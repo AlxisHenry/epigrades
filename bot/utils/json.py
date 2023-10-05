@@ -75,7 +75,18 @@ class Json:
         return False
 
     def public_update_day(self, semester, course_name, day, data):
-        # TODO: Update day data
+        with open(self.file_path, 'w') as outfile:
+            for s in self.json['semesters']:
+                if s['name'] == semester:
+                    for c in s['courses']:
+                        if c['name'] == course_name:
+                            for d in c['days']:
+                                if d['name'] == day:
+                                    d['assignments'] = data['assignments']
+                                    d['due_date'] = data['due_date']
+                                    d['submission'] = data['submission']
+                                    d['grade'] = data['grade']
+            json.dump(self.json, outfile)
         return self
 
     def format_day_data_to_object(self, data):
