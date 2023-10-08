@@ -1,0 +1,32 @@
+@import "../extends";
+
+.sidebar__dropdown {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all .8s ease-in-out;
+
+  .sidebar__dropdown__header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    @extend .sidebar__title;
+  }
+
+  .sidebar__dropdown__icon {
+    @extend .sidebar__icon;
+  }
+
+  .sidebar__dropdown__items {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  &.sidebar__dropdown--open {
+    max-height: 100vh;
+  }
+
+  @extend .sidebar__item__general;
+}
