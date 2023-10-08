@@ -1,28 +1,47 @@
 import "@/styles/components/SidebarDropdown.scss";
-import SidebarItem, { type SidebarItemProps } from "./SidebarItem";
-import React, { useState } from "react";
+import SidebarItem from "./SidebarItem";
+import React, { useEffect, useState } from "react";
 import Icon from "./Icon";
 
 export type SidebarDropdownProps = {
+  pathname: string;
   text: string;
   icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  items: SidebarItemProps[];
+  items: DropdownItemProps[];
 };
 
+export type DropdownItemProps = {
+  route: string;
+  text: string;
+}
+
 export default function SidebarDropdown({
+  pathname,
   text,
   icon,
   items,
 }: SidebarDropdownProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [disableMouseEvents, setDisableMouseEvents] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Search for pathname in items.route,
+    if (items.find((item) => item.route === pathname)) {
+      setIsDropdownOpen(true);
+      setDisableMouseEvents(true);
+    } else {
+      setIsDropdownOpen(false);
+      setDisableMouseEvents(false);
+    }
+  }, [items, pathname])
 
   return (
     <div
       className={
         "sidebar__dropdown" + (isDropdownOpen ? " sidebar__dropdown--open" : "")
       }
-      onMouseEnter={() => setIsDropdownOpen(!isDropdownOpen)}
-      onMouseLeave={() => setIsDropdownOpen(!isDropdownOpen)}
+      onMouseEnter={disableMouseEvents ? undefined : () => setIsDropdownOpen(true)}
+      onMouseLeave={disableMouseEvents ? undefined : () => setIsDropdownOpen(false)}
     >
       <div className="sidebar__dropdown__header">
         {icon && (
@@ -41,9 +60,7 @@ export default function SidebarDropdown({
         }
       >
         {items.map((item, index) => (
-          <>
-            <SidebarItem key={index} route={item.route} text={item.text} />
-          </>
+          <SidebarItem pathname={pathname} key={index} route={item.route} text={item.text} />
         ))}
       </div>
     </div>

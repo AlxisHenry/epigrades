@@ -17,6 +17,11 @@
     @extend .sidebar__icon;
   }
 
+  &.sidebar__item--active {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark); 
+  }
+
 	@extend .sidebar__item__general;
 	
 }

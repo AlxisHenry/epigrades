@@ -1,6 +1,6 @@
 import "@/styles/components/Sidebar.scss";
-import SidebarItem, { type SidebarItemProps } from "./SidebarItem";
-import SidebarDropdown from "./SidebarDropdown";
+import SidebarItem from "./SidebarItem";
+import SidebarDropdown, { type DropdownItemProps } from "./SidebarDropdown";
 import SidebarToggle from "./SidebarToggle";
 import { getSemesterNames } from "@/services/semesters";
 import { useEffect, useState } from "react";
@@ -8,10 +8,12 @@ import BarChartIcon from "./Icons/BarChartIcon";
 import InfoIcon from "./Icons/InfoIcon";
 import HomeIcon from "./Icons/HomeIcon";
 import SchoolIcon from "./Icons/SchoolIcon";
+import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
-  const [semesters, setSemesters] = useState<SidebarItemProps[]>([]);
+  const [semesters, setSemesters] = useState<DropdownItemProps[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  const pathname = usePathname();
 
   useEffect(() => {
     setSemesters(
@@ -34,14 +36,15 @@ export default function Sidebar() {
           isSidebarOpen={isSidebarOpen}
         />
         <div className="sidebar__items">
-          <SidebarItem route="/" icon={HomeIcon} text="Home" />
+          <SidebarItem pathname={pathname} route="/" icon={HomeIcon} text="Home" />
           <SidebarDropdown
+            pathname={pathname}
             text="Semesters"
             icon={SchoolIcon}
             items={semesters}
           />
-          <SidebarItem route="/" icon={InfoIcon} text="Alerts" />
-          <SidebarItem route="/stats" icon={BarChartIcon} text="Statistics" />
+          <SidebarItem pathname={pathname} route="/alerts" icon={InfoIcon} text="Alerts" />
+          <SidebarItem pathname={pathname} route="/stats" icon={BarChartIcon} text="Statistics" />
         </div>
       </nav>
     </>

@@ -1,15 +1,17 @@
 import "@/styles/components/SidebarItem.scss";
 import Icon from "./Icon";
+import Link from "next/link";
 
 export type SidebarItemProps = {
   route: string;
+  pathname: string;
   icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   text: string;
 };
 
-export default function SidebarItem({ route, icon, text }: SidebarItemProps) {
+export default function SidebarItem({ route, pathname, icon, text }: SidebarItemProps) {
   return (
-    <div className="sidebar__item">
+    <Link href={route} className={"sidebar__item" + (pathname === route ? " sidebar__item--active" : "")}>
       {icon && (
         <>
           <div className="sidebar__item__icon">
@@ -18,8 +20,8 @@ export default function SidebarItem({ route, icon, text }: SidebarItemProps) {
         </>
       )}
       <div className="sidebar__item__text">
-        <a href={route}>{text}</a>
+        {text}
       </div>
-    </div>
+    </Link>
   );
 }

@@ -4,6 +4,8 @@
 
   --color-primary: #1e1e1e;
   --contrast-primary: #f2f2f2;
+  --color-primary-light: #2e2e2e;
+  --color-primary-dark: #0e0e0e;
 }
 
 * {
