@@ -4,12 +4,12 @@
   height: 100vh;
   width: 25rem;
   position: fixed;
+  z-index: 100; 
   top: 0;
   left: 0;
   background-color: var(--color-primary);
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.8);
   transition: transform 0.3s ease-in-out;
-  padding-top: 1rem;
   overflow-y: auto;
   transform: translateX(-100%);
 
@@ -26,7 +26,7 @@
   }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 620px) {
   .sidebar {
     width: 100%;
   }

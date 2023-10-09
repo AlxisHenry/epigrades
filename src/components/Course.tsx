@@ -1,25 +1,54 @@
-import { type Course } from "@/services/courses";
+import "@/styles/components/Course.scss";
+import ArrowIcon from "./Icons/Arrow";
+import { type Day as DayType } from "@/services/days";
+import { useState } from "react";
+import CourseLink from "./CourseLink";
+import { type Semester } from "@/services/semesters";
+import CourseTable from "./CourseTable";
 
-export default function Course({ name, days }: Course) {
-	return (
-		<div>
-			<h1>{name}</h1>
-			{
-				days.map((day) => {
-					return (
-						<div>
-							<h2>{day.name}</h2>
-							<ul>
-								<li>{day.assignments}</li>
-								<li>{day.due_date}</li>
-								<li>{day.submission}</li>
-								<li>{day.topic}</li>
-								<li>{day.grade}</li>
-							</ul>
-						</div>
-					);
-				})
-			}
-		</div>
-	);
+type Props = {
+  name: string;
+  semester: Semester | null;
+  days: DayType[];
+  isOpen: boolean;
+  toggleDropdown: () => void;
+};
+
+export default function Course({
+  name,
+  semester,
+  days,
+  isOpen,
+  toggleDropdown,
+}: Props) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.target instanceof HTMLAnchorElement) return;
+    toggleDropdown();
+  };
+
+  return (
+    <div className={`course ${isOpen ? "course--open" : ""}`}>
+      <div className="course__header" onClick={handleClick}>
+        <CourseLink
+          semester={semester?.name}
+          courseName={name}
+          content={name}
+          title={true}
+        />
+        <div className="course__arrow">
+          <ArrowIcon />
+        </div>
+      </div>
+      <div className="course__days">
+        <CourseTable days={days} />
+        <CourseLink
+          semester={semester?.name}
+          courseName={name}
+          content="View Course"
+          title={false}
+        />
+      </div>
+    </div>
+  );
 }

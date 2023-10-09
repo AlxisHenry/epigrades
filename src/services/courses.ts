@@ -18,3 +18,7 @@ export function getCourses(): Course[] {
 export function getCoursesNames(): string[] {
   return getCourses().map((c) => c.name);
 }
+
+export function getCourse(course: string): Course | null {
+  return getCourses().find((c) => c.name === course) || null;
+}

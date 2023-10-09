@@ -1,0 +1,38 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.5rem 0;
+  }
+
+  th {
+    font-weight: 600;
+  }
+
+  td {
+    font-size: 0.85rem;
+  }
+}
+
+@media screen and (max-width: 742px) {
+  table {
+    th,
+    td {
+      padding: 0.5rem 0.5rem;
+    }
+  }
+
+  table thead tr th:nth-child(2),
+  table tbody tr td:nth-child(2),
+  table thead tr th:nth-child(3),
+  table tbody tr td:nth-child(3),
+  table thead tr th:nth-child(4),
+  table tbody tr td:nth-child(4),
+  table thead tr th:nth-child(5),
+  table tbody tr td:nth-child(5) {
+    display: none;
+  }
+}

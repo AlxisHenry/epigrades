@@ -1,9 +1,12 @@
 .sidebar__toggle {
   position: fixed;
-  top: 1rem;
-  left: 1rem;
+  width: 100%;
+  background-color: var(--color-primary);
+  z-index: 100;
 
   button {
+    margin-left: 1rem;
+    margin-top: 1rem;
     background-color: transparent;
     border: none;
     cursor: pointer;

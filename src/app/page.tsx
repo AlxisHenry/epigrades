@@ -1,17 +1,12 @@
 "use client";
 
-import { type Semester, getSemesters } from "@/services/semesters";
-import { useEffect, useState } from "react";
+import Layout from "@/components/Layout";
+import PageTitle from "@/components/PageTitle";
 
 export default function Home() {
-  const [semesters, setSemesters] = useState<Semester[]>([]);
-
-  useEffect(() => {
-    setSemesters(getSemesters());
-  }, []);
-
   return (
-    <>
-    </>
-  );
+    <Layout>
+      <PageTitle parts={["Home"]} />
+    </Layout>
+  )
 }
