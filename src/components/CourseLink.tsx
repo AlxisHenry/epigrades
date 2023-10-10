@@ -15,7 +15,7 @@ export default function CourseLink({ courseName, semester, content, title }: Pro
     <Link
       className={`course__link ${title ? "course__link--title" : ""}`}
       href="/semesters/[semester]/[course]"
-      as={`/semesters/${semester}/${courseName}`}
+      as={`/semesters/${semester.toLowerCase()}/${courseName.toLowerCase()}`}
     >
       <div>
         {content} <LinkArrow />

@@ -1,7 +1,12 @@
 "use client";
 
 import "@/styles/pages/[semester].scss";
-import { type Semester, getSemester } from "@/services/semesters";
+import {
+  type Semester,
+  getSemester,
+  getSemesterGrade,
+  calculateSemesterGradeAverage,
+} from "@/services/semesters";
 import { type Course as CourseType } from "@/services/courses";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -9,6 +14,9 @@ import Course from "@/components/Course";
 import PageTitle from "@/components/PageTitle";
 import Loading from "@/components/Loading";
 import Layout from "@/components/Layout";
+import Card from "@/components/Card";
+import Cards from "@/components/Cards";
+import { getSemesterAssignementsCount } from "@/services/assignements";
 
 type Params = {
   semester: string;
@@ -22,9 +30,17 @@ export default function Home() {
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number>(-1);
 
+  const [semesterGrade, setSemesterGrade] = useState<string>("");
+  const [semesterGradeAverage, setSemesterGradeAverage] = useState<string>("");
+  const [semesterAsssignementsCount, setSemesterAsssignementsCount] =
+    useState<number>(0);
+
   useEffect(() => {
     setSemester(getSemester(params.semester));
     setCourses(semester?.courses || []);
+    setSemesterGrade(getSemesterGrade(semester));
+    setSemesterGradeAverage(calculateSemesterGradeAverage(semester));
+    setSemesterAsssignementsCount(getSemesterAssignementsCount(semester));
     setLoading(false);
   });
 
@@ -39,6 +55,14 @@ export default function Home() {
       ) : (
         <>
           <PageTitle parts={["Semesters", semester?.name ?? ""]} />
+          <Cards>
+            <Card title="Grade" subtitle={semesterGrade} />
+            <Card title="Average" subtitle={semesterGradeAverage} />
+            <Card
+              title="Assignments"
+              subtitle={semesterAsssignementsCount.toString()}
+            />
+          </Cards>
           <div className="courses__items">
             {courses.length > 0 ? (
               courses.map((course, index) => (

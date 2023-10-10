@@ -1,13 +1,15 @@
 .course {
   max-height: 115px;
   overflow: hidden;
-  margin-bottom: 1.2rem;
-  border-radius: 0.5rem;
+  border-radius: .5rem;
   background-color: var(--contrast-secondary);
   transition: all 0.3s ease-in-out;
   box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+  margin-bottom: 1.2rem;
 
   &:hover {
+    cursor: pointer;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.4);
     background-color: var(--contrast-primary);
   }
 

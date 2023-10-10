@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
   const [semesters, setSemesters] = useState<DropdownItemProps[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const pathname = usePathname();
 
   useEffect(() => {

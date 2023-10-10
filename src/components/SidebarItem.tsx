@@ -11,7 +11,7 @@ export type SidebarItemProps = {
 
 export default function SidebarItem({ route, pathname, icon, text }: SidebarItemProps) {
   return (
-    <Link href={route} className={"sidebar__item" + (pathname === route ? " sidebar__item--active" : "")}>
+    <Link href={route.toLowerCase()} className={"sidebar__item" + (pathname === route ? " sidebar__item--active" : "")}>
       {icon && (
         <>
           <div className="sidebar__item__icon">
