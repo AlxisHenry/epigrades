@@ -20,7 +20,8 @@ class Bot:
 
     def load(self, url):
         self.service = Service(os.getenv('CHROMEDRIVER_PATH'))
-        self.driver = webdriver.Chrome(service=self.service)
+        self.driver = webdriver.Chrome(
+            service=self.service)
         self.driver.maximize_window()
         self.driver.get(url)
         self.wait(2)
@@ -126,6 +127,10 @@ class Bot:
             j.public_add_or_update_day(
                 semester=semester, course_name=course_name, day=day_name, data=row)
         del j
+
+    def push(self):
+        os.system(
+            'cd .. && git add ./bot/grades.json && git commit -m "Update grades.json" && git push')
 
     def quit(self):
         self.driver.quit()
