@@ -36,15 +36,24 @@ export default function Sidebar() {
           isSidebarOpen={isSidebarOpen}
         />
         <div className="sidebar__items">
-          <SidebarItem pathname={pathname} route="/" icon={HomeIcon} text="Home" />
+          <SidebarItem
+            pathname={pathname}
+            route="/"
+            icon={HomeIcon}
+            text="Home"
+          />
           <SidebarDropdown
             pathname={pathname}
             text="Semesters"
             icon={SchoolIcon}
             items={semesters}
           />
-          <SidebarItem pathname={pathname} route="/alerts" icon={InfoIcon} text="Alerts" />
-          <SidebarItem pathname={pathname} route="/stats" icon={BarChartIcon} text="Statistics" />
+          <SidebarItem
+            pathname={pathname}
+            route="/stats"
+            icon={BarChartIcon}
+            text="Statistics"
+          />
         </div>
       </nav>
     </>
