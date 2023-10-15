@@ -65,7 +65,7 @@ export default function Home() {
     setCourseGradeAverage(calculateCourseGradeAverage(course));
     setCourseAssignementsCount(getCourseAssignementsCount(course));
     setLoading(false);
-  });
+  }, [params.semester, params.course, course]);
 
   const options = {
     responsive: true,

@@ -42,7 +42,7 @@ export default function Home() {
     setSemesterGradeAverage(calculateSemesterGradeAverage(semester));
     setSemesterAsssignementsCount(getSemesterAssignementsCount(semester));
     setLoading(false);
-  });
+  }, [params.semester, semester]);
 
   const toggleDropdown = (i: number) => {
     setOpenDropdownIndex(i === openDropdownIndex ? -1 : i);
