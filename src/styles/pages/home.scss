@@ -1,0 +1,52 @@
+.description {
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.5;
+  margin-bottom: 3.5rem;
+  color: var(--contrast-primary);
+  text-align: justify;
+
+	.link {
+		font-weight: 500;
+		margin-left: 0.4rem;
+		text-decoration: underline;
+
+		&:hover {
+			color: var(--contrast-secondary);
+		}
+	}
+}
+
+.links {
+  display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+  gap: 2rem;
+
+  .link {
+		flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    background-color: var(--contrast-primary);
+    color: var(--color-primary);
+    transition: all 0.3s ease-in-out;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+		border: 1px solid var(--contrast-primary);
+
+    &:hover {
+      background-color: var(--color-primary);
+      color: var(--contrast-primary);
+      border: 1px solid var(--contrast-primary);
+    }
+
+    &:active {
+      background-color: var(--contrast-tertiary);
+    }
+  }
+}
