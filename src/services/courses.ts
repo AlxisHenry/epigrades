@@ -1,5 +1,5 @@
 import type { Day } from "./days";
-import { Grade, getLetterGrade } from "./grades";
+import { getLetterGrade } from "./grades";
 import { type Semester, getSemesters } from "./semesters";
 
 export type Course = {
@@ -43,4 +43,15 @@ export function getCourseGrade(course: Course | null): string {
   let grade = calculateCourseGradeAverage(course);
   if (grade === "-") return grade;
   return getLetterGrade(parseFloat(grade));
+}
+
+export function getCourseAssignementsNames(course: Course | null): string[] {
+  if (course === null) return [];
+  let assignements: string[] = [];
+  course.days.map((day) => {
+    if (day !== null) {
+      assignements.push(day.name);
+    }
+  });
+  return assignements;
 }

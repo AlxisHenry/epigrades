@@ -75,7 +75,7 @@ export default function Home() {
                 />
               ))
             ) : (
-              <div>No courses found</div>
+              <div className="error">No courses found for this semester.</div>
             )}
           </div>
         </>

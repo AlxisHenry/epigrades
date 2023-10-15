@@ -24,7 +24,7 @@ export function getSemesterCourses(semester: string): Course[] {
   return s ? s.courses : [];
 }
 
-export function getSemesterNames(): string[] {
+export function getSemestersNames(): string[] {
   return grades.semesters.map((s) => s.name);
 }
 
@@ -44,14 +44,17 @@ export function calculateSemesterGradeAverage(
 ): string {
   if (semester === null) return "-";
   let grade = 0,
-    countOfGrades = 0;
+    countOfGrades = 0,
+    countOfDays = 0;
   semester.courses.forEach((course) => {
     course.days.map((day) => {
       if (day.grade !== "-" && day.grade !== null) {
         grade += parseFloat(day.grade);
         countOfGrades++;
       }
+      countOfDays++;
     });
   });
+  if (countOfGrades === 0) return "-";
   return (grade / countOfGrades).toFixed(2);
 }

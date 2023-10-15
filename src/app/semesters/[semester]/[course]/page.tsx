@@ -17,6 +17,18 @@ import Layout from "@/components/Layout";
 import Cards from "@/components/Cards";
 import Card from "@/components/Card";
 import { getCourseAssignementsCount } from "@/services/assignements";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  PointElement,
+  LineElement,
+  Legend,
+} from "chart.js";
 
 type Params = {
   semester: string;
@@ -25,6 +37,17 @@ type Params = {
 
 export default function Home() {
   const params: Params = useParams();
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    PointElement,
+    LineElement,
+    Tooltip,
+    Legend
+  );
 
   const [semester, setSemester] = useState<Semester | null>(null);
   const [course, setCourse] = useState<CourseType | null>(null);
@@ -43,6 +66,50 @@ export default function Home() {
     setCourseAssignementsCount(getCourseAssignementsCount(course));
     setLoading(false);
   });
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Grade per assignment",
+      },
+    },
+  };
+
+  const data: {
+    labels: string[];
+    datasets: {
+      label: string;
+      data: string[];
+      backgroundColor: string[];
+      borderColor: string[];
+      borderWidth: number;
+      tension: number;
+    }[];
+  } = {
+    labels: [],
+    datasets: [
+      {
+        label: "Grade per assignment",
+        data: [],
+        backgroundColor: ["#FFF"],
+        borderColor: ["#FFF"],
+        borderWidth: 1,
+        tension: 0.2,
+      },
+    ],
+  };
+
+  if (!loading) {
+    for (const day of course!.days) {
+      data.labels.push(day.name);
+      data.datasets[0].data.push(day.grade);
+    }
+  }
 
   return (
     <Layout>
@@ -64,6 +131,9 @@ export default function Home() {
           </Cards>
           <div className="table__container">
             <CourseTable days={course!.days} />
+          </div>
+          <div className="charts">
+            <Line data={data} options={options} />
           </div>
         </>
       )}
