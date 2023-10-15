@@ -47,6 +47,13 @@ export default function Home() {
         >
           LinkedIn
         </a>
+        <a
+          className="link"
+          href="https://alexishenry.eu"
+          target="_blank"
+        >
+          Portfolio
+        </a>
       </div>
     </Layout>
   );
