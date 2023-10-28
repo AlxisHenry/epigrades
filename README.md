@@ -75,7 +75,9 @@ $ pnpm run dev
 
 ## Technologies
 
-![](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&logo=gnu-bash&color=20232a)
+![](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&color=20232a)
+![](https://img.shields.io/badge/next.js-%2320232a?style=for-the-badge&logo=nextdotjs)
+![](https://img.shields.io/badge/python-%2320232a.svg?style=for-the-badge&logo=python&color=20232a)
 
 ## Authors
 
