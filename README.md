@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Epitech grades and statistics 📈
 
-## Getting Started
+This is a web application to have a global view and some statistics about my studies at Epitech.
 
-First, run the development server:
+## Table of contents
+1. [How to use it ?](#how-to-use-it-)
+2. [Technologies](#technologies)
+3. [Authors](#authors)
+
+## How to use it ?
+
+First, you need to clone the repository.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+$ git clone https://github.com/AlxisHenry/epitech-grades.git
+$ cd epitech-grades
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install javascript dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> Note that I'm using pnpm instead of npm
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+$ pnpm i
+```
 
-## Learn More
+### Configure the bot
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+$ cd bot
+$ cp .env.example .env
+$ cat .env
+MICROSOFT_EMAIL="example@gmail.com"
+MICROSOFT_PASSWORD="password"
+CHROMEDRIVER_PATH="./drivers/chromedriver.exe"
+WEBSITE_URL="https://www.microsoft.com/en-us/software-download/windows10ISO"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Replace the `MICROSOFT_EMAIL` and `MICROSOFT_PASSWORD` environments variables with your microsoft credentials.
+- Replace `WEBSITE_URL` with the link to gandalf login page.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+#### Reset the `grades.json` file using the sample.
 
-## Deploy on Vercel
+```
+$ cp grades.sample.json grades.json
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Optionally you can use a python virtual environment to run the bot.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```bash
+python3 -m venv venv
+venv/Scripts/activate
+```
+
+#### Install the needed packages
+
+```bash
+pip install -r requirements.txt
+```
+
+#### Now you just need to run the `main.py` ! 🐡
+
+```bash
+$ py main.py
+```
+
+During the script, you will be asked for an OTP code, which you should normally receive by phone. Your Microsoft account must be linked to your telephone number if you turn on 2FA. So you just need to enter the code in your terminal when asked.
+
+#### Launch the web application
+
+```bash
+$ cd ..
+$ pnpm run dev
+```
+
+## Technologies
+
+![](https://img.shields.io/badge/bash-%23121011.svg?style=for-the-badge&logo=gnu-bash&color=20232a)
+
+## Authors
+
+- [@AlxisHenry](https://github.com/AlxisHenry)
