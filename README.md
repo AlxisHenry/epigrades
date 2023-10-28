@@ -1,4 +1,4 @@
-# Epitech grades and statistics 📈
+# Notes and statistics at Epitech 🎓
 
 This is a web application to have a global view and some statistics about my studies at Epitech.
 
