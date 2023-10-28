@@ -48,14 +48,14 @@ $ cp grades.sample.json grades.json
 #### Optionally you can use a python virtual environment to run the bot.
 
 ```bash
-python3 -m venv venv
-venv/Scripts/activate
+$ python3 -m venv venv
+$ venv/Scripts/activate
 ```
 
 #### Install the needed packages
 
 ```bash
-pip install -r requirements.txt
+$ pip install -r requirements.txt
 ```
 
 #### Now you just need to run the `main.py` ! 🐡
