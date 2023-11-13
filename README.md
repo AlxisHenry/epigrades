@@ -58,6 +58,10 @@ $ venv/Scripts/activate
 $ pip install -r requirements.txt
 ```
 
+#### Install the chromedriver
+
+Go to `https://googlechromelabs.github.io/chrome-for-testing/#stable` and download the chromedriver for your version of chrome. Then put it in the `drivers` folder (name it `chromedriver.exe`).
+
 #### Now you just need to run the `main.py` ! 🐡
 
 ```bash
