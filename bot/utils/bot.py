@@ -1,6 +1,5 @@
 import time
 import os
-import json
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -9,8 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from dotenv import load_dotenv
 from datetime import datetime
-from .json import Json
-
+from utils.json import Json
 
 class Bot:
 
@@ -80,7 +78,7 @@ class Bot:
                 print("Assignments found for this course.")
                 self.driver.get(self.find_assignment_link())
                 self.save(semester=self.retrieve_semester(
-                ), course_name=self.course_name, values=self.retrieve_values_from_table())
+                    ), course_name=self.course_name, values=self.retrieve_values_from_table())
                 self.wait()
             else:
                 print("No assignments found for this course.")
@@ -101,7 +99,9 @@ class Bot:
         return self.driver.find_element(By.XPATH, '/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[5]/ul/li[3]/a').get_attribute("href")
 
     def retrieve_semester(self):
-        return self.driver.find_element(By.XPATH, '//*[@id="page-navbar"]/nav/ol/li[4]/span/a/span').text
+        if len(self.driver.find_elements(By.XPATH, '//*[@id="page-navbar"]/nav/ol/li[4]/span/a/span')) > 0:
+            return self.driver.find_element(By.XPATH, '//*[@id="page-navbar"]/nav/ol/li[4]/span/a/span').text
+        return "T5"
 
     def retrieve_values_from_table(self):
         tbody_element = self.driver.find_element(By.TAG_NAME, 'tbody')
