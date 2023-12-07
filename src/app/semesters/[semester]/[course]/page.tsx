@@ -71,12 +71,31 @@ export default function Home() {
     responsive: true,
     plugins: {
       legend: {
-        position: "top" as const,
+        display: false,
       },
       title: {
-        display: true,
-        text: "Grade per assignment",
+        display: false,
       },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        min: 0,
+        grid: {
+          color: "rgba(255, 255, 255, 0.1)",
+        },
+        ticks: {
+          color: "rgba(255, 255, 255, 0.5)",
+        }
+      },
+      x: {
+        grid: {
+          color: "rgba(255, 255, 255, 0.1)",
+        },
+        ticks: {
+          color: "rgba(255, 255, 255, 0.5)",
+        }
+      }
     },
   };
 
@@ -94,7 +113,7 @@ export default function Home() {
     labels: [],
     datasets: [
       {
-        label: "Grade per assignment",
+        label: "Grade",
         data: [],
         backgroundColor: ["#FFF"],
         borderColor: ["#FFF"],
@@ -105,9 +124,10 @@ export default function Home() {
   };
 
   if (!loading) {
-    for (const day of course!.days) {
-      data.labels.push(day.name);
-      data.datasets[0].data.push(day.grade);
+    for (const c of course!.days) {
+      if (c.grade === null || c.grade === "-") continue;
+      data.labels.push(c.name);
+      data.datasets[0].data.push(c.grade);
     }
   }
 
@@ -132,9 +152,13 @@ export default function Home() {
           <div className="table__container">
             <CourseTable days={course!.days} />
           </div>
-          <div className="charts">
-            <Line data={data} options={options} />
-          </div>
+          {
+            data.labels.length > 0 ? (
+              <div className="charts">
+                <Line data={data} options={options} />
+              </div>
+            ) : null
+          }
         </>
       )}
     </Layout>
