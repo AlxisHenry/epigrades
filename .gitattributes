@@ -1,34 +1,15 @@
-# EditorConfig helps developers define and maintain consistent
-# coding styles between different editors and IDEs
-# editorconfig.org
+* text=auto
 
-root = true
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+*.sh text eol=lf
+*.yml text eol=lf
+*.env text eol=lf
+*.example text eol=lf
 
-[*]
-charset = utf-8
-indent_style = space
-indent_size = 2
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-[*.md]
-trim_trailing_whitespace = false
-
-[*.json]
-indent_size = 2
-
-[*.yml]
-indent_size = 2
-
-[*.js]
-indent_size = 2
-
-[*.jsx]
-indent_size = 2
-
-[*.css]
-indent_size = 2
-
-[*.scss]
-indent_size = 2
+/.github export-ignore
+CHANGELOG.md export-ignore
+.styleci.yml export-ignore
