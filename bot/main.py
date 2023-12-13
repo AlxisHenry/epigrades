@@ -6,6 +6,7 @@ load_dotenv()
 
 bot = Bot(url=os.getenv('WEBSITE_URL'))
 
+bot.pull()
 bot.authenticate()
 bot.retrieve_courses()
 bot.quit()
