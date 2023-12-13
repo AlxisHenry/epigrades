@@ -129,8 +129,7 @@ class Bot:
         del j
 
     def push(self):
-        os.system(
-            'cd .. && git add ./bot/grades.json && git commit -m "Update grades.json" && git push')
+        os.system('cd .. && git stash && git pull && git add ./bot/grades.json && git commit -m "Update grades.json" && git push')
 
     def quit(self):
         self.driver.quit()
