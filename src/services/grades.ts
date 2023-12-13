@@ -1,16 +1,25 @@
-import { type Semester } from "./semesters";
+import { type Course } from "./courses";
+import { type Day } from "./days";
+import { getSemesterCourses } from "./semesters";
 
 export enum Grade {
-  "A" = 15,
-  "B" = 10,
-  "C" = 5,
-  "D" = 0,
+  A = "A", 
+  B = "B",
+  C = "C",
+  D = "D",
+  ECHEC = "ECHEC"
 }
 
-export function getLetterGrade(grade: number): string {
-  if (grade >= Grade.A) return "A";
-  if (grade >= Grade.B) return "B";
-  if (grade >= Grade.C) return "C";
-  if (grade >= Grade.D) return "D";
+export function getCourseGrade(course: Course|null): string {
+  if (course === null) return "-";
+
+  let lastDay: Day = course.days[course.days.length - 1];
+
+  if (lastDay.due_date === "-") {
+    if (Object.values(Grade).includes(lastDay.grade as Grade)) {
+      return lastDay.grade;
+    }
+  }
+
   return "-";
 }

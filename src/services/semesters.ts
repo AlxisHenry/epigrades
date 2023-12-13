@@ -1,6 +1,7 @@
 import grades from "../../bot/grades.json";
 import type { Course } from "./courses";
-import { getLetterGrade } from "./grades";
+import { isGradedDay } from "./days";
+import { getCourseGrade } from "./grades";
 
 export type Semester = {
   name: string;
@@ -32,29 +33,20 @@ export function getSemestersCount(): number {
   return grades.semesters.length;
 }
 
-export function getSemesterGrade(semester: Semester | null) {
-  if (semester === null) return "-";
-  let grade = calculateSemesterGradeAverage(semester);
-  if (grade === "-") return grade;
-  return getLetterGrade(parseFloat(grade));
-}
-
 export function calculateSemesterGradeAverage(
   semester: Semester | null
 ): string {
   if (semester === null) return "-";
   let grade = 0,
-    countOfGrades = 0,
-    countOfDays = 0;
+    gradesCount = 0;
   semester.courses.forEach((course) => {
     course.days.map((day) => {
-      if (day.grade !== "-" && day.grade !== null) {
+      if (isGradedDay(day)) {
         grade += parseFloat(day.grade);
-        countOfGrades++;
+        gradesCount++;
       }
-      countOfDays++;
     });
   });
-  if (countOfGrades === 0) return "-";
-  return (grade / countOfGrades).toFixed(2);
+  if (gradesCount === 0) return "-";
+  return (grade / gradesCount).toFixed(2);
 }

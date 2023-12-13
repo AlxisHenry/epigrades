@@ -5,7 +5,6 @@ import { type Semester, getSemester } from "@/services/semesters";
 import {
   type Course as CourseType,
   getCourse,
-  getCourseGrade,
   calculateCourseGradeAverage,
 } from "@/services/courses";
 import { useEffect, useState } from "react";
@@ -17,7 +16,7 @@ import Layout from "@/components/Layout";
 import Cards from "@/components/Cards";
 import Card from "@/components/Card";
 import { getCourseAssignementsCount } from "@/services/assignements";
-import { Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -29,6 +28,8 @@ import {
   LineElement,
   Legend,
 } from "chart.js";
+import { getCourseGrade } from "@/services/grades";
+import { isGradedDay } from "@/services/days";
 
 type Params = {
   semester: string;
@@ -115,7 +116,7 @@ export default function Home() {
       {
         label: "Grade",
         data: [],
-        backgroundColor: ["#FFF"],
+        backgroundColor: ["#fdfdfd10"],
         borderColor: ["#FFF"],
         borderWidth: 1,
         tension: 0.2,
@@ -124,10 +125,10 @@ export default function Home() {
   };
 
   if (!loading) {
-    for (const c of course!.days) {
-      if (c.grade === null || c.grade === "-") continue;
-      data.labels.push(c.name);
-      data.datasets[0].data.push(c.grade);
+    for (const day of course!.days) {
+      if (!isGradedDay(day)) continue;
+      data.labels.push(day.name);
+      data.datasets[0].data.push(day.grade);
     }
   }
 
@@ -155,7 +156,7 @@ export default function Home() {
           {
             data.labels.length > 0 ? (
               <div className="charts">
-                <Line data={data} options={options} />
+                <Bar data={data} options={options} />
               </div>
             ) : null
           }

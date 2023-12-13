@@ -4,7 +4,6 @@ import "@/styles/pages/[semester].scss";
 import {
   type Semester,
   getSemester,
-  getSemesterGrade,
   calculateSemesterGradeAverage,
 } from "@/services/semesters";
 import { type Course as CourseType } from "@/services/courses";
@@ -38,7 +37,7 @@ export default function Home() {
   useEffect(() => {
     setSemester(getSemester(params.semester));
     setCourses(semester?.courses || []);
-    setSemesterGrade(getSemesterGrade(semester));
+    // setSemesterGrade(getSemesterGrade(semester));
     setSemesterGradeAverage(calculateSemesterGradeAverage(semester));
     setSemesterAsssignementsCount(getSemesterAssignementsCount(semester));
     setLoading(false);

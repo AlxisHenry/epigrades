@@ -9,6 +9,25 @@ export type Day = {
   grade: string;
 };
 
+export function isValidDay(day: Day): boolean {
+  return (
+    day.name !== "" &&
+    day.name !== null &&
+    day.due_date !== "-" &&
+    day.due_date !== null &&
+    day.grade !== null
+  );
+}
+
+export function isGradedDay(day: Day): boolean {
+  return (
+    day.due_date !== "-" &&
+    day.due_date !== null &&
+    day.grade !== null &&
+    day.grade !== "-"
+  );
+}
+
 export function getDays(): Day[] {
   let days: Day[] = [];
   let courses: Course[] = getCourses();

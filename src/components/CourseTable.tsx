@@ -1,5 +1,5 @@
 import "@/styles/components/CourseTable.scss";
-import { type Day as DayType } from "@/services/days";
+import { isValidDay, type Day as DayType } from "@/services/days";
 import Day from "./Day";
 
 type Props = {
@@ -20,8 +20,8 @@ export default function CourseTable({days}: Props) {
         </tr>
       </thead>
       <tbody>
-        {days.map((day) => (
-          <Day {...day} key={day.name} />
+        {days.map((day: DayType) => (
+          isValidDay(day) && (<Day {...day} key={day.name} />)
         ))}
       </tbody>
     </table>
