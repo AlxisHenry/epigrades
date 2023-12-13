@@ -28,8 +28,6 @@ export default function Home() {
   const [semester, setSemester] = useState<Semester | null>(null);
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number>(-1);
-
-  const [semesterGrade, setSemesterGrade] = useState<string>("");
   const [semesterGradeAverage, setSemesterGradeAverage] = useState<string>("");
   const [semesterAsssignementsCount, setSemesterAsssignementsCount] =
     useState<number>(0);
@@ -37,7 +35,6 @@ export default function Home() {
   useEffect(() => {
     setSemester(getSemester(params.semester));
     setCourses(semester?.courses || []);
-    // setSemesterGrade(getSemesterGrade(semester));
     setSemesterGradeAverage(calculateSemesterGradeAverage(semester));
     setSemesterAsssignementsCount(getSemesterAssignementsCount(semester));
     setLoading(false);
@@ -55,7 +52,6 @@ export default function Home() {
         <>
           <PageTitle parts={["Semesters", semester?.name ?? ""]} />
           <Cards>
-            <Card title="Grade" subtitle={semesterGrade} />
             <Card title="Average" subtitle={semesterGradeAverage} />
             <Card
               title="Assignments"
