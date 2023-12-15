@@ -1,9 +1,10 @@
 import '@/styles/components/Cards.scss'
 
 type Props = {
+	className?: string
 	children: React.ReactNode
 }
 
-export default function Cards({ children }: Props) {
-	return <div className="cards">{children}</div>
+export default function Cards({ className, children }: Props) {
+	return <div className={`cards ${className}`}>{children}</div>
 }

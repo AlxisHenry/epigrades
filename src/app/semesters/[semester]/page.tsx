@@ -51,7 +51,7 @@ export default function Home() {
       ) : (
         <>
           <PageTitle parts={["Semesters", semester?.name ?? ""]} />
-          <Cards>
+          <Cards className="is-semester-cards">
             <Card title="Average" subtitle={semesterGradeAverage} />
             <Card
               title="Assignments"
