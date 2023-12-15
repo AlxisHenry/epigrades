@@ -4,7 +4,17 @@ import { type Semester, getSemesters } from "./semesters";
 export type Course = {
   name: string;
   days: Day[];
+  created_at: string;
 };
+
+export function sortCourses(courses: undefined | null | Course[]): Course[] {
+  if (!courses) return [];
+  return courses.sort((a, b) => {
+    if (a.created_at > b.created_at) return -1;
+    if (a.created_at < b.created_at) return 1;
+    return 0;
+  });
+}
 
 export function getCourses(): Course[] {
   let courses: Course[] = [];

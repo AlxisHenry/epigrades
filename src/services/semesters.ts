@@ -1,7 +1,6 @@
 import grades from "../../bot/grades.json";
-import type { Course } from "./courses";
+import { sortCourses, type Course } from "./courses";
 import { isGradedDay } from "./days";
-import { getCourseGrade } from "./grades";
 
 export type Semester = {
   name: string;
@@ -22,7 +21,7 @@ export function getSemester(semester: string): Semester | null {
 
 export function getSemesterCourses(semester: string): Course[] {
   const s: Semester | null = getSemester(semester);
-  return s ? s.courses : [];
+  return sortCourses(s?.courses);
 }
 
 export function getSemestersNames(): string[] {

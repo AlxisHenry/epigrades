@@ -32,7 +32,8 @@ class Json:
                     if s['name'] == semester:
                         s['courses'].append({
                             "name": course_name,
-                            "days": []
+                            "days": [],
+                            "created_at": self.now()
                         })
                 json.dump(self.json, outfile)
             return self
@@ -88,6 +89,9 @@ class Json:
                                     d['grade'] = data['grade']
             json.dump(self.json, outfile)
         return self
+
+    def now(self):
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def format_day_data_to_object(self, data):
         return {

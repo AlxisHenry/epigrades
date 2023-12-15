@@ -6,7 +6,7 @@ import {
   getSemester,
   calculateSemesterGradeAverage,
 } from "@/services/semesters";
-import { type Course as CourseType } from "@/services/courses";
+import { sortCourses, type Course as CourseType } from "@/services/courses";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Course from "@/components/Course";
@@ -34,7 +34,7 @@ export default function Home() {
 
   useEffect(() => {
     setSemester(getSemester(params.semester));
-    setCourses(semester?.courses || []);
+    setCourses(sortCourses(semester?.courses));
     setSemesterGradeAverage(calculateSemesterGradeAverage(semester));
     setSemesterAsssignementsCount(getSemesterAssignementsCount(semester));
     setLoading(false);
@@ -62,9 +62,9 @@ export default function Home() {
             {courses.length > 0 ? (
               courses.map((course, index) => (
                 <Course
-                  {...course}
-                  key={index}
+                  course={course}
                   semester={semester}
+                  key={index}
                   isOpen={index === openDropdownIndex}
                   toggleDropdown={() => toggleDropdown(index)}
                 />
