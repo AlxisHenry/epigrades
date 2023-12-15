@@ -1,6 +1,5 @@
 import { type Course } from "./courses";
 import { type Day } from "./days";
-import { Semester, getSemesterCourses } from "./semesters";
 
 export enum Grade {
   A = "A", 
@@ -8,6 +7,10 @@ export enum Grade {
   C = "C",
   D = "D",
   ECHEC = "ECHEC"
+}
+
+export function isValidGrade(grade: string): boolean {
+  return Object.values(Grade).includes(grade as Grade);
 }
 
 export function getCourseGrade(course: Course|null): string {

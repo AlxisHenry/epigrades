@@ -1,7 +1,7 @@
 .course {
   max-height: 115px;
   overflow: hidden;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   background-color: var(--contrast-secondary);
   transition: all 0.3s ease-in-out;
   box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
@@ -33,10 +33,34 @@
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
     max-height: 115px;
     overflow: hidden;
-    .course__arrow {
-      z-index: 0;
-      transform: rotate(90deg);
-      transition: all 0.3s ease-in-out;
+
+    .course__header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      .course__arrow {
+        z-index: 0;
+        transform: rotate(90deg);
+        transition: all 0.3s ease-in-out;
+      }
+      .grade-badge {
+        font-size: 1.2rem;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        background-color: var(--contrast-primary);
+        align-self: center;
+
+        &.grade-badge--A {
+          color: var(--grade-success);
+        }
+        &.grade-badge--B {
+          color: var(--grade-warning);
+        }
+        &.grade-badge--C {
+          color: var(--grade-danger);
+        }
+      }
     }
   }
 
@@ -51,5 +75,11 @@
     .course__asignment_link {
       text-align: end;
     }
+  }
+}
+
+@media screen and (max-width: 460px) {
+  .grade-badge {
+    display: none;
   }
 }

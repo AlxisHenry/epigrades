@@ -15,7 +15,7 @@
 
   .card__title {
     position: absolute;
-    top: 12px;
+    top: 22px;
     font-size: 1.2rem;
     font-weight: 600;
   }
@@ -34,6 +34,7 @@
     min-height: 140px;
     .card__title {
       font-size: 1.1rem;
+      top: 18px;
     }
     .card__subtitle {
       font-size: 1.8rem;
@@ -46,6 +47,7 @@
     min-height: 100px;
     .card__title {
       font-size: 1rem;
+      top: 12px;
     }
     .card__subtitle {
       font-size: 1.5rem;

@@ -1,26 +1,24 @@
 import "@/styles/components/Course.scss";
 import ArrowIcon from "./Icons/Arrow";
-import { type Day as DayType } from "@/services/days";
-import { useState } from "react";
 import CourseLink from "./CourseLink";
 import { type Semester } from "@/services/semesters";
 import CourseTable from "./CourseTable";
+import { type Course } from "@/services/courses";
+import { getCourseGrade, isValidGrade } from "@/services/grades";
 
 type Props = {
-  name: string;
+  course: Course;
   semester: Semester | null;
-  days: DayType[];
   isOpen: boolean;
   toggleDropdown: () => void;
 };
 
 export default function Course({
-  name,
+  course,
   semester,
-  days,
   isOpen,
   toggleDropdown,
-}: Props) {
+}: Props): JSX.Element {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (e.target instanceof HTMLAnchorElement) return;
@@ -32,23 +30,36 @@ export default function Course({
       <div className="course__header" onClick={handleClick}>
         <CourseLink
           semester={semester?.name}
-          courseName={name}
-          content={name}
+          courseName={course.name}
+          content={course.name}
           title={true}
         />
-        <div className="course__arrow">
-          <ArrowIcon />
+        <div className="course__header-left">
+          <CourseGradeBadge grade={getCourseGrade(course)} />
+          <div className="course__arrow">
+            <ArrowIcon />
+          </div>
         </div>
       </div>
       <div className="course__days">
-        <CourseTable days={days} />
+        <CourseTable days={course.days} />
         <CourseLink
           semester={semester?.name}
-          courseName={name}
+          courseName={course.name}
           content="View Course"
           title={false}
         />
       </div>
     </div>
+  );
+}
+
+function CourseGradeBadge({ grade }: { grade: string }): JSX.Element {
+  if (!isValidGrade(grade)) return (<></>);
+
+  return (
+    <span className={`grade-badge grade-badge--${grade}`}>
+      {grade}
+    </span>
   );
 }
