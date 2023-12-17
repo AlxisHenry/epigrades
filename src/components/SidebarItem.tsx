@@ -1,11 +1,10 @@
 import "@/styles/components/SidebarItem.scss";
-import Icon from "./Icon";
 import Link from "next/link";
 
 export type SidebarItemProps = {
   route: string;
   pathname: string;
-  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  icon?: JSX.Element;
   text: string;
 };
 
@@ -15,7 +14,7 @@ export default function SidebarItem({ route, pathname, icon, text }: SidebarItem
       {icon && (
         <>
           <div className="sidebar__item__icon">
-            <Icon icon={icon} />
+            {icon}
           </div>
         </>
       )}

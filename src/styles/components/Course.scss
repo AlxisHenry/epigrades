@@ -16,7 +16,7 @@
   &.course--open {
     max-height: 100vh;
     background-color: rgba(255, 255, 255, 0.1);
-    .course__header .course__arrow {
+    .course__header .course__header-right .course__arrow {
       transform: rotate(-90deg);
     }
   }
@@ -34,7 +34,7 @@
     max-height: 115px;
     overflow: hidden;
 
-    .course__header-left {
+    .course__header-right {
       display: flex;
       align-items: center;
       gap: 1rem;
