@@ -30,6 +30,7 @@ import {
 } from "chart.js";
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
+import { NotFound } from "@/components/NotFound";
 
 type Params = {
   semester: string;
@@ -87,7 +88,7 @@ export default function Home() {
         },
         ticks: {
           color: "rgba(255, 255, 255, 0.5)",
-        }
+        },
       },
       x: {
         grid: {
@@ -95,8 +96,8 @@ export default function Home() {
         },
         ticks: {
           color: "rgba(255, 255, 255, 0.5)",
-        }
-      }
+        },
+      },
     },
   };
 
@@ -124,7 +125,7 @@ export default function Home() {
     ],
   };
 
-  if (!loading) {
+  if (!loading && course) {
     for (const day of course!.days) {
       if (!isGradedDay(day)) continue;
       data.labels.push(day.name);
@@ -136,6 +137,8 @@ export default function Home() {
     <Layout>
       {loading ? (
         <Loading />
+      ) : !semester || !course ? (
+        <NotFound />
       ) : (
         <>
           <PageTitle
@@ -153,13 +156,11 @@ export default function Home() {
           <div className="table__container">
             <CourseTable days={course!.days} />
           </div>
-          {
-            data.labels.length > 0 ? (
-              <div className="charts">
-                <Bar data={data} options={options} />
-              </div>
-            ) : null
-          }
+          {data.labels.length > 0 ? (
+            <div className="charts">
+              <Bar data={data} options={options} />
+            </div>
+          ) : null}
         </>
       )}
     </Layout>

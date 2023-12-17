@@ -16,6 +16,7 @@ import Layout from "@/components/Layout";
 import Card from "@/components/Card";
 import Cards from "@/components/Cards";
 import { getSemesterAssignementsCount } from "@/services/assignements";
+import { NotFound } from "@/components/NotFound";
 
 type Params = {
   semester: string;
@@ -48,6 +49,8 @@ export default function Home() {
     <Layout>
       {loading ? (
         <Loading />
+      ) : !semester ? (
+        <NotFound />
       ) : (
         <>
           <PageTitle parts={["Semesters", semester?.name ?? ""]} />
