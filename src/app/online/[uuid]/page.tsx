@@ -14,6 +14,7 @@ import Card from "@/components/Card";
 import { getSemesterAssignementsCount } from "@/services/assignements";
 import { sortCourses } from "@/services/courses";
 import { NotFound } from "@/components/NotFound";
+import Loading from "@/components/Loading";
 
 type Params = {
   uuid: string;
@@ -22,10 +23,12 @@ type Params = {
 export default function Home() {
   const params: Params = useParams();
   const uuid = params.uuid;
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number>(-1);
 
   useEffect(() => {
+    setIsLoading(true);
     (async () => {
       const response = await retrieveGradeWithUUID(uuid);
       console.log(response);
@@ -33,6 +36,7 @@ export default function Home() {
         return;
       }
       setSemesters(response.semesters);
+      setIsLoading(false);
     })();
   }, [uuid]);
 
@@ -42,48 +46,44 @@ export default function Home() {
 
   return (
     <Layout>
-      {semesters.length > 0 ? (
+      {isLoading ? (
+        <Loading />
+      ) : !semesters ? (
+        <NotFound />
+      ) : (
         <>
           <PageTitle parts={[getName(uuid), "Semesters"]} />
-          {semesters ? (
-            semesters.map((semester) => {
-              return (
-                <div key={semester.name}>
-                  <SemesterTitle title={semester.name} />
-                  <Cards className="is-semester-cards">
-                    <Card
-                      title="Average"
-                      subtitle={calculateSemesterGradeAverage(semester)}
+          {semesters.map((semester) => {
+            return (
+              <div key={semester.name}>
+                <SemesterTitle title={semester.name} />
+                <Cards className="is-semester-cards">
+                  <Card
+                    title="Average"
+                    subtitle={calculateSemesterGradeAverage(semester)}
+                  />
+                  <Card
+                    title="Assignments"
+                    subtitle={getSemesterAssignementsCount(semester).toString()}
+                  />
+                </Cards>
+                {sortCourses(semester.courses).map((course, index) => {
+                  return (
+                    <Course
+                      isOnline={true}
+                      uuid={uuid}
+                      course={course}
+                      semester={semester}
+                      key={index}
+                      isOpen={index === openDropdownIndex}
+                      toggleDropdown={() => toggleDropdown(index)}
                     />
-                    <Card
-                      title="Assignments"
-                      subtitle={getSemesterAssignementsCount(
-                        semester
-                      ).toString()}
-                    />
-                  </Cards>
-                  {sortCourses(semester.courses).map((course, index) => {
-                    return (
-                      <Course
-                        isOnline={true}
-                        uuid={uuid}
-                        course={course}
-                        semester={semester}
-                        key={index}
-                        isOpen={index === openDropdownIndex}
-                        toggleDropdown={() => toggleDropdown(index)}
-                      />
-                    );
-                  })}
-                </div>
-              );
-            })
-          ) : (
-            <></>
-          )}
+                  );
+                })}
+              </div>
+            );
+          })}
         </>
-      ) : (
-        <NotFound />
       )}
     </Layout>
   );

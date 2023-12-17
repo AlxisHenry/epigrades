@@ -31,6 +31,7 @@ import {
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
 import { getName } from "@/services/online";
+import { NotFound } from "@/components/NotFound";
 
 type Params = {
   semester: string;
@@ -127,7 +128,7 @@ export default function Home() {
     ],
   };
 
-  if (!loading) {
+  if (!loading && course) {
     for (const day of course!.days) {
       if (!isGradedDay(day)) continue;
       data.labels.push(day.name);
@@ -139,6 +140,8 @@ export default function Home() {
     <Layout>
       {loading ? (
         <Loading />
+      ) : !semester || !course ? (
+        <NotFound />
       ) : (
         <>
           <PageTitle
