@@ -148,6 +148,7 @@ cleanFiles();
       "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div/div[3]/div/input"
     );
     await codeInput[0].type(code);
+
     await page.waitForXPath(
       "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[6]/div/div/div/div/input"
     );
@@ -155,6 +156,18 @@ cleanFiles();
       "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[6]/div/div/div/div/input"
     );
     await submitCodeButton[0].click();
+
+    await new Promise((r) => setTimeout(r, 1500));
+
+    const errorSendingCode = await page.$x(
+      '//*[@id="idDiv_SAOTCC_ErrorMsg_OTC"]'
+    );
+
+    if (errorSendingCode.length > 0) {
+      write("Authentication failed", 10, 1);
+      await browser.close();
+      process.exit(0);
+    }
 
     write("The code has been correctly submitted", 15);
   }
