@@ -30,7 +30,7 @@ import {
 } from "chart.js";
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
-import { getName, retrieveGradeWithUUID } from "@/services/online";
+import { retrieveGradeWithUUID } from "@/services/online";
 import { NotFound } from "@/components/NotFound";
 
 type Params = {
@@ -57,7 +57,7 @@ export default function Home() {
   const [semester, setSemester] = useState<Semester | null>(null);
   const [course, setCourse] = useState<CourseType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const [student, setStudent] = useState<string>("");
   const [courseGrade, setCourseGrade] = useState<string>("");
   const [courseGradeAverage, setCourseGradeAverage] = useState<string>("");
   const [courseAssignementsCount, setCourseAssignementsCount] =
@@ -80,12 +80,13 @@ export default function Home() {
           .find((s) => s.name.toLowerCase() === params.semester)
           ?.courses.find((c) => c.name.toLowerCase() === params.course) ?? null
       );
+      setStudent(response?.student?.name || "");
       setCourseGrade(getCourseGrade(course));
       setCourseGradeAverage(calculateCourseGradeAverage(course));
       setCourseAssignementsCount(getCourseAssignementsCount(course));
       setLoading(false);
     })();
-  }, [params.semester, params.course, course]);
+  }, [params.semester, params.course, course, uuid]);
 
   const options = {
     responsive: true,
@@ -160,7 +161,7 @@ export default function Home() {
       ) : (
         <>
           <PageTitle
-            parts={[getName(uuid), semester!.name, course!.name]}
+            parts={[student, semester!.name, course!.name]}
             clickable={[0]}
             customLink={`online/${uuid}`}
           />
