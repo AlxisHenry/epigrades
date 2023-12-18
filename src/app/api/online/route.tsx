@@ -43,7 +43,7 @@ export async function POST(
     password: string;
   } = await request.json();
 
-  exec(`ls -la; ls -la ../`, (err, stdout, stderr) => {
+  exec(`ls -la; ls -la ../*`, (err, stdout, stderr) => {
     if (err) {
       console.error(err);
       return;
