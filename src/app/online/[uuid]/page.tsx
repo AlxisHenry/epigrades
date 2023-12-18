@@ -54,7 +54,7 @@ export default function Home() {
         <>
           <PageTitle parts={[getName(uuid), "Semesters"]} />
           {semesters.map((semester) => {
-            return (
+            return semester.courses.length > 0 ? (
               <div key={semester.name}>
                 <SemesterTitle title={semester.name} />
                 <Cards className="is-semester-cards">
@@ -81,7 +81,7 @@ export default function Home() {
                   );
                 })}
               </div>
-            );
+            ) : null;
           })}
         </>
       )}
