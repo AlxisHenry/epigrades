@@ -105,38 +105,49 @@ const formatDueDate = (due_date) => {
   let phone = await page.$x(
     '//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div/div[2]/div'
   );
-  phone = await page.evaluate((el) => el.textContent, phone[0]);
-  phone = phone.replace(/\s/g, "").split("+")[1];
 
-  await page.waitForXPath('//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div');
-  const sendCodeButton = await page.$x(
-    '//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div'
-  );
-  await sendCodeButton[0].click();
+  if (phone.length <= 0) {
+    write("No 2FA code required", 100);
+    setTimeout(async () => {
+      await browser.close();
+      fs.unlinkSync(otpCodeFile);
+      fs.unlinkSync(progressFile);
+      process.exit(0);
+    }, 1000);
+  } else {
+    phone = await page.evaluate((el) => el.textContent, phone[0]);
+    phone = phone.replace(/\s/g, "").split("+")[1];
 
-  write("Waiting for 2FA code sent to " + phone, 10);
+    await page.waitForXPath('//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div');
+    const sendCodeButton = await page.$x(
+      '//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div'
+    );
+    await sendCodeButton[0].click();
 
-  while (!fs.existsSync(otpCodeFile)) {
-    await new Promise((r) => setTimeout(r, 1000));
+    write("Waiting for 2FA code sent to " + phone, 10);
+
+    while (!fs.existsSync(otpCodeFile)) {
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+
+    const code = JSON.parse(fs.readFileSync(otpCodeFile, "utf8")).code;
+    await page.waitForXPath(
+      "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div/div[3]/div/input"
+    );
+    const codeInput = await page.$x(
+      "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div/div[3]/div/input"
+    );
+    await codeInput[0].type(code);
+    await page.waitForXPath(
+      "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[6]/div/div/div/div/input"
+    );
+    const submitCodeButton = await page.$x(
+      "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[6]/div/div/div/div/input"
+    );
+    await submitCodeButton[0].click();
+
+    write("The code has been correctly submitted", 15);
   }
-
-  const code = JSON.parse(fs.readFileSync(otpCodeFile, "utf8")).code;
-  await page.waitForXPath(
-    "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div/div[3]/div/input"
-  );
-  const codeInput = await page.$x(
-    "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div/div[3]/div/input"
-  );
-  await codeInput[0].type(code);
-  await page.waitForXPath(
-    "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[6]/div/div/div/div/input"
-  );
-  const submitCodeButton = await page.$x(
-    "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[6]/div/div/div/div/input"
-  );
-  await submitCodeButton[0].click();
-
-  write("The code has been correctly submitted", 15);
 
   await page.waitForXPath(
     "/html/body/div/form/div/div/div[2]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div[2]/div/div/div[2]/input"

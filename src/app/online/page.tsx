@@ -15,6 +15,7 @@ import Progress from "@/components/Progress";
 import OtpForm from "@/components/OtpForm";
 import Spinner from "@/components/Spinner";
 import { ScraperFinished } from "@/components/ScraperFinished";
+import { ScraperFailed } from "@/components/ScraperFailed";
 
 export type Credentials = {
   email: string;
@@ -27,6 +28,7 @@ export default function Home() {
   const [code, setCode] = useState<string>("");
   const [isSavingOTPCode, setIsSavingOTPCode] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasFailed, setHasFailed] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isFinished, setIsFinished] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
@@ -67,7 +69,7 @@ export default function Home() {
           if (!steps.includes(state.currentStep)) {
             setProgress(state.progress);
             setCurrentStep(state.currentStep);
-            if (state.currentStep.includes("2FA")) {
+            if (state.currentStep.includes("Waiting for 2FA")) {
               setIsAskingForOTPCode(true);
               let parts = state.currentStep.split(" ");
               setPhone(`+${parts[parts.length - 1]}`);
@@ -76,6 +78,13 @@ export default function Home() {
               clearInterval(checkExecutionProgress);
               setTimeout(() => {
                 setIsFinished(true);
+                setIsLoading(false);
+              }, 1000);
+            }
+            if (state.currentStep.includes("No 2FA")) {
+              clearInterval(checkExecutionProgress);
+              setTimeout(() => {
+                setHasFailed(true);
                 setIsLoading(false);
               }, 1000);
             }
@@ -126,6 +135,7 @@ export default function Home() {
           {isFinished && (
             <ScraperFinished url={credentials.email.split("@")[0]} />
           )}
+          {hasFailed && <ScraperFailed />}
         </>
       ) : (
         <>
