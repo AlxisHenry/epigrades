@@ -4,7 +4,7 @@
     { "handle": "filesystem" },
     {
       "src": "scraper/(.*)",
-      "dest": "/var/tasks/scraper/$1"
+      "dest": "/var/task/scraper/$1"
     }
   ]
 }
