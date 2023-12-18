@@ -3,6 +3,7 @@
 This is a web application to have a global view and some statistics about my studies at Epitech.
 
 ## Table of contents
+
 1. [How to use it ?](#how-to-use-it-)
 2. [Technologies](#technologies)
 3. [Authors](#authors)
@@ -21,10 +22,49 @@ $ cd epitech-grades
 > Note that I'm using pnpm instead of npm
 
 ```
-$ pnpm i
+$ pnpm install
+$ pnpm run build
+$ pnpm start
 ```
 
-### Configure the bot
+### Configure the puppeteer bot
+
+The puppeteer bot is used to scrap the grades from the intranet. You can use it to scrap your grades and then use the web application to see your statistics.
+
+**Note:** you need to disable 2FA with the Microsoft Authenticator app to use the puppeteer bot.
+
+You need to install the apt packages with the following command:
+
+```bash
+cd scraper
+bash packages.sh
+```
+
+#### Testing
+
+```bash
+$ node index.js <email> <password> <uuid>
+```
+
+When you run the script, you will be asked for an OTP code, which you should normally receive by phone. Your Microsoft account must be linked to your telephone number if you turn on 2FA. So you just need to run the `otp.sh` script like this:
+
+```bash
+$ bash otp.sh <email> <password> <code>
+```
+
+#### Access to your grades
+
+When the script is finished, you can access with the web application to your grades with the following url:
+
+`<url>:3000/online/<uuid>`
+
+For example, the default file is named `me.json`, so the url will be:
+
+`<url>:3000/online/me`
+
+### Configure the selenium bot (deprecated)
+
+**Note:** this bot is not maintained anymore, but you can still use it if you want. (I recommend you to use the puppeteer bot)
 
 ```bash
 $ cd bot
@@ -69,13 +109,6 @@ $ py main.py
 ```
 
 During the script, you will be asked for an OTP code, which you should normally receive by phone. Your Microsoft account must be linked to your telephone number if you turn on 2FA. So you just need to enter the code in your terminal when asked.
-
-#### Launch the web application
-
-```bash
-$ cd ..
-$ pnpm run dev
-```
 
 ## Technologies
 
