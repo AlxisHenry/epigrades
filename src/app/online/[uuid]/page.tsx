@@ -5,7 +5,7 @@ import Layout from "@/components/Layout";
 import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getName, retrieveGradeWithUUID } from "@/services/online";
+import { retrieveGradeWithUUID } from "@/services/online";
 import { Semester, calculateSemesterGradeAverage } from "@/services/semesters";
 import Course from "@/components/Course";
 import SemesterTitle from "@/components/SemesterTitle";
@@ -23,18 +23,20 @@ type Params = {
 export default function Home() {
   const params: Params = useParams();
   const uuid = params.uuid;
+  const [student, setStudent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [semesters, setSemesters] = useState<Semester[]>([]);
+  const [semesters, setSemesters] = useState<Semester[] | null>(null);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number>(-1);
 
   useEffect(() => {
     setIsLoading(true);
     (async () => {
       const response = await retrieveGradeWithUUID(uuid);
-      console.log(response);
       if (!response.success || !response.semesters) {
+        setIsLoading(false);
         return;
       }
+      setStudent(response?.student?.name || "");
       setSemesters(response.semesters);
       setIsLoading(false);
     })();
@@ -52,7 +54,7 @@ export default function Home() {
         <NotFound />
       ) : (
         <>
-          <PageTitle parts={[getName(uuid), "Semesters"]} />
+          <PageTitle parts={[student, "Semesters"]} />
           {semesters.map((semester) => {
             return semester.courses.length > 0 ? (
               <div key={semester.name}>

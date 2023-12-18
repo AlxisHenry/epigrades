@@ -1,4 +1,4 @@
-export const ScraperFinished = ({ url }: { url: string }) => {
+export const ScraperFinished = ({ uuid }: { uuid: string }) => {
   return (
     <div className="modal">
       <div
@@ -21,7 +21,7 @@ export const ScraperFinished = ({ url }: { url: string }) => {
             width: "100%",
           }}
           type="submit"
-          onClick={() => (location.href = `/online/${url}`)}
+          onClick={() => (location.href = `/online/${uuid}`)}
         >
           Open report
         </button>

@@ -2,7 +2,7 @@ import "@/styles/components/Sidebar.scss";
 import SidebarItem from "./SidebarItem";
 import SidebarDropdown, { type DropdownItemProps } from "./SidebarDropdown";
 import SidebarToggle from "./SidebarToggle";
-import { getSemestersNames } from "@/services/semesters";
+import { getSemester, getSemestersNames } from "@/services/semesters";
 import { useEffect, useState } from "react";
 import BarChartIcon from "./Icons/BarChartIcon";
 import InfoIcon from "./Icons/InfoIcon";
@@ -18,10 +18,15 @@ export default function Sidebar() {
 
   useEffect(() => {
     setSemesters(
-      getSemestersNames().map((name) => ({
-        route: `/semesters/${name}`,
-        text: name,
-      }))
+      getSemestersNames()
+        .filter((semesterName) => {
+          let semester = getSemester(semesterName);
+          return semester!.courses.length > 0;
+        })
+        .map((name) => ({
+          route: `/semesters/${name}`,
+          text: name,
+        }))
     );
   }, []);
 

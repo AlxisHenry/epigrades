@@ -3,15 +3,16 @@ import puppeteer from "puppeteer";
 
 const email = process.argv[2];
 const password = process.argv[3];
+const uuid = process.argv[4];
 
-if (!email || !password) {
-  console.error("Email and password are required");
+if (!email || !password || !uuid) {
+  console.error("Missing arguments (email, password or uuid).");
   process.exit(1);
 }
 
 const otpCodeFile = `scraper/otp/${email.split("@")[0]}.json`;
 const progressFile = `scraper/progress/${email.split("@")[0]}.json`;
-const reportFile = `scraper/reports/${email.split("@")[0]}.json`;
+const reportFile = `scraper/reports/${uuid}.json`;
 const ASSIGNEMENTS_URL =
   "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
 
@@ -19,13 +20,8 @@ const cleanFiles = () => {
   if (fs.existsSync(otpCodeFile)) {
     fs.unlinkSync(otpCodeFile);
   }
-
   if (fs.existsSync(progressFile)) {
     fs.unlinkSync(progressFile);
-  }
-
-  if (fs.existsSync(reportFile)) {
-    fs.unlinkSync(reportFile);
   }
 };
 
@@ -53,14 +49,23 @@ const write = (currentStep, progress, status = 0) => {
   );
 };
 
-function now() {
+const now = () => {
   const currentDate = new Date();
   const formattedDate = currentDate
     .toISOString()
     .slice(0, 19)
     .replace("T", " ");
   return formattedDate;
-}
+};
+
+const getStudentName = (email) => {
+  let parts = email.split("@")[0].split(".");
+  return parts
+    .map((part) => {
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    })
+    .join(" ");
+};
 
 cleanFiles();
 
@@ -180,6 +185,10 @@ cleanFiles();
   write("Starting the assignements retrieval", 25);
 
   let grades = {
+    student: {
+      email,
+      name: getStudentName(email),
+    },
     semesters: [],
   };
 

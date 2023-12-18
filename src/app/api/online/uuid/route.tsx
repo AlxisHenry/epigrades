@@ -5,6 +5,10 @@ import { Semester } from "@/services/semesters";
 export type uuidResponse = {
   success: boolean;
   semesters?: Semester[];
+  student?: {
+    email: string;
+    name: string;
+  };
 };
 
 export async function GET(
@@ -14,10 +18,11 @@ export async function GET(
 
   let file = `scraper/reports/${uuid}.json`;
   if (fs.existsSync(file)) {
-    let semesters = fs.readFileSync(file, "utf8");
+    let grade = JSON.parse(fs.readFileSync(file, "utf8"));
     return NextResponse.json({
       success: true,
-      ...JSON.parse(semesters),
+      semesters: grade.semesters,
+      student: grade.student,
     });
   }
 

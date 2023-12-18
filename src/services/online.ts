@@ -12,7 +12,7 @@ export const INVALID_CREDENTIALS_ERROR = "Invalid login";
 export const isEpitechEmail = (email: string) => EMAIL_REGEX.test(email);
 
 export type ScraperResponse = {
-  error: string | null;
+  uuid: string;
 };
 
 export type AuthenticateResponse = {
@@ -134,11 +134,6 @@ export const retrieveGradeWithUUID = async (
   return await response.json();
 };
 
-export const getName = (uuid: string) => {
-  let parts = uuid.split(".");
-  return parts
-    .map((part) => {
-      return part.charAt(0).toUpperCase() + part.slice(1);
-    })
-    .join(" ");
-};
+export const generateUUID = (): string => {
+  return crypto.randomUUID() + "-" + Date.now();
+}

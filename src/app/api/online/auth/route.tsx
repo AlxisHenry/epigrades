@@ -1,3 +1,4 @@
+import { Credentials } from "@/app/online/page";
 import {
   AuthenticateResponse,
   INVALID_CREDENTIALS_ERROR,
@@ -10,13 +11,7 @@ import { NextResponse, NextRequest } from "next/server";
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<AuthenticateResponse>> {
-  const {
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  } = await request.json();
+  const { email, password }: Credentials = await request.json();
 
   if (!isEpitechEmail(email)) {
     return NextResponse.json({

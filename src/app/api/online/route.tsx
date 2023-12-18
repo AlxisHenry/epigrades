@@ -1,7 +1,12 @@
-import { NODE_SCRIPT_PATH, type ScraperResponse } from "@/services/online";
+import {
+  NODE_SCRIPT_PATH,
+  generateUUID,
+  type ScraperResponse,
+} from "@/services/online";
 import { exec } from "child_process";
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
+import { Credentials } from "@/app/online/page";
 
 export type Progress = {
   currentStep: string;
@@ -35,26 +40,33 @@ export async function GET(
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<ScraperResponse>> {
-  const {
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  } = await request.json();
+  const { email, password }: Credentials = await request.json();
 
-  exec(`ls -al ./*`,
-  (err, stdout, stderr) => {
-    if (err) {
-      console.error(err);
-      return;
+  let uuid = null;
+
+  const files = fs.readdirSync("scraper/reports");
+  for (const file of files) {
+    if (file.includes(".json")) {
+      let report = JSON.parse(
+        fs.readFileSync(`scraper/reports/${file}`, "utf8")
+      );
+      if (report.student.email === email) {
+        uuid = file.split(".json")[0];
+        break;
+      }
     }
-    console.log(stdout);
-  });
+  }
+
+  if (uuid === null) {
+    uuid = generateUUID();
+    while (fs.existsSync(`scraper/reports/${uuid}.json`)) {
+      uuid = generateUUID();
+    }
+  }
 
   exec(
-    `node ${NODE_SCRIPT_PATH} "${email}" "${password}"`,
-    (err, stdout, stderr) => {
+    `node ${NODE_SCRIPT_PATH} "${email}" "${password}" ${uuid}`,
+    (err, stdout) => {
       if (err) {
         console.error(err);
         return;
@@ -64,6 +76,6 @@ export async function POST(
   );
 
   return NextResponse.json({
-    error: null,
+    uuid,
   });
 }

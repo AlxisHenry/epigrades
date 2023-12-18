@@ -27,6 +27,7 @@ export default function Home() {
   const [isAskingForOTPCode, setIsAskingForOTPCode] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const [isSavingOTPCode, setIsSavingOTPCode] = useState<boolean>(false);
+  const [uuid, setUuid] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasFailed, setHasFailed] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -57,11 +58,11 @@ export default function Home() {
       return;
     }
 
-    const { error: scraperError } = await runScraper(credentials);
+    const { uuid } = await runScraper(credentials);
 
-    if (!scraperError) {
+    if (uuid) {
+      setUuid(uuid);
       setIsRunning(true);
-
       setTimeout(() => {
         const steps: string[] = [];
         let checkExecutionProgress = setInterval(async () => {
@@ -132,9 +133,7 @@ export default function Home() {
               }}
             />
           )}
-          {isFinished && (
-            <ScraperFinished url={credentials.email.split("@")[0]} />
-          )}
+          {isFinished && <ScraperFinished uuid={uuid} />}
           {hasFailed && <ScraperFailed />}
         </>
       ) : (

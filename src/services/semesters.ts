@@ -1,4 +1,4 @@
-import grades from "../../bot/grades.json";
+import grades from "../../scraper/reports/me.json";
 import { sortCourses, type Course } from "./courses";
 import { isGradedDay } from "./days";
 
