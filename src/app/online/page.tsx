@@ -97,7 +97,7 @@ export default function Home() {
 
   return (
     <Layout>
-      <PageTitle parts={["You want the same ?"]} />
+      <PageTitle parts={["Welcome ✋"]} />
       {isRunning ? (
         <>
           {currentStep && progress ? (

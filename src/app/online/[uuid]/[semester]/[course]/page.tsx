@@ -30,7 +30,7 @@ import {
 } from "chart.js";
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
-import { getName } from "@/services/online";
+import { getName, retrieveGradeWithUUID } from "@/services/online";
 import { NotFound } from "@/components/NotFound";
 
 type Params = {
@@ -64,12 +64,27 @@ export default function Home() {
     useState<number>(0);
 
   useEffect(() => {
-    setSemester(getSemester(params.semester));
-    setCourse(getCourse(params.course));
-    setCourseGrade(getCourseGrade(course));
-    setCourseGradeAverage(calculateCourseGradeAverage(course));
-    setCourseAssignementsCount(getCourseAssignementsCount(course));
-    setLoading(false);
+    (async () => {
+      const response = await retrieveGradeWithUUID(uuid);
+      if (!response.success || !response.semesters) {
+        return;
+      }
+
+      setSemester(
+        response.semesters.find(
+          (s) => s.name.toLowerCase() === params.semester
+        ) ?? null
+      );
+      setCourse(
+        response.semesters
+          .find((s) => s.name.toLowerCase() === params.semester)
+          ?.courses.find((c) => c.name.toLowerCase() === params.course) ?? null
+      );
+      setCourseGrade(getCourseGrade(course));
+      setCourseGradeAverage(calculateCourseGradeAverage(course));
+      setCourseAssignementsCount(getCourseAssignementsCount(course));
+      setLoading(false);
+    })();
   }, [params.semester, params.course, course]);
 
   const options = {
