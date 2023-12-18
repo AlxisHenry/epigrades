@@ -94,8 +94,6 @@ cleanFiles();
   const nextButton = await page.$x('//*[@id="idSIButton9"]');
   await nextButton[0].click();
 
-  await page.waitForNavigation();
-
   const passwordInput = await page.$x('//*[@id="passwordInput"]');
 
   if (passwordInput.length > 0) {
