@@ -9,6 +9,7 @@ import InfoIcon from "./Icons/InfoIcon";
 import HomeIcon from "./Icons/HomeIcon";
 import SchoolIcon from "./Icons/SchoolIcon";
 import { usePathname } from "next/navigation";
+import MagicIcon from "./Icons/MagicIcon";
 
 export default function Sidebar() {
   const [semesters, setSemesters] = useState<DropdownItemProps[]>([]);
@@ -39,20 +40,26 @@ export default function Sidebar() {
           <SidebarItem
             pathname={pathname}
             route="/"
-            icon={HomeIcon}
+            icon={<HomeIcon />}
             text="Home"
           />
           <SidebarDropdown
             pathname={pathname}
             text="Semesters"
-            icon={SchoolIcon}
+            icon={<SchoolIcon />}
             items={semesters}
           />
           <SidebarItem
             pathname={pathname}
             route="/stats"
-            icon={BarChartIcon}
+            icon={<BarChartIcon />}
             text="Statistics"
+          />
+          <SidebarItem
+            pathname={pathname}
+            route="/online"
+            icon={<MagicIcon />}
+            text="Online"
           />
         </div>
       </nav>

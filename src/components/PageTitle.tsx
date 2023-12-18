@@ -4,9 +4,10 @@ import Link from "next/link";
 type Props = {
   parts: string[];
   clickable?: number[];
+  customLink?: string;
 };
 
-export default function PageTitle({ parts, clickable }: Props) {
+export default function PageTitle({ parts, clickable, customLink }: Props) {
   const isLast = (part: string) => parts.length - 1 === parts.indexOf(part);
 
   return (
@@ -18,10 +19,11 @@ export default function PageTitle({ parts, clickable }: Props) {
               {clickable && clickable.includes(parts.indexOf(part)) ? (
                 <Link
                   className="page__title__link"
-                  href={`/${parts
-                    .slice(0, parts.indexOf(part) + 1)
-                    .join("/")
-                    .toLowerCase()}`}
+                  href={
+                    customLink
+                      ? `/${customLink}`
+                      : `/${parts[0].toLowerCase()}/${part.toLowerCase()}`
+                  }
                 >
                   {part}
                 </Link>

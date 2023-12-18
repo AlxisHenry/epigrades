@@ -1,12 +1,11 @@
 import "@/styles/components/SidebarDropdown.scss";
 import SidebarItem from "./SidebarItem";
 import React, { useEffect, useState } from "react";
-import Icon from "./Icon";
 
 export type SidebarDropdownProps = {
   pathname: string;
   text: string;
-  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  icon?: JSX.Element;
   items: DropdownItemProps[];
 };
 
@@ -47,7 +46,7 @@ export default function SidebarDropdown({
         {icon && (
           <>
             <div className="sidebar__dropdown__icon">
-              <Icon icon={icon} />
+              {icon}
             </div>
           </>
         )}

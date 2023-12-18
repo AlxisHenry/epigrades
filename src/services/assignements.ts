@@ -1,5 +1,5 @@
 import { type Course } from "./courses";
-import { isGradedDay, isValidDay } from "./days";
+import { isGradedDay } from "./days";
 import { type Semester } from "./semesters";
 
 export function getSemesterAssignementsCount(

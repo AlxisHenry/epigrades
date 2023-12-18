@@ -7,6 +7,8 @@ import { type Course } from "@/services/courses";
 import { getCourseGrade, isValidGrade } from "@/services/grades";
 
 type Props = {
+  isOnline?: boolean;
+  uuid?: string;
   course: Course;
   semester: Semester | null;
   isOpen: boolean;
@@ -14,6 +16,8 @@ type Props = {
 };
 
 export default function Course({
+  isOnline = false,
+  uuid,
   course,
   semester,
   isOpen,
@@ -29,12 +33,14 @@ export default function Course({
     <div className={`course ${isOpen ? "course--open" : ""}`}>
       <div className="course__header" onClick={handleClick}>
         <CourseLink
+          isOnline={isOnline}
+          uuid={uuid}
           semester={semester?.name}
           courseName={course.name}
           content={course.name}
           title={true}
         />
-        <div className="course__header-left">
+        <div className="course__header-right">
           <CourseGradeBadge grade={getCourseGrade(course)} />
           <div className="course__arrow">
             <ArrowIcon />
@@ -44,6 +50,8 @@ export default function Course({
       <div className="course__days">
         <CourseTable days={course.days} />
         <CourseLink
+          isOnline={isOnline}
+          uuid={uuid}
           semester={semester?.name}
           courseName={course.name}
           content="View Course"

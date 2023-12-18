@@ -1,0 +1,51 @@
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+  flex-direction: column;
+  gap: 1.5rem;
+  font-size: 1rem;
+  color: var(--contrast-secondary);
+
+  span {
+    animation: load 0.5s ease-in-out;
+  }
+
+  .progress {
+    height: 40px;
+    background-color: var(--color-primary-light-hover);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    transition: background-color 0.5s ease-in-out;
+    .progress-bar {
+      transition: width 0.5s ease-in-out;
+      background-color: var(--progress-bar);
+      height: 100%;
+      width: 0;
+      transition: width 0.5s ease-in-out;
+      .state {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-weight: 500;
+        color: var(--contrast-secondary);
+      }
+    }
+  }
+}
+
+@keyframes load {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

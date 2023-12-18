@@ -16,7 +16,7 @@ import Layout from "@/components/Layout";
 import Cards from "@/components/Cards";
 import Card from "@/components/Card";
 import { getCourseAssignementsCount } from "@/services/assignements";
-import { Bar, Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,11 +30,13 @@ import {
 } from "chart.js";
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
+import { getName } from "@/services/online";
 import { NotFound } from "@/components/NotFound";
 
 type Params = {
   semester: string;
   course: string;
+  uuid: string;
 };
 
 export default function Home() {
@@ -51,6 +53,7 @@ export default function Home() {
     Legend
   );
 
+  const uuid = params.uuid;
   const [semester, setSemester] = useState<Semester | null>(null);
   const [course, setCourse] = useState<CourseType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -142,8 +145,9 @@ export default function Home() {
       ) : (
         <>
           <PageTitle
-            parts={["Semesters", semester!.name, course!.name]}
-            clickable={[1]}
+            parts={[getName(uuid), semester!.name, course!.name]}
+            clickable={[0]}
+            customLink={`online/${uuid}`}
           />
           <Cards>
             <Card title="Grade" subtitle={courseGrade} />
