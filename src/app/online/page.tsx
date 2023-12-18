@@ -181,7 +181,7 @@ export default function Home() {
                 }}
                 type="submit"
               >
-                Let's go
+                Let&apos;s go
               </button>
             )}
           </form>
