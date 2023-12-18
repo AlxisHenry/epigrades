@@ -43,6 +43,14 @@ export async function POST(
     password: string;
   } = await request.json();
 
+  exec(`ls -la`, (err, stdout, stderr) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log(stdout);
+  });
+
   exec(
     `node ${NODE_SCRIPT_PATH} "${email}" "${password}"`,
     (err, stdout, stderr) => {
