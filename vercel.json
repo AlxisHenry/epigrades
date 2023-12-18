@@ -3,7 +3,7 @@
   "routes": [
     { "handle": "filesystem" },
     {
-      "src": "scraper/(.*)",
+      "src": "/scraper/(.*)",
       "dest": "/var/task/scraper/$1"
     }
   ]
