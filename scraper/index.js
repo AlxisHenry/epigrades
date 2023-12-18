@@ -95,7 +95,9 @@ cleanFiles();
   await nextButton[0].click();
 
   try {
-    await page.waitForXPath('//*[@id="passwordInput"]');
+    await page.waitForXPath('//*[@id="passwordInput"]', {
+      timeout: 5000,
+    });
     const passwordInput = await page.$x('//*[@id="passwordInput"]');
     await passwordInput[0].type(password);
     await page.waitForXPath('//*[@id="submitButton"]');
