@@ -94,14 +94,14 @@ cleanFiles();
   const nextButton = await page.$x('//*[@id="idSIButton9"]');
   await nextButton[0].click();
 
-  const passwordInput = await page.$x('//*[@id="passwordInput"]');
-
-  if (passwordInput.length > 0) {
+  try {
+    await page.waitForXPath('//*[@id="passwordInput"]');
+    const passwordInput = await page.$x('//*[@id="passwordInput"]');
     await passwordInput[0].type(password);
     await page.waitForXPath('//*[@id="submitButton"]');
     const submitButton = await page.$x('//*[@id="submitButton"]');
     await submitButton[0].click();
-  } else {
+  } catch (e) {
     write("Authentication failed", 5, 1);
     await browser.close();
     process.exit(0);
