@@ -27,6 +27,8 @@ $ pnpm run build
 $ pnpm start
 ```
 
+The web application is now running on `http://localhost:3000`.
+
 ### Configure the puppeteer bot
 
 The puppeteer bot is used to scrap the grades from the intranet. You can use it to scrap your grades and then use the web application to see your statistics.
@@ -56,11 +58,21 @@ $ bash otp.sh <email> <password> <code>
 
 When the script is finished, you can access with the web application to your grades with the following url:
 
-`<url>:3000/online/<uuid>`
+`http://localhost:3000/online/<uuid>`
 
 For example, the default file is named `me.json`, so the url will be:
 
-`<url>:3000/online/me`
+`http://localhost:3000/online/me`
+
+### API usage
+
+You can use the API to get your grades in JSON format with the following command:
+
+```bash	
+$ curl -X GET http://localhost:3000/api/online/uuid?uuid=<uuid>
+```
+
+The `uuid` parameter is the name of the file in the `scraper/reports` folder.
 
 ### Configure the selenium bot (deprecated)
 
