@@ -52,15 +52,6 @@ export async function POST(
     console.log(stdout);
   });
 
-  exec(`ls -al ./*/*`,
-  (err, stdout, stderr) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    console.log(stdout);
-  });
-
   exec(
     `node ${NODE_SCRIPT_PATH} "${email}" "${password}"`,
     (err, stdout, stderr) => {
