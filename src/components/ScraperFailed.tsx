@@ -11,7 +11,7 @@ export const ScraperFailed = () => {
 					gap: "1rem",
 				}}
 			>
-				<h2>2FA authentication failed</h2>
+				<h2>Authentication failed</h2>
 				<p>
 					We were unable to authenticate you. Please try again later.
 				</p>

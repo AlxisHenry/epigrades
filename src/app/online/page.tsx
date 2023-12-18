@@ -81,7 +81,7 @@ export default function Home() {
                 setIsLoading(false);
               }, 1000);
             }
-            if (state.currentStep.includes("No 2FA")) {
+            if (state.currentStep.includes("Authentication failed")) {
               clearInterval(checkExecutionProgress);
               setTimeout(() => {
                 setHasFailed(true);

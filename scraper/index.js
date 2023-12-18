@@ -15,17 +15,35 @@ const reportFile = `scraper/reports/${email.split("@")[0]}.json`;
 const ASSIGNEMENTS_URL =
   "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
 
-if (fs.existsSync(otpCodeFile)) {
-  fs.unlinkSync(otpCodeFile);
-}
+const cleanFiles = () => {
+  if (fs.existsSync(otpCodeFile)) {
+    fs.unlinkSync(otpCodeFile);
+  }
 
-if (fs.existsSync(progressFile)) {
-  fs.unlinkSync(progressFile);
-}
+  if (fs.existsSync(progressFile)) {
+    fs.unlinkSync(progressFile);
+  }
 
-if (fs.existsSync(reportFile)) {
-  fs.unlinkSync(reportFile);
-}
+  if (fs.existsSync(reportFile)) {
+    fs.unlinkSync(reportFile);
+  }
+};
+
+const formatDueDate = (due_date) => {
+  let parsedDate = new Date(due_date);
+
+  if (!isNaN(parsedDate)) {
+    const year = parsedDate.getFullYear();
+    const month = `0${parsedDate.getMonth() + 1}`.slice(-2);
+    const day = `0${parsedDate.getDate()}`.slice(-2);
+    const hours = `0${parsedDate.getHours()}`.slice(-2);
+    const minutes = `0${parsedDate.getMinutes()}`.slice(-2);
+    const seconds = `0${parsedDate.getSeconds()}`.slice(-2);
+    parsedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  return parsedDate;
+};
 
 const write = (currentStep, progress, status = 0) => {
   fs.writeFileSync(
@@ -44,21 +62,7 @@ function now() {
   return formattedDate;
 }
 
-const formatDueDate = (due_date) => {
-  let parsedDate = new Date(due_date);
-
-  if (!isNaN(parsedDate)) {
-    const year = parsedDate.getFullYear();
-    const month = `0${parsedDate.getMonth() + 1}`.slice(-2);
-    const day = `0${parsedDate.getDate()}`.slice(-2);
-    const hours = `0${parsedDate.getHours()}`.slice(-2);
-    const minutes = `0${parsedDate.getMinutes()}`.slice(-2);
-    const seconds = `0${parsedDate.getSeconds()}`.slice(-2);
-    parsedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  }
-
-  return parsedDate;
-};
+cleanFiles();
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -92,28 +96,29 @@ const formatDueDate = (due_date) => {
 
   await page.waitForNavigation();
 
-  await page.waitForXPath('//*[@id="passwordInput"]');
   const passwordInput = await page.$x('//*[@id="passwordInput"]');
-  await passwordInput[0].type(password);
 
-  await page.waitForXPath('//*[@id="submitButton"]');
-  const submitButton = await page.$x('//*[@id="submitButton"]');
-  await submitButton[0].click();
+  if (passwordInput.length > 0) {
+    await passwordInput[0].type(password);
+    await page.waitForXPath('//*[@id="submitButton"]');
+    const submitButton = await page.$x('//*[@id="submitButton"]');
+    await submitButton[0].click();
+  } else {
+    write("Authentication failed", 5, 1);
+    await browser.close();
+    process.exit(0);
+  }
 
-  await page.waitForNavigation();
+  await new Promise((r) => setTimeout(r, 1500));
 
   let phone = await page.$x(
     '//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div/div[2]/div'
   );
 
-  if (phone.length <= 0) {
-    write("No 2FA code required", 100);
-    setTimeout(async () => {
-      await browser.close();
-      fs.unlinkSync(otpCodeFile);
-      fs.unlinkSync(progressFile);
-      process.exit(0);
-    }, 1000);
+  if (!phone || phone.length <= 0) {
+    write("Authentication failed", 5, 1);
+    await browser.close();
+    process.exit(0);
   } else {
     phone = await page.evaluate((el) => el.textContent, phone[0]);
     phone = phone.replace(/\s/g, "").split("+")[1];
