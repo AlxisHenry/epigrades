@@ -12,6 +12,8 @@ if (!email || !password) {
 const otpCodeFile = `scraper/otp/${email.split("@")[0]}.json`;
 const progressFile = `scraper/progress/${email.split("@")[0]}.json`;
 const reportFile = `scraper/reports/${email.split("@")[0]}.json`;
+const ASSIGNEMENTS_URL =
+  "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
 
 if (fs.existsSync(otpCodeFile)) {
   fs.unlinkSync(otpCodeFile);
@@ -21,12 +23,41 @@ if (fs.existsSync(progressFile)) {
   fs.unlinkSync(progressFile);
 }
 
+if (fs.existsSync(reportFile)) {
+  fs.unlinkSync(reportFile);
+}
+
 const write = (currentStep, progress, status = 0) => {
   fs.writeFileSync(
     progressFile,
     JSON.stringify({ currentStep, progress, status }),
     "utf8"
   );
+};
+
+function now() {
+  const currentDate = new Date();
+  const formattedDate = currentDate
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
+  return formattedDate;
+}
+
+const formatDueDate = (due_date) => {
+  let parsedDate = new Date(due_date);
+
+  if (!isNaN(parsedDate)) {
+    const year = parsedDate.getFullYear();
+    const month = `0${parsedDate.getMonth() + 1}`.slice(-2);
+    const day = `0${parsedDate.getDate()}`.slice(-2);
+    const hours = `0${parsedDate.getHours()}`.slice(-2);
+    const minutes = `0${parsedDate.getMinutes()}`.slice(-2);
+    const seconds = `0${parsedDate.getSeconds()}`.slice(-2);
+    parsedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  return parsedDate;
 };
 
 (async () => {
@@ -132,44 +163,122 @@ const write = (currentStep, progress, status = 0) => {
 
   write("Starting the assignements retrieval", 25);
 
+  let grades = {
+    semesters: [],
+  };
+
   for (let i = 0; i < coursesCount; i++) {
     let currentProgress = 25 + (i / coursesCount) * 75;
     const course = courses[i];
     const element = await course.$("a");
     const link = await page.evaluate((el) => el.href, element);
     const name = await page.evaluate((el) => el.textContent, element);
-
     const coursePage = await browser.newPage();
-    await coursePage.goto(link);
+    await coursePage.goto(ASSIGNEMENTS_URL.replace("[id]", link.split("=")[1]));
     write(`Retrieving ${name} - ${i + 1}/${coursesCount}`, currentProgress);
 
-    // await coursePage.waitForNavigation();
-    // await page.waitForXPath(
-    //   "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[5]/ul"
-    // );
+    await new Promise((r) => setTimeout(r, 1500));
 
-    // const actionsMenu = await page.$x(
-    //   "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[5]/ul"
-    // );
+    const courseNotAvailable = await coursePage.$x(
+      "/html/body/div[4]/div/div[2]/section/div/div[1]"
+    );
 
-    // const actions = await actionsMenu[0].$$("li");
+    if (!(courseNotAvailable.length > 0)) {
+      const semester = await coursePage.$x(
+        "/html/body/div[5]/div[1]/div[1]/div/nav/ol/li[4]/span/a/span"
+      );
+      const semesterName = await coursePage.evaluate(
+        (el) => el?.textContent ?? "T5",
+        semester[0]
+      );
+      const table = await coursePage.$x(
+        "/html/body/div[5]/div[1]/div[2]/section/div/table"
+      );
+      const tableRows = await table[0].$$("tr");
+      const tableRowsCount = tableRows.length;
 
-    // console.log(actions);
+      if (!grades.semesters.find((s) => s.name === semesterName)) {
+        grades.semesters.push({
+          name: semesterName,
+          courses: [],
+        });
+      }
 
-    // actions.forEach(async (element) => {
-    //   const name = await page.evaluate((el) => el.textContent, element);
-    //   if (name === "Assignments") {
-    //     console.log(`Course ${name} has assignments`);
-    //   }
-    // });
+      for (let i = 1; i < tableRowsCount; i++) {
+        const row = tableRows[i];
+        const rowColumns = await row.$$("td");
+        if (rowColumns.length <= 0) continue;
+        const topic = await coursePage.evaluate(
+          (el) => el?.textContent ?? "",
+          rowColumns[0]
+        );
+        const assignments = await coursePage.evaluate(
+          (el) => el?.textContent ?? "",
+          rowColumns[1]
+        );
+        const due_date = await coursePage.evaluate(
+          (el) => el?.textContent ?? "",
+          rowColumns[2]
+        );
+        const submission = await coursePage.evaluate(
+          (el) => el?.textContent ?? "",
+          rowColumns[3]
+        );
+        const grade = await coursePage.evaluate(
+          (el) => el?.textContent ?? "",
+          rowColumns[4]
+        );
+        if (!topic && !assignments && !due_date && !submission && !grade)
+          continue;
+
+        if (
+          !grades.semesters
+            .find((s) => s.name === semesterName)
+            .courses.find((c) => c.name === name)
+        ) {
+          grades.semesters
+            .find((s) => s.name === semesterName)
+            .courses.push({
+              name: name,
+              days: [],
+              created_at: now(),
+            });
+        }
+
+        grades.semesters
+          .find((s) => s.name === semesterName)
+          .courses.find((c) => c.name === name)
+          .days.push({
+            name: topic,
+            topic,
+            assignments,
+            due_date: due_date === "-" ? "-" : formatDueDate(due_date),
+            submission,
+            grade,
+          });
+      }
+
+      if (grades && grades.semesters) {
+        const semester = grades.semesters.find((s) => s.name === semesterName);
+        if (semester) {
+          const course = semester.courses.find((c) => c.name === name);
+          if (course) {
+            const lastGrade = course.days[course.days.length - 1];
+            if (lastGrade) {
+              course.created_at = lastGrade.due_date;
+            }
+          }
+        }
+      }
+    }
 
     await coursePage.close();
   }
 
   write("Generating the report", 100, 1);
 
-  // todo: generate report
-  
+  fs.writeFileSync(reportFile, JSON.stringify(grades), "utf8");
+
   setTimeout(async () => {
     await browser.close();
     fs.unlinkSync(otpCodeFile);
