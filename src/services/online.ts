@@ -8,6 +8,8 @@ const FAKE_SLUG: string = "fake-slug";
 export const NODE_SCRIPT_PATH = "scraper/index.js";
 export const UNREACHABLE_SERVER_ERROR = "The server is unreachable.";
 export const INVALID_CREDENTIALS_ERROR = "Invalid login";
+export const REPORTS_DIR = "scraper/reports";
+export const PROGRESS_DIR = "scraper/progress";
 
 export const isEpitechEmail = (email: string) => EMAIL_REGEX.test(email);
 
