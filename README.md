@@ -66,13 +66,25 @@ For example, the default file is named `me.json`, so the url will be:
 
 ### API usage
 
+**The `uuid` parameter is the name of the file in the `scraper/reports` folder.**
+
 You can use the API to get your grades in JSON format with the following command:
 
-```bash	
+```bash
 $ curl -X GET http://localhost:3000/api/online/uuid?uuid=<uuid>
 ```
 
-The `uuid` parameter is the name of the file in the `scraper/reports` folder.
+#### Average
+
+You can get the average of all your grades with the following endpoint:
+
+```bash
+$ curl -X GET http://localhost:3000/api/average?uuid=<uuid>
+```
+
+Without the `uuid` parameter, the API will return by default the average of the `me.json` file.
+
+**Note:** If the given `uuid` is not found, the API will return `-1`.
 
 ### Configure the selenium bot (deprecated)
 
