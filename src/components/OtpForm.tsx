@@ -1,6 +1,5 @@
 "use client";
 
-import { Console } from "console";
 import Spinner from "./Spinner";
 
 type Props = {

@@ -1,4 +1,3 @@
-import "@/styles/components/PageTitle.scss";
 import Link from "next/link";
 
 type Props = {

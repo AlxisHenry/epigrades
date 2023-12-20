@@ -1,6 +1,6 @@
 "use client";
 
-import "@/styles/pages/[course].scss";
+import "@/styles/pages/course.scss";
 import { type Semester, getSemester } from "@/services/semesters";
 import {
   type Course as CourseType,
@@ -16,7 +16,7 @@ import Layout from "@/components/Layout";
 import Cards from "@/components/Cards";
 import Card from "@/components/Card";
 import { getCourseAssignementsCount } from "@/services/assignements";
-import { Bar, Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,

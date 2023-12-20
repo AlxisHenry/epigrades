@@ -1,7 +1,5 @@
 "use client";
 
-import "@/styles/components/SemesterTitle.scss";
-
 type Props = {
 	title: string;
 };

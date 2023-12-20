@@ -1,4 +1,3 @@
-import "@/styles/components/SidebarItem.scss";
 import Link from "next/link";
 
 export type SidebarItemProps = {

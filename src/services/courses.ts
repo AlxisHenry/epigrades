@@ -1,4 +1,4 @@
-import { isValidDay, type Day, isGradedDay } from "./days";
+import { type Day, isGradedDay } from "./days";
 import { type Semester, getSemesters } from "./semesters";
 
 export type Course = {

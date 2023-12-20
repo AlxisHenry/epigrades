@@ -1,7 +1,5 @@
 "use client";
 
-import "@/styles/components/Card.scss";
-
 type Props = {
   title: string;
   subtitle: string;

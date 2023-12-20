@@ -1,4 +1,3 @@
-import "@/styles/components/Course.scss";
 import ArrowIcon from "./Icons/Arrow";
 import CourseLink from "./CourseLink";
 import { type Semester } from "@/services/semesters";

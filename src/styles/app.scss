@@ -1,0 +1,39 @@
+@import "./components/card";
+@import "./components/course";
+@import "./components/course-link";
+@import "./components/course-table";
+@import "./components/page-title";
+@import "./components/semester-title";
+@import "./components/sidebar";
+@import "./components/sidebar-item";
+@import "./components/sidebar-dropdown";
+@import "./components/sidebar-toggle";
+@import "./components/loading";
+@import "./components/spinner";
+@import "./components/progress";
+@import "./components/modal";
+
+.cards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+
+  &.is-semester-cards {
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 820px) {
+  .cards {
+    gap: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .cards {
+    gap: 1rem;
+  }
+}

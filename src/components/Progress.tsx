@@ -1,5 +1,4 @@
 "use client";
-import "@/styles/components/Progess.scss";
 
 type Props = {
   currentStep: string;

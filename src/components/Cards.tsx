@@ -1,5 +1,3 @@
-import '@/styles/components/Cards.scss'
-
 type Props = {
 	className?: string
 	children: React.ReactNode

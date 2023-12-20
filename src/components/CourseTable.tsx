@@ -1,4 +1,3 @@
-import "@/styles/components/CourseTable.scss";
 import { isValidDay, type Day as DayType } from "@/services/days";
 import Day from "./Day";
 

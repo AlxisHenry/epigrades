@@ -1,11 +1,9 @@
-import "@/styles/components/Sidebar.scss";
 import SidebarItem from "./SidebarItem";
 import SidebarDropdown, { type DropdownItemProps } from "./SidebarDropdown";
 import SidebarToggle from "./SidebarToggle";
 import { getSemester, getSemestersNames } from "@/services/semesters";
 import { useEffect, useState } from "react";
 import BarChartIcon from "./Icons/BarChartIcon";
-import InfoIcon from "./Icons/InfoIcon";
 import HomeIcon from "./Icons/HomeIcon";
 import SchoolIcon from "./Icons/SchoolIcon";
 import { usePathname } from "next/navigation";

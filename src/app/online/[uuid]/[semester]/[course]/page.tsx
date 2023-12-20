@@ -1,10 +1,9 @@
 "use client";
 
-import "@/styles/pages/[course].scss";
-import { type Semester, getSemester } from "@/services/semesters";
+import "@/styles/pages/course.scss";
+import { type Semester } from "@/services/semesters";
 import {
   type Course as CourseType,
-  getCourse,
   calculateCourseGradeAverage,
 } from "@/services/courses";
 import { useEffect, useState } from "react";

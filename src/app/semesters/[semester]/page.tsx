@@ -1,6 +1,6 @@
 "use client";
 
-import "@/styles/pages/[semester].scss";
+import "@/styles/pages/semester.scss";
 import {
   type Semester,
   getSemester,

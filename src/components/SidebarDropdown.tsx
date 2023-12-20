@@ -1,4 +1,3 @@
-import "@/styles/components/SidebarDropdown.scss";
 import SidebarItem from "./SidebarItem";
 import React, { useEffect, useState } from "react";
 

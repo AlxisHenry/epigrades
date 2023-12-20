@@ -1,5 +1,4 @@
 import Link from "next/link";
-import "@/styles/components/CourseLink.scss";
 import { LinkArrow } from "./Icons/LinkArrow";
 
 type Props = {

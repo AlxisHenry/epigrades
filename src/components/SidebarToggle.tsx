@@ -1,5 +1,3 @@
-import "@/styles/components/SidebarToggle.scss";
-
 type SidebarToggleProps = {
 	setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	isSidebarOpen: boolean;
