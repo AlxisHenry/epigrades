@@ -45,13 +45,13 @@ bash packages.sh
 #### Testing
 
 ```bash
-$ node index.js <email> <password> <uuid>
+$ node scraper/index.js <email> <password> <uuid>
 ```
 
 When you run the script, you will be asked for an OTP code, which you should normally receive by phone. Your Microsoft account must be linked to your telephone number if you turn on 2FA. So you just need to run the `otp.sh` script like this:
 
 ```bash
-$ bash otp.sh <email> <password> <code>
+$ bash scraper/otp.sh <email> <code>
 ```
 
 #### Access to your grades
