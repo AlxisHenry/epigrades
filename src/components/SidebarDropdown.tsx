@@ -11,7 +11,7 @@ export type SidebarDropdownProps = {
 export type DropdownItemProps = {
   route: string;
   text: string;
-}
+};
 
 export default function SidebarDropdown({
   pathname,
@@ -23,7 +23,6 @@ export default function SidebarDropdown({
   const [disableMouseEvents, setDisableMouseEvents] = useState<boolean>(false);
 
   useEffect(() => {
-    // Search for pathname in items.route,
     if (items.find((item) => item.route === pathname)) {
       setIsDropdownOpen(true);
       setDisableMouseEvents(true);
@@ -31,22 +30,24 @@ export default function SidebarDropdown({
       setIsDropdownOpen(false);
       setDisableMouseEvents(false);
     }
-  }, [items, pathname])
+  }, [items, pathname]);
 
   return (
     <div
       className={
         "sidebar__dropdown" + (isDropdownOpen ? " sidebar__dropdown--open" : "")
       }
-      onMouseEnter={disableMouseEvents ? undefined : () => setIsDropdownOpen(true)}
-      onMouseLeave={disableMouseEvents ? undefined : () => setIsDropdownOpen(false)}
+      onMouseEnter={
+        disableMouseEvents ? undefined : () => setIsDropdownOpen(true)
+      }
+      onMouseLeave={
+        disableMouseEvents ? undefined : () => setIsDropdownOpen(false)
+      }
     >
       <div className="sidebar__dropdown__header">
         {icon && (
           <>
-            <div className="sidebar__dropdown__icon">
-              {icon}
-            </div>
+            <div className="sidebar__dropdown__icon">{icon}</div>
           </>
         )}
         <div className="sidebar__dropdown__text">{text}</div>
@@ -58,7 +59,12 @@ export default function SidebarDropdown({
         }
       >
         {items.map((item, index) => (
-          <SidebarItem pathname={pathname} key={index} route={item.route} text={item.text} />
+          <SidebarItem
+            pathname={pathname}
+            key={index}
+            route={item.route}
+            text={item.text}
+          />
         ))}
       </div>
     </div>

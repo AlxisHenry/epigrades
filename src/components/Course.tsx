@@ -62,11 +62,7 @@ export default function Course({
 }
 
 function CourseGradeBadge({ grade }: { grade: string }): JSX.Element {
-  if (!isValidGrade(grade)) return (<></>);
+  if (!isValidGrade(grade)) return <></>;
 
-  return (
-    <span className={`grade-badge grade-badge--${grade}`}>
-      {grade}
-    </span>
-  );
+  return <span className={`grade-badge grade-badge--${grade}`}>{grade}</span>;
 }

@@ -1,7 +1,9 @@
 import React from "react";
 
-export default function BarChartIcon({ size = 48 }: {
-	size?: number
+export default function BarChartIcon({
+  size = 48,
+}: {
+  size?: number;
 }): JSX.Element {
   return (
     <svg

@@ -1,5 +1,7 @@
-export default function SchoolIcon({ size = 48 }: {
-	size?: number
+export default function SchoolIcon({
+  size = 48,
+}: {
+  size?: number;
 }): JSX.Element {
   return (
     <svg

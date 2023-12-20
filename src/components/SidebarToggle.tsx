@@ -1,9 +1,12 @@
 type SidebarToggleProps = {
-	setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	isSidebarOpen: boolean;
-}
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isSidebarOpen: boolean;
+};
 
-export default function SidebarToggle({ setIsSidebarOpen, isSidebarOpen }: SidebarToggleProps) {
+export default function SidebarToggle({
+  setIsSidebarOpen,
+  isSidebarOpen,
+}: SidebarToggleProps) {
   return (
     <div className="sidebar__toggle">
       <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>

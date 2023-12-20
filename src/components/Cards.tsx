@@ -1,8 +1,8 @@
 type Props = {
-	className?: string
-	children: React.ReactNode
-}
+  className?: string;
+  children: React.ReactNode;
+};
 
 export default function Cards({ className, children }: Props) {
-	return <div className={`cards ${className}`}>{children}</div>
+  return <div className={`cards ${className}`}>{children}</div>;
 }

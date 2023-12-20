@@ -2,10 +2,10 @@ import { isValidDay, type Day as DayType } from "@/services/days";
 import Day from "./Day";
 
 type Props = {
-	days: DayType[];
+  days: DayType[];
 };
 
-export default function CourseTable({days}: Props) {
+export default function CourseTable({ days }: Props) {
   return (
     <table>
       <thead>
@@ -19,9 +19,9 @@ export default function CourseTable({days}: Props) {
         </tr>
       </thead>
       <tbody>
-        {days.map((day: DayType) => (
-          isValidDay(day) && (<Day {...day} key={day.name} />)
-        ))}
+        {days.map(
+          (day: DayType) => isValidDay(day) && <Day {...day} key={day.name} />
+        )}
       </tbody>
     </table>
   );
