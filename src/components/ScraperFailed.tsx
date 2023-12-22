@@ -20,7 +20,7 @@ export const ScraperFailed = () => {
           }}
           type="submit"
           onClick={() => {
-            location.href = "/";
+            location.href = "/online";
           }}
         >
           Let me out !
