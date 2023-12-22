@@ -115,13 +115,13 @@ cleanFiles();
     await submitButton[0].click();
   } catch (e) {}
 
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise((resolve) => setTimeout(resolve, 1500));
 
   const useSms = await page.$x('//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div');
 
   if (useSms.length > 0) {
     await useSms[0].click();
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     await page.waitForXPath('//*[@id="idDiv_SAOTCC_Description"]');
     let phone = await page.$x('//*[@id="idDiv_SAOTCC_Description"]');
     phone = await page.evaluate((el) => el.textContent, phone[0]);
