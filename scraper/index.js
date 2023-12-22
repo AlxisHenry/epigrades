@@ -78,7 +78,7 @@ cleanFiles();
   const browser = await puppeteer.launch({
     headless: "new",
     defaultViewport: null,
-    args: ["--disable-features=site-per-process"],
+    args: ["--disable-features=site-per-process", "--window-size=1280,1080"],
   });
   const page = await browser.newPage();
   await page.goto("https://gandalf.epitech.eu/login/index.php");
@@ -115,7 +115,7 @@ cleanFiles();
     await submitButton[0].click();
   } catch (e) {}
 
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   const useSms = await page.$x('//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div');
 
@@ -175,7 +175,7 @@ cleanFiles();
     const cropWidth = 50;
     const cropHeight = 40;
     const cropX = width / 2 - cropWidth / 2;
-    const cropY = height / 2 - cropHeight / 2 + 38.5;
+    const cropY = height / 2 - cropHeight / 2 - 22;
     image.crop(cropX, cropY, cropWidth, cropHeight);
     await image.writeAsync(AUTHENTICATOR_FILE);
     write("Waiting for validation on the Authenticator app", 5);
