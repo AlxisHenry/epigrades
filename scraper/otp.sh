@@ -14,4 +14,4 @@ if [ ${#2} -lt 6 ]; then
 fi
 
 filename=$(echo $1 | awk -F@ '{print $1}') 
-echo $2 > "scraper/otp/$filename.json"
+echo "{\"code\":\"$2\"}" > "scraper/otp/$filename.json"
