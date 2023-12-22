@@ -11,7 +11,7 @@ if (!email || !password || !uuid) {
   process.exit(1);
 }
 
-const AUTHENTICATOR_FILE = `public/authenticator/${uuid}.png`;
+const AUTHENTICATOR_FILE = `scraper/authenticator/${uuid}.png`;
 const otpCodeFile = `scraper/otp/${email.split("@")[0]}.json`;
 const progressFile = `scraper/progress/${email.split("@")[0]}.json`;
 const reportFile = `scraper/reports/${uuid}.json`;
