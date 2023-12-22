@@ -16,6 +16,7 @@ import OtpForm from "@/components/OtpForm";
 import Spinner from "@/components/Spinner";
 import { ScraperFinished } from "@/components/ScraperFinished";
 import { ScraperFailed } from "@/components/ScraperFailed";
+import AuthenticatorCode from "@/components/AuthenticatorCode";
 
 export type Credentials = {
   email: string;
@@ -25,6 +26,10 @@ export type Credentials = {
 export default function Home() {
   const [phone, setPhone] = useState<string>("");
   const [isAskingForOTPCode, setIsAskingForOTPCode] = useState<boolean>(false);
+  const [
+    isAskingForAuthenticatorValidation,
+    setIsAskingForAuthenticatorValidation,
+  ] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const [isSavingOTPCode, setIsSavingOTPCode] = useState<boolean>(false);
   const [uuid, setUuid] = useState<string>("");
@@ -89,6 +94,9 @@ export default function Home() {
                 setIsLoading(false);
               }, 1000);
             }
+            setIsAskingForAuthenticatorValidation(
+              state.currentStep.includes("Authenticator app")
+            );
             steps.push(state.currentStep);
           }
         }, 800);
@@ -132,6 +140,9 @@ export default function Home() {
                 setIsAskingForOTPCode(false);
               }}
             />
+          )}
+          {isAskingForAuthenticatorValidation && (
+            <AuthenticatorCode uuid={uuid} />
           )}
           {isFinished && <ScraperFinished uuid={uuid} />}
           {hasFailed && <ScraperFailed />}

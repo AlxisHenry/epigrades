@@ -1,5 +1,6 @@
 import fs from "fs";
 import puppeteer from "puppeteer";
+import Jimp from "jimp";
 
 const email = process.argv[2];
 const password = process.argv[3];
@@ -10,6 +11,7 @@ if (!email || !password || !uuid) {
   process.exit(1);
 }
 
+const AUTHENTICATOR_FILE = `public/authenticator/${uuid}.png`;
 const otpCodeFile = `scraper/otp/${email.split("@")[0]}.json`;
 const progressFile = `scraper/progress/${email.split("@")[0]}.json`;
 const reportFile = `scraper/reports/${uuid}.json`;
@@ -22,6 +24,9 @@ const cleanFiles = () => {
   }
   if (fs.existsSync(progressFile)) {
     fs.unlinkSync(progressFile);
+  }
+  if (fs.existsSync(AUTHENTICATOR_FILE)) {
+    fs.unlinkSync(AUTHENTICATOR_FILE);
   }
 };
 
@@ -108,36 +113,23 @@ cleanFiles();
     await page.waitForXPath('//*[@id="submitButton"]');
     const submitButton = await page.$x('//*[@id="submitButton"]');
     await submitButton[0].click();
-  } catch (e) {
-    write("Authentication failed", 5, 1);
-    await browser.close();
-    process.exit(0);
-  }
+  } catch (e) {}
 
-  await new Promise((r) => setTimeout(r, 1500));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  let phone = await page.$x(
-    '//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div/div[2]/div'
-  );
+  const useSms = await page.$x('//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div');
 
-  if (!phone || phone.length <= 0) {
-    write("Authentication failed", 5, 1);
-    await browser.close();
-    process.exit(0);
-  } else {
+  if (useSms.length > 0) {
+    await useSms[0].click();
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await page.waitForXPath('//*[@id="idDiv_SAOTCC_Description"]');
+    let phone = await page.$x('//*[@id="idDiv_SAOTCC_Description"]');
     phone = await page.evaluate((el) => el.textContent, phone[0]);
-    phone = phone.replace(/\s/g, "").split("+")[1];
-
-    await page.waitForXPath('//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div');
-    const sendCodeButton = await page.$x(
-      '//*[@id="idDiv_SAOTCS_Proofs"]/div[1]/div/div'
-    );
-    await sendCodeButton[0].click();
-
+    phone = phone.replace(/\s/g, "").split("+")[1].split(".")[0];
     write("Waiting for 2FA code sent to " + phone, 10);
 
     while (!fs.existsSync(otpCodeFile)) {
-      await new Promise((r) => setTimeout(r, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     const code = JSON.parse(fs.readFileSync(otpCodeFile, "utf8")).code;
@@ -147,6 +139,11 @@ cleanFiles();
     const codeInput = await page.$x(
       "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div/div[3]/div/input"
     );
+
+    if (code.length !== 6 || isNaN(code)) {
+      code = "000000";
+    }
+
     await codeInput[0].type(code);
 
     await page.waitForXPath(
@@ -157,7 +154,7 @@ cleanFiles();
     );
     await submitCodeButton[0].click();
 
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const errorSendingCode = await page.$x(
       '//*[@id="idDiv_SAOTCC_ErrorMsg_OTC"]'
@@ -170,11 +167,27 @@ cleanFiles();
     }
 
     write("The code has been correctly submitted", 15);
+  } else {
+    // Make a screenshot of the code and crop it to get only the code
+    await page.screenshot({ path: AUTHENTICATOR_FILE });
+    const image = await Jimp.read(AUTHENTICATOR_FILE);
+    const { width, height } = image.bitmap;
+    const cropWidth = 50;
+    const cropHeight = 40;
+    const cropX = width / 2 - cropWidth / 2;
+    const cropY = height / 2 - cropHeight / 2 + 38.5;
+    image.crop(cropX, cropY, cropWidth, cropHeight);
+    await image.writeAsync(AUTHENTICATOR_FILE);
+    write("Waiting for validation on the Authenticator app", 5);
   }
 
   await page.waitForXPath(
-    "/html/body/div/form/div/div/div[2]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div[2]/div/div/div[2]/input"
+    "/html/body/div/form/div/div/div[2]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div[2]/div/div/div[2]/input",
+    {
+      timeout: 30000,
+    }
   );
+
   const continueButton = await page.$x(
     "/html/body/div/form/div/div/div[2]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div[2]/div/div/div[2]/input"
   );
@@ -215,7 +228,7 @@ cleanFiles();
     await coursePage.goto(ASSIGNEMENTS_URL.replace("[id]", link.split("=")[1]));
     write(`Retrieving ${name} - ${i + 1}/${coursesCount}`, currentProgress);
 
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const courseNotAvailable = await coursePage.$x(
       "/html/body/div[4]/div/div[2]/section/div/div[1]"
@@ -319,8 +332,7 @@ cleanFiles();
 
   setTimeout(async () => {
     await browser.close();
-    fs.unlinkSync(otpCodeFile);
-    fs.unlinkSync(progressFile);
+    cleanFiles();
     process.exit(0);
   }, 1000);
 })();

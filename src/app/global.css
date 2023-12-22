@@ -33,7 +33,7 @@ a {
 main {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 1rem 1rem;
+  padding: 2.5rem 2.5rem;
   height: auto;
 }
 
