@@ -148,18 +148,10 @@ export default function Home() {
           {hasFailed && <ScraperFailed />}
         </>
       ) : (
-        <>
-          <div className="description">
-            To have the same experience as me, you only need to put your
-            Microsoft Epitech credentials here. Note that your credentials are
-            not stored anywhere, they are only used to scrap your grades.
-          </div>
+        <> 
           <form
             className="container"
             onSubmit={(e) => handleSubmit(e)}
-            style={{
-              paddingTop: "2rem",
-            }}
           >
             {hasError && <div className="error">{error}</div>}
             <label htmlFor="email">Email</label>
