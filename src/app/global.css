@@ -168,3 +168,9 @@ button:disabled:focus {
     max-width: 180px;
   }
 }
+
+@media screen and (max-width: 400px) {
+  button {
+    width: 100%!important;
+  }
+}
