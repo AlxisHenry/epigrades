@@ -11,7 +11,9 @@ This project is a more glamorous and faster **Gandalf** (the intranet of Epitech
 
 ## How to use it ?
 
-Go to [epigrades](https://epigrades.alexishenry.eu/online), enter your Microsoft Epitech credentials, give your authentication code and that's it ! 
+Go to [epigrades](https://epigrades.alexishenry.eu/online), enter your Microsoft Epitech credentials, give your authentication code and that's it !
+
+> For more confidentialy you will have a **private token** for your account.
 
 ## Technical guide
 
