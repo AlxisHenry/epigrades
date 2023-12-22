@@ -1,14 +1,19 @@
-# Notes and statistics at Epitech 🎓
+# Epigrades 🎓
 
-This is a web application to have a global view and some statistics about my studies at Epitech.
+This project is a more glamorous and faster **Gandalf** (the intranet of Epitech). On this website you can retrieve my own grades ordered by semesters and also by modules, and the possibility for you student to see your grades easily !
 
 ## Table of contents
 
 1. [How to use it ?](#how-to-use-it-)
-2. [Technologies](#technologies)
-3. [Authors](#authors)
+2. [Technical guide](#technical-guide)
+3. [Technologies](#technologies)
+4. [Authors](#authors)
 
 ## How to use it ?
+
+Go to [epigrades](https://epigrades.alexishenry.eu/online), enter your Microsoft Epitech credentials, give your authentication code and that's it ! 
+
+## Technical guide
 
 First, you need to clone the repository.
 
@@ -33,7 +38,7 @@ The web application is now running on `http://localhost:3000`.
 
 The puppeteer bot is used to scrap the grades from the intranet. You can use it to scrap your grades and then use the web application to see your statistics.
 
-**Note:** you need to disable 2FA with the Microsoft Authenticator app to use the puppeteer bot.
+**Note:** the bot is supporting SMS 2FA authentication and Microsoft Authenticator application usage.
 
 You need to install the apt packages with the following command:
 
@@ -48,11 +53,19 @@ bash packages.sh
 $ node scraper/index.js <email> <password> <uuid>
 ```
 
-When you run the script, you will be asked for an OTP code, which you should normally receive by phone. Your Microsoft account must be linked to your telephone number if you turn on 2FA. So you just need to run the `otp.sh` script like this:
+##### Using SMS A2F
+
+When you run the script, you will be asked for an OTP code, which you should normally receive by phone.
+
+You just need to run the `otp.sh` script using the following command:
 
 ```bash
 $ bash scraper/otp.sh <email> <code>
 ```
+
+##### Using Microsoft Authenticator
+
+When you run the script, your A2F app will ask for a code of two digits, you can retrieve this code in the `scraper/authenticator` folder, in `png` format in a file named `<uuid>.png`.
 
 #### Access to your grades
 
