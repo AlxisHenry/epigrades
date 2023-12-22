@@ -106,7 +106,7 @@ export default function Home() {
 
   return (
     <Layout>
-      <PageTitle parts={["Welcome ✋"]} />
+      <PageTitle parts={["Epigrades 🎓"]} />
       {isRunning ? (
         <>
           {currentStep && progress ? (
