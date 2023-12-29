@@ -23,7 +23,7 @@ export async function GET(
   request: NextRequest
 ): Promise<NextResponse<Progress>> {
   const email: string = request.nextUrl.searchParams.get("email") || "";
-  const file = `scraper/progress/${email.split("@")[0]}.json`;
+  const file = `${PROGRESS_DIR}/${email.split("@")[0]}.json`;
 
   if (!fs.existsSync(file)) {
     return NextResponse.json({

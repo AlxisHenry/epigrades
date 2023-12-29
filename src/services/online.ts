@@ -10,6 +10,8 @@ export const UNREACHABLE_SERVER_ERROR = "The server is unreachable.";
 export const INVALID_CREDENTIALS_ERROR = "Invalid login";
 export const REPORTS_DIR = "scraper/reports";
 export const PROGRESS_DIR = "scraper/progress";
+export const OTP_DIR = "scraper/otp";
+export const AUTHENTICATOR_DIR = "scraper/authenticator";
 
 export const isEpitechEmail = (email: string) => EMAIL_REGEX.test(email);
 
@@ -176,4 +178,15 @@ export const getTimeElapsed = (date: Date | string): string => {
     Date.now(),
     typeof date === "string" ? Date.parse(date) : date.getTime()
   );
+};
+
+export const clearCache = async (email: string): Promise<void> => {
+  await fetch("/api/online/reset", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
 };

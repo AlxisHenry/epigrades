@@ -17,6 +17,8 @@ import Spinner from "@/components/Spinner";
 import { ScraperFinished } from "@/components/ScraperFinished";
 import { ScraperFailed } from "@/components/ScraperFailed";
 import AuthenticatorCode from "@/components/AuthenticatorCode";
+import TroubleLink from "@/components/TroubleLink";
+import { color } from "chart.js/helpers";
 
 export type Credentials = {
   email: string;
@@ -110,7 +112,9 @@ export default function Home() {
       {isRunning ? (
         <>
           {currentStep && progress ? (
-            <Progress currentStep={currentStep} progress={progress} />
+            <>
+              <Progress currentStep={currentStep} progress={progress} />
+            </>
           ) : (
             <>
               <span
@@ -148,11 +152,8 @@ export default function Home() {
           {hasFailed && <ScraperFailed />}
         </>
       ) : (
-        <> 
-          <form
-            className="container"
-            onSubmit={(e) => handleSubmit(e)}
-          >
+        <>
+          <form className="container" onSubmit={(e) => handleSubmit(e)}>
             {hasError && <div className="error">{error}</div>}
             <label htmlFor="email">Email</label>
             <input
@@ -176,15 +177,23 @@ export default function Home() {
                 }}
               />
             ) : (
-              <button
-                style={{
-                  maxWidth: "250px",
-                  marginTop: "10px",
-                }}
-                type="submit"
-              >
-                Let&apos;s go
-              </button>
+              <>
+                <TroubleLink
+                  credentials={credentials}
+                  setHasError={setHasError}
+                  setError={setError}
+                  setIsLoading={setIsLoading}
+                />
+                <button
+                  style={{
+                    maxWidth: "250px",
+                    marginTop: "10px",
+                  }}
+                  type="submit"
+                >
+                  Let&apos;s go
+                </button>
+              </>
             )}
           </form>
         </>
