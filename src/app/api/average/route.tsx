@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   Semester,
+  calculateGlobalGradeAverage,
   calculateSemesterGradeAverage,
   getSemesters,
 } from "@/services/semesters";
@@ -9,12 +10,11 @@ import fs from "fs";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const uuid: string | null = request.nextUrl.searchParams.get("uuid") || null;
-  let average: number = 0;
-  let studentSemesters: Semester[] = [];
+  let semesters: Semester[] = [];
 
   if (uuid) {
     try {
-      studentSemesters = JSON.parse(
+      semesters = JSON.parse(
         fs.readFileSync(`${REPORTS_DIR}/${uuid}.json`, "utf8")
       ).semesters;
     } catch (error) {
@@ -23,17 +23,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       });
     }
   } else {
-    studentSemesters = getSemesters();
-  }
-
-  for (const semester of studentSemesters) {
-    let currentAverage = parseFloat(calculateSemesterGradeAverage(semester));
-    if (currentAverage >= 0) {
-      average += currentAverage;
-    }
+    semesters = getSemesters();
   }
 
   return NextResponse.json({
-    average: average ?? -1,
+    average: +calculateGlobalGradeAverage(semesters) ?? -1,
   });
 }

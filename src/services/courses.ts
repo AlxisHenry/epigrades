@@ -2,6 +2,7 @@ import { type Day, isGradedDay } from "./days";
 import { type Semester, getSemesters } from "./semesters";
 
 export type Course = {
+  id: string;
   name: string;
   days: Day[];
   created_at: string;
@@ -29,8 +30,8 @@ export function getCoursesNames(): string[] {
   return getCourses().map((c) => c.name);
 }
 
-export function getCourse(course: string): Course | null {
-  return getCourses().find((c) => c.name.toLowerCase() === course) || null;
+export function getCourse(id: string): Course | null {
+  return getCourses().find((c) => c.id === id) || null;
 }
 
 export function calculateCourseGradeAverage(course: Course | null): string {

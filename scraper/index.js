@@ -18,6 +18,39 @@ const reportFile = `scraper/reports/${uuid}.json`;
 const ASSIGNEMENTS_URL =
   "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
 
+const semestersDates = [
+  {
+    name: "T5",
+    start: "2023-09-12",
+    end: "2024-02-12",
+  },
+  {
+    name: "T6",
+    start: "2024-02-12",
+    end: "2024-08-12",
+  },
+  {
+    name: "T7",
+    start: "2024-08-12",
+    end: "2025-02-12",
+  },
+  {
+    name: "T8",
+    start: "2025-02-12",
+    end: "2025-08-12",
+  },
+  {
+    name: "T9",
+    start: "2025-08-12",
+    end: "2026-02-12",
+  },
+  {
+    name: "T10",
+    start: "2026-02-12",
+    end: "2026-08-12",
+  },
+];
+
 const cleanFiles = () => {
   if (fs.existsSync(otpCodeFile)) {
     fs.unlinkSync(otpCodeFile);
@@ -49,18 +82,25 @@ const formatDueDate = (due_date) => {
 const write = (currentStep, progress, status = 0) => {
   fs.writeFileSync(
     progressFile,
-    JSON.stringify({ currentStep, progress, status }),
+    JSON.stringify({
+      currentStep,
+      progress: Math.round(progress),
+      status,
+    }),
     "utf8"
   );
 };
 
 const now = () => {
-  const currentDate = new Date();
-  const formattedDate = currentDate
-    .toISOString()
-    .slice(0, 19)
-    .replace("T", " ");
-  return formattedDate;
+  const fullDate = new Date(Date.now())
+    .toLocaleString("fr-FR", {
+      timeZone: "Europe/Paris",
+    })
+    .toString();
+  let [date, time] = fullDate.replace(" AM", "").split(" ");
+  let [day, month, year] = date.split("/");
+  let [hours, minutes, seconds] = time.split(":");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
 const getStudentName = (email) => {
@@ -75,6 +115,7 @@ const getStudentName = (email) => {
 cleanFiles();
 
 (async () => {
+  write("Launching the browser", 0);
   const browser = await puppeteer.launch({
     headless: "new",
     defaultViewport: null,
@@ -82,7 +123,7 @@ cleanFiles();
   });
   const page = await browser.newPage();
   await page.goto("https://gandalf.epitech.eu/login/index.php");
-  write("Opening Gandalf", 0);
+  write("Opening the intranet login page", 2);
 
   await page.waitForXPath(
     "/html/body/div[4]/div[1]/div[2]/section/div/div[2]/div/div/div/div/div/div[2]/div[3]/div/a"
@@ -92,7 +133,7 @@ cleanFiles();
   );
   await microsoftLoginButton[0].click();
 
-  write("Starting authentication with Microsoft", 5);
+  write("Identifying the authentication method used", 5);
 
   await page.waitForNavigation();
 
@@ -166,9 +207,9 @@ cleanFiles();
       process.exit(0);
     }
 
-    write("The code has been correctly submitted", 15);
+    write("The code has been sent", 10);
   } else {
-    // Make a screenshot of the code and crop it to get only the code
+    write("Retrieving the code needed for the authentication", 10);
     await page.screenshot({ path: AUTHENTICATOR_FILE });
     const image = await Jimp.read(AUTHENTICATOR_FILE);
     const { width, height } = image.bitmap;
@@ -178,7 +219,7 @@ cleanFiles();
     const cropY = height / 2 - cropHeight / 2 - 22;
     image.crop(cropX, cropY, cropWidth, cropHeight);
     await image.writeAsync(AUTHENTICATOR_FILE);
-    write("Waiting for validation on the Authenticator app", 5);
+    write("Waiting for Microsoft Authenticator validation", 10);
   }
 
   await page.waitForXPath(
@@ -195,7 +236,7 @@ cleanFiles();
 
   await page.waitForNavigation();
 
-  write("Successfully logged on the intranet", 20);
+  write("Logged successfully to the intranet", 15);
 
   await page.waitForXPath(
     "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[4]/ul"
@@ -208,7 +249,7 @@ cleanFiles();
   const courses = await list[0].$$("li");
   const coursesCount = courses.length;
 
-  write("Starting the assignements retrieval", 25);
+  write("Starting to retrieve your graded courses", 20);
 
   let grades = {
     student: {
@@ -216,17 +257,19 @@ cleanFiles();
       name: getStudentName(email),
     },
     semesters: [],
+    created_at: null,
   };
 
+  // For each course we retrieve the assignments
   for (let i = 0; i < coursesCount; i++) {
-    let currentProgress = 25 + (i / coursesCount) * 75;
     const course = courses[i];
     const element = await course.$("a");
     const link = await page.evaluate((el) => el.href, element);
     const name = await page.evaluate((el) => el.textContent, element);
     const coursePage = await browser.newPage();
     await coursePage.goto(ASSIGNEMENTS_URL.replace("[id]", link.split("=")[1]));
-    write(`Retrieving ${name} - ${i + 1}/${coursesCount}`, currentProgress);
+
+    write(`${name} (${i + 1}/${coursesCount})`, 20 + (i / coursesCount) * 70);
 
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
@@ -238,10 +281,27 @@ cleanFiles();
       const semester = await coursePage.$x(
         "/html/body/div[5]/div[1]/div[1]/div/nav/ol/li[4]/span/a/span"
       );
-      const semesterName = await coursePage.evaluate(
-        (el) => el?.textContent ?? "T5",
+      let semesterName = await coursePage.evaluate(
+        (el) => el?.textContent ?? null,
         semester[0]
       );
+
+      if (semesterName === null) {
+        for (const semesterDate of semestersDates) {
+          if (
+            new Date(semesterDate.start) <= new Date() &&
+            new Date(semesterDate.end) >= new Date()
+          ) {
+            semesterName = semesterDate.name;
+            break;
+          }
+        }
+      }
+
+      if (semesterName === null) {
+        semesterName = "-";
+      }
+
       const table = await coursePage.$x(
         "/html/body/div[5]/div[1]/div[2]/section/div/table"
       );
@@ -252,6 +312,7 @@ cleanFiles();
         grades.semesters.push({
           name: semesterName,
           courses: [],
+          created_at: null,
         });
       }
 
@@ -290,9 +351,10 @@ cleanFiles();
           grades.semesters
             .find((s) => s.name === semesterName)
             .courses.push({
+              id: link.split("=")[1],
               name: name,
               days: [],
-              created_at: now(),
+              created_at: null,
             });
         }
 
@@ -314,8 +376,11 @@ cleanFiles();
         if (semester) {
           const course = semester.courses.find((c) => c.name === name);
           if (course) {
-            const lastGrade = course.days[course.days.length - 1];
+            let lastGrade = course.days[course.days.length - 1];
             if (lastGrade) {
+              if (lastGrade.due_date === "-") {
+                lastGrade = course.days[course.days.length - 2];
+              }
               course.created_at = lastGrade.due_date;
             }
           }
@@ -326,8 +391,17 @@ cleanFiles();
     await coursePage.close();
   }
 
+  write("Retrieving your GPA", 95);
+
   write("Generating the report", 100, 1);
 
+  for (const semester of grades.semesters) {
+    if (semester.courses.length > 0) {
+      semester.created_at = semester?.courses[0]?.created_at ?? null;
+    }
+  }
+
+  grades.created_at = now();
   fs.writeFileSync(reportFile, JSON.stringify(grades), "utf8");
 
   setTimeout(async () => {

@@ -2,6 +2,20 @@ import { type Course } from "./courses";
 import { isGradedDay } from "./days";
 import { type Semester } from "./semesters";
 
+export function getGlobalAssignementsCount(semesters: Semester[]): number {
+  let count = 0;
+  semesters.forEach((semester) => {
+    semester.courses.forEach((course) => {
+      course.days.map((day) => {
+        if (isGradedDay(day)) {
+          count++;
+        }
+      });
+    });
+  });
+  return count;
+}
+
 export function getSemesterAssignementsCount(
   semester: Semester | null
 ): number {

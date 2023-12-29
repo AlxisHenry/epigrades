@@ -35,7 +35,7 @@ export default function Course({
           isOnline={isOnline}
           uuid={uuid}
           semester={semester?.name}
-          courseName={course.name}
+          id={course.id}
           content={course.name}
           title={true}
         />
@@ -52,7 +52,7 @@ export default function Course({
           isOnline={isOnline}
           uuid={uuid}
           semester={semester?.name}
-          courseName={course.name}
+          id={course.id}
           content="View Course"
           title={false}
         />

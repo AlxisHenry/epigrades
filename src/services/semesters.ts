@@ -5,10 +5,24 @@ import { isGradedDay } from "./days";
 export type Semester = {
   name: string;
   courses: Course[];
+  created_at: string | null;
 };
 
+function clear(semesters: Semester[]): Semester[] {
+  return semesters.filter((s) => s.created_at !== null);
+}
+
+export function sortSemesters(semesters: Semester[]): Semester[] {
+  return clear(semesters).sort((a, b) => {
+    if (a.created_at === null || b.created_at === null) return 0;
+    if (a.created_at > b.created_at) return -1;
+    if (a.created_at < b.created_at) return 1;
+    return 0;
+  });
+}
+
 export function getSemesters(): Semester[] {
-  return grades.semesters;
+  return clear(grades.semesters);
 }
 
 export function getSemester(semester: string): Semester | null {
@@ -25,7 +39,7 @@ export function getSemesterCourses(semester: string): Course[] {
 }
 
 export function getSemestersNames(): string[] {
-  return grades.semesters.map((s) => s.name);
+  return getSemesters().map((s) => s.name);
 }
 
 export function getSemestersCount(): number {
@@ -44,6 +58,23 @@ export function calculateSemesterGradeAverage(
         grade += parseFloat(day.grade);
         gradesCount++;
       }
+    });
+  });
+  if (gradesCount === 0) return "-";
+  return (grade / gradesCount).toFixed(2);
+}
+
+export function calculateGlobalGradeAverage(semesters: Semester[]): string {
+  let grade = 0,
+    gradesCount = 0;
+  semesters.forEach((semester) => {
+    semester.courses.forEach((course) => {
+      course.days.map((day) => {
+        if (isGradedDay(day)) {
+          grade += parseFloat(day.grade);
+          gradesCount++;
+        }
+      });
     });
   });
   if (gradesCount === 0) return "-";

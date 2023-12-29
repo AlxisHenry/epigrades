@@ -4,7 +4,7 @@ import { LinkArrow } from "./Icons/LinkArrow";
 type Props = {
   isOnline?: boolean;
   uuid?: string;
-  courseName: string;
+  id: string;
   semester: string | undefined;
   content: string;
   title: boolean;
@@ -13,7 +13,7 @@ type Props = {
 export default function CourseLink({
   isOnline = false,
   uuid,
-  courseName,
+  id,
   semester,
   content,
   title,
@@ -24,8 +24,8 @@ export default function CourseLink({
 
   const getAs = (): string => {
     return isOnline
-      ? `/online/${uuid}/${t(semester)}/${t(courseName)}`
-      : `/semesters/${t(semester)}/${courseName.toLowerCase()}`;
+      ? `/online/${uuid}/${t(semester)}/${id}`
+      : `/semesters/${t(semester)}/${id}`;
   };
 
   const getLink = (): string => {

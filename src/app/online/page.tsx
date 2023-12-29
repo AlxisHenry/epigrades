@@ -95,7 +95,7 @@ export default function Home() {
               }, 1000);
             }
             setIsAskingForAuthenticatorValidation(
-              state.currentStep.includes("Authenticator app")
+              state.currentStep.includes("Microsoft Authenticator")
             );
             steps.push(state.currentStep);
           }

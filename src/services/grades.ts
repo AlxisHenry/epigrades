@@ -6,7 +6,7 @@ export enum Grade {
   B = "B",
   C = "C",
   D = "D",
-  ECHEC = "ECHEC"
+  E = "E"
 }
 
 export function isValidGrade(grade: string): boolean {

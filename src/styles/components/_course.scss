@@ -57,7 +57,9 @@
         &.grade-badge--B {
           color: var(--grade-warning);
         }
-        &.grade-badge--C {
+        &.grade-badge--C,
+        &.grade-badge--D,
+        &.grade-badge--E {
           color: var(--grade-danger);
         }
       }

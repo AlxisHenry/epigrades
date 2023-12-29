@@ -77,7 +77,7 @@ export default function Home() {
       setCourse(
         response.semesters
           .find((s) => s.name.toLowerCase() === params.semester)
-          ?.courses.find((c) => c.name.toLowerCase() === params.course) ?? null
+          ?.courses.find((c) => c.id === params.course) ?? null
       );
       setStudent(response?.student?.name || "");
       setCourseGrade(getCourseGrade(course));

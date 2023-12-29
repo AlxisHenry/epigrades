@@ -138,4 +138,42 @@ export const retrieveGradeWithUUID = async (
 
 export const generateUUID = (): string => {
   return crypto.randomUUID() + "-" + Date.now();
-}
+};
+
+const formatTimeElapsed = (value: number, unit: string): string => {
+  return `${value} ${unit}${value > 1 ? "s" : ""}`;
+};
+
+const getTimeElapsedBetween = (d1: number, d2: number): string => {
+  const diff = d1 - d2;
+  const seconds = Math.floor(diff / 1000),
+    minutes = Math.floor(seconds / 60),
+    hours = Math.floor(minutes / 60),
+    days = Math.floor(hours / 24),
+    weeks = Math.floor(days / 7),
+    months = Math.floor(days / 30),
+    years = Math.floor(days / 365);
+
+  if (seconds < 60) {
+    return formatTimeElapsed(seconds, "second");
+  } else if (minutes < 60) {
+    return formatTimeElapsed(minutes, "minute");
+  } else if (hours < 24) {
+    return formatTimeElapsed(hours, "hour");
+  } else if (days < 7) {
+    return formatTimeElapsed(days, "day");
+  } else if (weeks < 4) {
+    return formatTimeElapsed(weeks, "week");
+  } else if (months < 12) {
+    return formatTimeElapsed(months, "month");
+  } else {
+    return formatTimeElapsed(years, "year");
+  }
+};
+
+export const getTimeElapsed = (date: Date | string): string => {
+  return getTimeElapsedBetween(
+    Date.now(),
+    typeof date === "string" ? Date.parse(date) : date.getTime()
+  );
+};

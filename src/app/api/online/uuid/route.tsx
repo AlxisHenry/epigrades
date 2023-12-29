@@ -10,6 +10,7 @@ export type uuidResponse = {
     email: string;
     name: string;
   };
+  created_at?: string|null;
 };
 
 export async function GET(
@@ -24,6 +25,7 @@ export async function GET(
       success: true,
       semesters: grade.semesters,
       student: grade.student,
+      created_at: grade.created_at || null,
     });
   }
 
