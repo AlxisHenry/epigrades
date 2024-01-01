@@ -112,6 +112,14 @@ const getStudentName = (email) => {
     .join(" ");
 };
 
+const exit = (browser) => {
+  setTimeout(async () => {
+    await browser.close();
+    cleanFiles();
+    process.exit(0);
+  }, 1000);
+};
+
 cleanFiles();
 
 (async () => {
@@ -144,6 +152,15 @@ cleanFiles();
   await page.waitForXPath('//*[@id="idSIButton9"]');
   const nextButton = await page.$x('//*[@id="idSIButton9"]');
   await nextButton[0].click();
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  const hasBrowserError = await page.$x('//*[@id="debugging"]');
+
+  if (hasBrowserError.length > 0) {
+    write("Authentication failed", 5, 1);
+    exit(browser);
+  }
 
   try {
     await page.waitForXPath('//*[@id="passwordInput"]', {
@@ -222,12 +239,17 @@ cleanFiles();
     write("Waiting for Microsoft Authenticator validation", 10);
   }
 
-  await page.waitForXPath(
-    "/html/body/div/form/div/div/div[2]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div[2]/div/div/div[2]/input",
-    {
-      timeout: 30000,
-    }
-  );
+  try {
+    await page.waitForXPath(
+      "/html/body/div/form/div/div/div[2]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div[2]/div/div/div[2]/input",
+      {
+        timeout: 30000,
+      }
+    );
+  } catch (e) {
+    write("Authentication failed", 10, 1);
+    exit(browser);
+  }
 
   const continueButton = await page.$x(
     "/html/body/div/form/div/div/div[2]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div[2]/div/div/div[2]/input"
@@ -403,10 +425,5 @@ cleanFiles();
 
   grades.created_at = now();
   fs.writeFileSync(reportFile, JSON.stringify(grades), "utf8");
-
-  setTimeout(async () => {
-    await browser.close();
-    cleanFiles();
-    process.exit(0);
-  }, 1000);
+  exit(browser);
 })();
