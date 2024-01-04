@@ -2,12 +2,11 @@ import { Progress } from "@/app/api/online/route";
 import { uuidResponse } from "@/app/api/online/uuid/route";
 import { Credentials } from "@/app/online/page";
 
-const AUTH_API_URL: string = "https://nsa.epitest.eu/api/login";
+const AUTH_API_URL: string = "https://console.bocal.org/auth/login";
 const EMAIL_REGEX: RegExp = new RegExp("^[a-zA-Z0-9._-]+@epitech.eu$", "i");
-const FAKE_SLUG: string = "fake-slug";
 export const NODE_SCRIPT_PATH = "scraper/index.js";
 export const UNREACHABLE_SERVER_ERROR = "The server is unreachable.";
-export const INVALID_CREDENTIALS_ERROR = "Invalid login";
+export const INVALID_CREDENTIALS_ERROR = "Wrong Email or Password";
 export const REPORTS_DIR = "scraper/reports";
 export const PROGRESS_DIR = "scraper/progress";
 export const OTP_DIR = "scraper/otp";
@@ -38,20 +37,17 @@ export const authenticateUsingEpitechAPI = async (
     const response = await fetch(AUTH_API_URL, {
       method: "POST",
       body: JSON.stringify({
-        slug: FAKE_SLUG,
+        id: credentials.email || "-",
+        password: credentials.password || "-",
       }),
-      credentials: "include",
-      mode: "cors",
       headers: new Headers({
         "Content-Type": "application/json",
-        Authorization:
-          "Basic " + btoa(Array.from(Object.values(credentials)).join(":")),
       }),
     });
 
-    const { error } = await response.json();
+    const { message } = await response.json();
 
-    if (error === INVALID_CREDENTIALS_ERROR) {
+    if (response.status === 401 && message === INVALID_CREDENTIALS_ERROR) {
       return {
         success: false,
         error: INVALID_CREDENTIALS_ERROR,
