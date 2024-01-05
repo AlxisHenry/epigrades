@@ -28,9 +28,9 @@ export function isGradedDay(day: Day): boolean {
   );
 }
 
-export function getDays(): Day[] {
+export async function getDays(): Promise<Day[]> {
   let days: Day[] = [];
-  let courses: Course[] = getCourses();
+  let courses: Course[] = await getCourses();
   for (let course of courses) {
     days.push(...course.days);
   }

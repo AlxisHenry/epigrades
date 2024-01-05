@@ -17,21 +17,25 @@ export function sortCourses(courses: undefined | null | Course[]): Course[] {
   });
 }
 
-export function getCourses(): Course[] {
+export async function getCourses(): Promise<Course[]> {
   let courses: Course[] = [];
-  let semesters: Semester[] = getSemesters();
+  let semesters: Semester[] = await getSemesters();
   for (let semester of semesters) {
     courses.push(...semester.courses);
   }
   return courses;
 }
 
-export function getCoursesNames(): string[] {
-  return getCourses().map((c) => c.name);
+export async function getCoursesNames(): Promise<string[]> {
+  let courses: Course[] = await getCourses();
+  return courses.map((c) => c.name);
 }
 
-export function getCourse(id: string): Course | null {
-  return getCourses().find((c) => c.id === id) || null;
+export function getCourse(id: string): Promise<Course | null> {
+  return new Promise(async (resolve, reject) => {
+    let courses = await getCourses();
+    resolve(courses.find((c) => c.id === id) || null);
+  });
 }
 
 export function calculateCourseGradeAverage(course: Course | null): string {

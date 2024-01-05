@@ -22,7 +22,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       });
     }
   } else {
-    semesters = getSemesters();
+    semesters = await getSemesters();
   }
 
   return NextResponse.json({

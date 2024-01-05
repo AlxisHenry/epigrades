@@ -34,11 +34,16 @@ export default function Home() {
     useState<number>(0);
 
   useEffect(() => {
-    setSemester(getSemester(params.semester));
-    setCourses(sortCourses(semester?.courses));
-    setSemesterGradeAverage(calculateSemesterGradeAverage(semester));
-    setSemesterAsssignementsCount(getSemesterAssignementsCount(semester));
-    setLoading(false);
+    const initialize = async () => {
+      const semester = await getSemester(params.semester);
+      setSemester(semester);
+      setCourses(sortCourses(semester?.courses));
+      setSemesterGradeAverage(calculateSemesterGradeAverage(semester));
+      setSemesterAsssignementsCount(getSemesterAssignementsCount(semester));
+      setLoading(false);
+    };
+
+    initialize();
   }, [params.semester, semester]);
 
   const toggleDropdown = (i: number) => {

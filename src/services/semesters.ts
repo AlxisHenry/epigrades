@@ -1,12 +1,19 @@
-import grades from "../../scraper/reports/me.json";
 import { sortCourses, type Course } from "./courses";
 import { isGradedDay } from "./days";
+import { retrieveGradeWithUUID } from "./online";
 
 export type Semester = {
   name: string;
   courses: Course[];
   created_at: string | null;
 };
+
+export function getSemesters(): Promise<Semester[]> {
+  return new Promise(async (resolve, reject) => {
+    const response = await retrieveGradeWithUUID();
+    resolve(sortSemesters(response?.semesters || []));
+  });
+}
 
 function clear(semesters: Semester[]): Semester[] {
   return semesters.filter((s) => s.created_at !== null);
@@ -21,29 +28,27 @@ export function sortSemesters(semesters: Semester[]): Semester[] {
   });
 }
 
-export function getSemesters(): Semester[] {
-  return clear(grades.semesters);
-}
-
-export function getSemester(semester: string): Semester | null {
+export async function getSemester(semester: string): Promise<Semester | null> {
+  const semesters = await getSemesters();
   return (
-    grades.semesters.find(
-      (s) => s.name.toLowerCase() === semester.toLowerCase()
-    ) || null
+    semesters?.find((s) => s.name.toLowerCase() === semester.toLowerCase()) ||
+    null
   );
 }
 
-export function getSemesterCourses(semester: string): Course[] {
-  const s: Semester | null = getSemester(semester);
+export async function getSemesterCourses(semester: string): Promise<Course[]> {
+  const s: Semester | null = await getSemester(semester);
   return sortCourses(s?.courses);
 }
 
-export function getSemestersNames(): string[] {
-  return getSemesters().map((s) => s.name);
+export async function getSemestersNames(): Promise<string[]> {
+  const semesters = await getSemesters();
+  return semesters.map((s) => s.name);
 }
 
-export function getSemestersCount(): number {
-  return grades.semesters.length;
+export async function getSemestersCount(): Promise<number> {
+  const semesters = await getSemesters();
+  return semesters.length;
 }
 
 export function calculateSemesterGradeAverage(

@@ -15,17 +15,21 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   useEffect(() => {
-    setSemesters(
-      getSemestersNames()
-        .filter((semesterName) => {
-          let semester = getSemester(semesterName);
-          return semester!.courses.length > 0;
+    const initialize = async () => {
+      const semestersNames = await getSemestersNames();
+      const semesters = semestersNames
+        .filter(async (semestersName) => {
+          let semester = await getSemester(semestersName);
+          return semester?.courses.length;
         })
-        .map((name) => ({
-          route: `/semesters/${name}`,
-          text: name,
-        }))
-    );
+        .map((semesterName) => ({
+          text: semesterName,
+          route: `/semesters/${semesterName}`,
+        }));
+      setSemesters(semesters);
+    };
+
+    initialize();
   }, []);
 
   return (

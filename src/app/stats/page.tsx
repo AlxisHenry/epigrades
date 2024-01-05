@@ -17,6 +17,7 @@ import {
 } from "@/services/semesters";
 import Layout from "@/components/Layout";
 import PageTitle from "@/components/PageTitle";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   ChartJS.register(
@@ -28,21 +29,7 @@ export default function Home() {
     Legend
   );
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Average per semester",
-      },
-    },
-  };
-
-  const labels = getSemestersNames();
-
+  const [labels, setLabels] = useState<string[]>([]);
   const data: {
     labels: string[];
     datasets: {
@@ -65,14 +52,36 @@ export default function Home() {
     ],
   };
 
-  for (const label of labels) {
-    let semester = getSemester(label);
-    let average = calculateSemesterGradeAverage(semester);
-    let randomColor = Math.floor(Math.random() * 16777215).toString(16);
-    data.datasets[0].data.push(average);
-    data.datasets[0].backgroundColor.push(`#${randomColor}`);
-    data.datasets[0].borderColor.push(`#${randomColor}`);
-  }
+  useEffect(() => {
+    const initialize = async () => {
+      const semestersNames = await getSemestersNames();
+      setLabels(semestersNames);
+
+      for (const semestersName of semestersNames) {
+        let semester = await getSemester(semestersName);
+        let average = calculateSemesterGradeAverage(semester);
+        let randomColor = Math.floor(Math.random() * 16777215).toString(16);
+        data.datasets[0].data.push(average);
+        data.datasets[0].backgroundColor.push(`#${randomColor}`);
+        data.datasets[0].borderColor.push(`#${randomColor}`);
+      }
+    };
+
+    initialize();
+  }, [data.datasets]);
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Average per semester",
+      },
+    },
+  };
 
   return (
     <Layout>

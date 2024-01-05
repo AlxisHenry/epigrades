@@ -149,7 +149,7 @@ export const saveOTPCode = async (
 };
 
 export const retrieveGradeWithUUID = async (
-  uuid: string
+  uuid: string = "me"
 ): Promise<uuidResponse> => {
   const response = await fetch("/api/online/uuid?uuid=" + uuid, {
     method: "GET",

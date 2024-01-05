@@ -61,12 +61,19 @@ export default function Home() {
     useState<number>(0);
 
   useEffect(() => {
-    setSemester(getSemester(params.semester));
-    setCourse(getCourse(params.course));
-    setCourseGrade(getCourseGrade(course));
-    setCourseGradeAverage(calculateCourseGradeAverage(course));
-    setCourseAssignementsCount(getCourseAssignementsCount(course));
-    setLoading(false);
+    const initialize = async () => {
+      let s = await getSemester(params.semester);
+      let c = await getCourse(params.course);
+
+      setSemester(s);
+      setCourse(c);
+      setCourseGrade(getCourseGrade(course));
+      setCourseGradeAverage(calculateCourseGradeAverage(course));
+      setCourseAssignementsCount(getCourseAssignementsCount(course));
+      setLoading(false);
+    };
+
+    initialize();
   }, [params.semester, params.course, course]);
 
   const options = {
