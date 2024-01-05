@@ -1,6 +1,6 @@
-import { type Credentials } from "@/app/online/page";
 import {
-  UNREACHABLE_SERVER_ERROR,
+  errors,
+  type Credentials,
   clearCache,
   validateCredentials,
 } from "@/services/online";
@@ -30,7 +30,7 @@ export default function TroubleLink({
 
         if (!success) {
           setHasError(true);
-          setError(error || UNREACHABLE_SERVER_ERROR);
+          setError(error || errors.unreachableServer);
           setIsLoading(false);
           return;
         }

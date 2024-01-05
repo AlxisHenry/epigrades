@@ -1,4 +1,4 @@
-import { AuthenticateResponse, OTP_DIR } from "@/services/online";
+import { AuthenticateResponse, paths } from "@/services/online";
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
 
@@ -13,7 +13,7 @@ export async function POST(
     code: string;
   } = await request.json();
 
-  const file = `${OTP_DIR}/${email.split("@")[0]}.json`;
+  const file = `${paths.otp}/${email.split("@")[0]}.json`;
 
   if (code.length !== 6) {
     return NextResponse.json({
