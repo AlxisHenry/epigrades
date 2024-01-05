@@ -171,7 +171,7 @@ cleanFiles();
     await page.waitForXPath('//*[@id="submitButton"]');
     const submitButton = await page.$x('//*[@id="submitButton"]');
     await submitButton[0].click();
-  } catch (e) {}
+  } catch (e) { }
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -243,7 +243,7 @@ cleanFiles();
     await page.waitForXPath(
       "/html/body/div/form/div/div/div[2]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div[2]/div/div/div[2]/input",
       {
-        timeout: 30000,
+        timeout: 15000,
       }
     );
   } catch (e) {
