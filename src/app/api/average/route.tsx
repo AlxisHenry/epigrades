@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   Semester,
   calculateGlobalGradeAverage,
-  calculateSemesterGradeAverage,
   getSemesters,
 } from "@/services/semesters";
-import { REPORTS_DIR, retrieveGradeWithUUID } from "@/services/online";
+import { paths } from "@/services/online";
 import fs from "fs";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -15,7 +14,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   if (uuid) {
     try {
       semesters = JSON.parse(
-        fs.readFileSync(`${REPORTS_DIR}/${uuid}.json`, "utf8")
+        fs.readFileSync(`${paths.reports}/${uuid}.json`, "utf8")
       ).semesters;
     } catch (error) {
       return NextResponse.json({

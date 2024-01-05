@@ -1,19 +1,38 @@
 import { Progress } from "@/app/api/online/route";
 import { uuidResponse } from "@/app/api/online/uuid/route";
-import { Credentials } from "@/app/online/page";
 
-const AUTH_API_URL: string = "https://nsa.epitest.eu/api/login";
-const EMAIL_REGEX: RegExp = new RegExp("^[a-zA-Z0-9._-]+@epitech.eu$", "i");
-const FAKE_SLUG: string = "fake-slug";
-export const NODE_SCRIPT_PATH = "scraper/index.js";
-export const UNREACHABLE_SERVER_ERROR = "The server is unreachable.";
-export const INVALID_CREDENTIALS_ERROR = "Invalid login";
-export const REPORTS_DIR = "scraper/reports";
-export const PROGRESS_DIR = "scraper/progress";
-export const OTP_DIR = "scraper/otp";
-export const AUTHENTICATOR_DIR = "scraper/authenticator";
+const AUTH_API_ENDPOINT: string = "https://console.bocal.org/auth/login";
+export const EMAIL_EXTENSION: string = "@epitech.eu";
 
-export const isEpitechEmail = (email: string) => EMAIL_REGEX.test(email);
+export const errors: {
+  unreachableServer: string;
+  invalidCredentials: string;
+} = {
+  unreachableServer: "The server is unreachable.",
+  invalidCredentials: "Wrong Email or Password",
+};
+
+export const paths: {
+  script: string;
+  reports: string;
+  progress: string;
+  otp: string;
+  authenticator: string;
+} = {
+  script: "scraper/index.js",
+  reports: "scraper/reports",
+  progress: "scraper/progress",
+  otp: "scraper/otp",
+  authenticator: "scraper/authenticator",
+};
+
+export const isEpitechEmail = (email: string) =>
+  new RegExp(`^[a-zA-Z0-9._-]+${EMAIL_EXTENSION}$`, "i").test(email);
+
+export type Credentials = {
+  email: string;
+  password: string;
+};
 
 export type ScraperResponse = {
   uuid: string;
@@ -35,26 +54,30 @@ export const authenticateUsingEpitechAPI = async (
   }
 
   try {
-    const response = await fetch(AUTH_API_URL, {
+    const response = await fetch(AUTH_API_ENDPOINT, {
       method: "POST",
       body: JSON.stringify({
-        slug: FAKE_SLUG,
+        id: credentials.email || "-",
+        password: credentials.password || "-",
       }),
-      credentials: "include",
-      mode: "cors",
       headers: new Headers({
         "Content-Type": "application/json",
-        Authorization:
-          "Basic " + btoa(Array.from(Object.values(credentials)).join(":")),
       }),
     });
 
-    const { error } = await response.json();
+    const { message } = await response.json();
 
-    if (error === INVALID_CREDENTIALS_ERROR) {
+    if (response.status === 401 && message === errors.invalidCredentials) {
       return {
         success: false,
-        error: INVALID_CREDENTIALS_ERROR,
+        error: errors.invalidCredentials,
+      };
+    }
+
+    if (response.status !== 200) {
+      return {
+        success: false,
+        error: errors.unreachableServer,
       };
     }
 
@@ -65,7 +88,7 @@ export const authenticateUsingEpitechAPI = async (
   } catch (e) {
     return {
       success: false,
-      error: UNREACHABLE_SERVER_ERROR,
+      error: errors.unreachableServer,
     };
   }
 };

@@ -1,14 +1,12 @@
 import {
-  NODE_SCRIPT_PATH,
+  paths,
   generateUUID,
   type ScraperResponse,
-  REPORTS_DIR,
-  PROGRESS_DIR,
+  type Credentials
 } from "@/services/online";
 import { exec } from "child_process";
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
-import { Credentials } from "@/app/online/page";
 
 export type Progress = {
   currentStep: string;
@@ -23,7 +21,7 @@ export async function GET(
   request: NextRequest
 ): Promise<NextResponse<Progress>> {
   const email: string = request.nextUrl.searchParams.get("email") || "";
-  const file = `${PROGRESS_DIR}/${email.split("@")[0]}.json`;
+  const file = `${paths.progress}/${email.split("@")[0]}.json`;
 
   if (!fs.existsSync(file)) {
     return NextResponse.json({
@@ -46,11 +44,11 @@ export async function POST(
 
   let uuid = null;
 
-  const files = fs.readdirSync(REPORTS_DIR);
+  const files = fs.readdirSync(paths.reports);
   for (const file of files) {
     if (file.includes(".json")) {
       let report = JSON.parse(
-        fs.readFileSync(`${REPORTS_DIR}/${file}`, "utf8")
+        fs.readFileSync(`${paths.reports}/${file}`, "utf8")
       );
       if (report.student.email === email) {
         uuid = file.split(".json")[0];
@@ -61,19 +59,19 @@ export async function POST(
 
   if (uuid === null) {
     uuid = generateUUID();
-    while (fs.existsSync(`${REPORTS_DIR}/${uuid}.json`)) {
+    while (fs.existsSync(`${paths.reports}/${uuid}.json`)) {
       uuid = generateUUID();
     }
   }
 
-  if (fs.existsSync(`${PROGRESS_DIR}/${email.split("@")[0]}.json`)) {
+  if (fs.existsSync(`${paths.progress}/${email.split("@")[0]}.json`)) {
     return NextResponse.json({
       uuid,
     });
   }
 
   exec(
-    `node ${NODE_SCRIPT_PATH} "${email}" "${password}" ${uuid}`,
+    `node ${paths.script} "${email}" "${password}" ${uuid}`,
     (err, stdout) => {
       if (err) {
         console.error(err);

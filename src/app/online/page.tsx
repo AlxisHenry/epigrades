@@ -4,7 +4,8 @@ import "@/styles/pages/online.scss";
 import Layout from "@/components/Layout";
 import PageTitle from "@/components/PageTitle";
 import {
-  UNREACHABLE_SERVER_ERROR,
+  type Credentials,
+  errors,
   getExecutionProgress,
   runScraper,
   saveOTPCode,
@@ -18,12 +19,6 @@ import { ScraperFinished } from "@/components/ScraperFinished";
 import { ScraperFailed } from "@/components/ScraperFailed";
 import AuthenticatorCode from "@/components/AuthenticatorCode";
 import TroubleLink from "@/components/TroubleLink";
-import { color } from "chart.js/helpers";
-
-export type Credentials = {
-  email: string;
-  password: string;
-};
 
 export default function Home() {
   const [phone, setPhone] = useState<string>("");
@@ -60,7 +55,7 @@ export default function Home() {
     const { success, error } = await validateCredentials(credentials);
     if (!success) {
       setHasError(true);
-      setError(error || UNREACHABLE_SERVER_ERROR);
+      setError(error || errors.unreachableServer);
       setIsLoading(false);
       return;
     }

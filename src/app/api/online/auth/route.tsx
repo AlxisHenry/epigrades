@@ -1,8 +1,7 @@
-import { Credentials } from "@/app/online/page";
 import {
-  AuthenticateResponse,
-  INVALID_CREDENTIALS_ERROR,
-  UNREACHABLE_SERVER_ERROR,
+  type Credentials,
+  type AuthenticateResponse,
+  errors,
   authenticateUsingEpitechAPI,
   isEpitechEmail,
 } from "@/services/online";
@@ -22,14 +21,14 @@ export async function POST(
 
   const { error } = await authenticateUsingEpitechAPI({ email, password });
 
-  if (error === INVALID_CREDENTIALS_ERROR) {
+  if (error === errors.invalidCredentials) {
     return NextResponse.json({
       error: "You provided invalid credentials.",
       success: false,
     });
-  } else if (error === UNREACHABLE_SERVER_ERROR) {
+  } else if (error === errors.unreachableServer) {
     return NextResponse.json({
-      error: UNREACHABLE_SERVER_ERROR,
+      error: errors.unreachableServer,
       success: false,
     });
   }

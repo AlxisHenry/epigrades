@@ -1,4 +1,4 @@
-import { AUTHENTICATOR_DIR, OTP_DIR, PROGRESS_DIR } from "@/services/online";
+import { paths } from "@/services/online";
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
 
@@ -10,8 +10,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<Response>
   const { email } = await request.json();
 
   let files = [
-    `${PROGRESS_DIR}/${email.split("@")[0]}.json`,
-    `${OTP_DIR}/${email.split("@")[0]}.json`
+    `${paths.progress}/${email.split("@")[0]}.json`,
+    `${paths.otp}/${email.split("@")[0]}.json`
   ];
 
   for (const file of files) {
