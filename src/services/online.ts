@@ -213,3 +213,15 @@ export const clearCache = async (email: string): Promise<void> => {
     },
   });
 };
+
+export const getAuthenticatorCodeImage = async (uuid: string): Promise<string> => {
+  const response = await fetch(`/api/online/authenticator?uuid=${uuid}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
+  const { image } = await response.json();
+  return image;
+}

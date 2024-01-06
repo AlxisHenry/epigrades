@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
+import { getAuthenticatorCodeImage } from "@/services/online";
 
 type Props = {
   uuid: string;
@@ -11,18 +12,29 @@ type Props = {
 export default function AuthenticatorCode({ uuid }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [image, setImage] = useState<string | null>(null);
+  const [timer, setTimer] = useState<number>(30);
 
   useEffect(() => {
-    fetch(`/api/online/authenticator?uuid=${uuid}`)
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.image === null) {
-          setIsLoading(false);
-          return;
+    const interval = setInterval(() => {
+      setTimer((timer) => {
+        if (timer === 0) {
+          clearInterval(interval);
+          return 0;
         }
-        setImage(res.image);
-        setIsLoading(false);
+        return timer - 1;
       });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const initialize = async () => {
+      setImage(await getAuthenticatorCodeImage(uuid));
+      setIsLoading(false);
+    };
+
+    initialize();
   }, [uuid]);
 
   return (
@@ -67,6 +79,17 @@ export default function AuthenticatorCode({ uuid }: Props) {
               alt="authenticator"
             />
           )}
+          <span
+            style={{
+              marginTop: "25px",
+              fontSize: "14px",
+              color: "#d9d9d9",
+              textAlign: "center",
+            }}
+          >
+            You have {timer} second{timer > 1 ? "s" : ""} to validate the
+            request !
+          </span>
         </div>
       </div>
     </div>
