@@ -30,45 +30,39 @@ export default function Home() {
   );
 
   const [labels, setLabels] = useState<string[]>([]);
-  const data: {
-    labels: string[];
-    datasets: {
+  const [datasets, setDatasets] = useState<
+    {
       label: string;
       data: string[];
       backgroundColor: string[];
       borderColor: string[];
       borderWidth: number;
-    }[];
-  } = {
-    labels: labels,
-    datasets: [
-      {
-        label: "Semester average",
-        data: [],
-        backgroundColor: [],
-        borderColor: [],
-        borderWidth: 1,
-      },
-    ],
-  };
+    }[]
+  >([]);
 
   useEffect(() => {
     const initialize = async () => {
       const semestersNames = await getSemestersNames();
-      setLabels(semestersNames);
+      const updatedDatasets = [];
 
-      for (const semestersName of semestersNames) {
-        let semester = await getSemester(semestersName);
-        let average = calculateSemesterGradeAverage(semester);
+      for (const semesterName of semestersNames) {
+        let semester = await getSemester(semesterName);
         let randomColor = Math.floor(Math.random() * 16777215).toString(16);
-        data.datasets[0].data.push(average);
-        data.datasets[0].backgroundColor.push(`#${randomColor}`);
-        data.datasets[0].borderColor.push(`#${randomColor}`);
+        updatedDatasets.push({
+          label: semesterName,
+          data: [calculateSemesterGradeAverage(semester)],
+          backgroundColor: [`#${randomColor}`],
+          borderColor: [`#${randomColor}`],
+          borderWidth: 1,
+        });
       }
+      
+      setLabels(semestersNames);
+      setDatasets(updatedDatasets);
     };
 
     initialize();
-  }, [data.datasets]);
+  }, []);
 
   const options = {
     responsive: true,
@@ -87,7 +81,13 @@ export default function Home() {
     <Layout>
       <PageTitle parts={["Stats 📈"]} />
       <div className="charts">
-        <Bar data={data} options={options} />
+        <Bar
+          data={{
+            labels: labels,
+            datasets: datasets,
+          }}
+          options={options}
+        />
       </div>
     </Layout>
   );
