@@ -86,7 +86,7 @@ For example, the default file is named `me.json`, so the url will be:
 You can use the API to get your grades in JSON format with the following command:
 
 ```bash
-$ curl -X GET http://localhost:3000/api/online/uuid?uuid=<uuid>
+$ curl -X GET http://localhost:3000/api/online/<uuid>
 ```
 
 #### Average

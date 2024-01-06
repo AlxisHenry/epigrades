@@ -1,5 +1,5 @@
 import { Progress } from "@/app/api/online/route";
-import { uuidResponse } from "@/app/api/online/uuid/route";
+import { uuidResponse } from "@/app/api/online/[uuid]/route";
 
 const AUTH_API_ENDPOINT: string = "https://console.bocal.org/auth/login";
 export const EMAIL_EXTENSION: string = "@epitech.eu";
@@ -151,7 +151,7 @@ export const saveOTPCode = async (
 export const retrieveGradeWithUUID = async (
   uuid: string = "me"
 ): Promise<uuidResponse> => {
-  const response = await fetch("/api/online/uuid?uuid=" + uuid, {
+  const response = await fetch(`/api/online/${uuid}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

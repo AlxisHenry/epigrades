@@ -16,7 +16,8 @@ export type uuidResponse = {
 export async function GET(
   request: NextRequest
 ): Promise<NextResponse<uuidResponse>> {
-  const uuid: string = request.nextUrl.searchParams.get("uuid") || "";
+  let url: string = request.nextUrl.toString();
+  let uuid = url.split("/").pop();
 
   let file = `${paths.reports}/${uuid}.json`;
   if (fs.existsSync(file)) {
