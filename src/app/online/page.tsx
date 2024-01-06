@@ -38,6 +38,7 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState<string>("");
   const [hasError, setHasError] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [cacheCleared, setCacheCleared] = useState<boolean>(false);
   const [credentials, setCredentials] = useState<Credentials>({
     email: "",
     password: "",
@@ -144,12 +145,15 @@ export default function Home() {
             <AuthenticatorCode uuid={uuid} />
           )}
           {isFinished && <ScraperFinished uuid={uuid} />}
-          {hasFailed && <ScraperFailed />}
+          {hasFailed && <ScraperFailed email={credentials.email} />}
         </>
       ) : (
         <>
           <form className="container" onSubmit={(e) => handleSubmit(e)}>
             {hasError && <div className="error">{error}</div>}
+            {cacheCleared && (
+              <div className="success">Cache successfully cleared.</div>
+            )}
             <label htmlFor="email">Email</label>
             <input
               type="text"
@@ -178,6 +182,7 @@ export default function Home() {
                   setHasError={setHasError}
                   setError={setError}
                   setIsLoading={setIsLoading}
+                  setCacheCleared={setCacheCleared}
                 />
                 <button
                   style={{

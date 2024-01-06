@@ -13,12 +13,14 @@ export default function TroubleLink({
   setHasError,
   setError,
   setIsLoading,
+  setCacheCleared,
   style = {},
 }: {
   credentials: Credentials;
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   setError: React.Dispatch<React.SetStateAction<string>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setCacheCleared: React.Dispatch<React.SetStateAction<boolean>>;
   style?: object;
 }) {
   return (
@@ -40,6 +42,7 @@ export default function TroubleLink({
         await clearCache(credentials.email);
 
         setIsLoading(false);
+        setCacheCleared(true);
       }}
       className="trouble"
       style={style}
