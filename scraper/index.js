@@ -11,10 +11,18 @@ if (!email || !password || !uuid) {
   process.exit(1);
 }
 
-const AUTHENTICATOR_FILE = `scraper/authenticator/${uuid}.png`;
-const otpCodeFile = `scraper/otp/${email.split("@")[0]}.json`;
-const progressFile = `scraper/progress/${email.split("@")[0]}.json`;
-const reportFile = `scraper/reports/${uuid}.json`;
+const WAITING_FOR_AUTHENTICATION_TIMEOUT = 33000;
+const files = {
+  otp: `scraper/otp/${email.split("@")[0]}.json`,
+  progress: `scraper/progress/${email.split("@")[0]}.json`,
+  report: `scraper/reports/${uuid}.json`,
+  authenticator: `scraper/authenticator/${uuid}.png`,
+};
+
+if (fs.existsSync(files.progress)) {
+  process.exit(0);
+}
+
 const ASSIGNEMENTS_URL =
   "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
 
@@ -52,14 +60,14 @@ const semestersDates = [
 ];
 
 const cleanFiles = () => {
-  if (fs.existsSync(otpCodeFile)) {
-    fs.unlinkSync(otpCodeFile);
+  if (fs.existsSync(files.otp)) {
+    fs.unlinkSync(files.otp);
   }
-  if (fs.existsSync(progressFile)) {
-    fs.unlinkSync(progressFile);
+  if (fs.existsSync(files.progress)) {
+    fs.unlinkSync(files.progress);
   }
-  if (fs.existsSync(AUTHENTICATOR_FILE)) {
-    fs.unlinkSync(AUTHENTICATOR_FILE);
+  if (fs.existsSync(files.authenticator)) {
+    fs.unlinkSync(files.authenticator);
   }
 };
 
@@ -81,7 +89,7 @@ const formatDueDate = (due_date) => {
 
 const write = (currentStep, progress, status = 0) => {
   fs.writeFileSync(
-    progressFile,
+    files.progress,
     JSON.stringify({
       currentStep,
       progress: Math.round(progress),
@@ -171,7 +179,7 @@ cleanFiles();
     await page.waitForXPath('//*[@id="submitButton"]');
     const submitButton = await page.$x('//*[@id="submitButton"]');
     await submitButton[0].click();
-  } catch (e) { }
+  } catch (e) {}
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -186,11 +194,11 @@ cleanFiles();
     phone = phone.replace(/\s/g, "").split("+")[1].split(".")[0];
     write("Waiting for 2FA code sent to " + phone, 10);
 
-    while (!fs.existsSync(otpCodeFile)) {
+    while (!fs.existsSync(files.otp)) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
-    const code = JSON.parse(fs.readFileSync(otpCodeFile, "utf8")).code;
+    const code = JSON.parse(fs.readFileSync(files.otp, "utf8")).code;
     await page.waitForXPath(
       "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div/div[3]/div/input"
     );
@@ -227,15 +235,15 @@ cleanFiles();
     write("The code has been sent", 10);
   } else {
     write("Retrieving the code needed for the authentication", 10);
-    await page.screenshot({ path: AUTHENTICATOR_FILE });
-    const image = await Jimp.read(AUTHENTICATOR_FILE);
+    await page.screenshot({ path: files.authenticator });
+    const image = await Jimp.read(files.authenticator);
     const { width, height } = image.bitmap;
     const cropWidth = 50;
-    const cropHeight = 40;
+    const cropHeight = 38;
     const cropX = width / 2 - cropWidth / 2;
     const cropY = height / 2 - cropHeight / 2 - 22;
     image.crop(cropX, cropY, cropWidth, cropHeight);
-    await image.writeAsync(AUTHENTICATOR_FILE);
+    await image.writeAsync(files.authenticator);
     write("Waiting for Microsoft Authenticator validation", 10);
   }
 
@@ -243,7 +251,7 @@ cleanFiles();
     await page.waitForXPath(
       "/html/body/div/form/div/div/div[2]/div[1]/div/div/div/div/div/div[3]/div/div[2]/div/div[3]/div[2]/div/div/div[2]/input",
       {
-        timeout: 15000,
+        timeout: WAITING_FOR_AUTHENTICATION_TIMEOUT,
       }
     );
   } catch (e) {
@@ -424,6 +432,6 @@ cleanFiles();
   }
 
   grades.created_at = now();
-  fs.writeFileSync(reportFile, JSON.stringify(grades), "utf8");
+  fs.writeFileSync(files.report, JSON.stringify(grades), "utf8");
   exit(browser);
 })();
