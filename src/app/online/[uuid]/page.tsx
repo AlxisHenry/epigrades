@@ -5,7 +5,11 @@ import Layout from "@/components/Layout";
 import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getTimeElapsed, retrieveGradeWithUUID } from "@/services/online";
+import {
+  getTimeElapsed,
+  isValidTimeElapsed,
+  retrieveGradeWithUUID,
+} from "@/services/online";
 import {
   Semester,
   calculateGlobalGradeAverage,
@@ -47,7 +51,7 @@ export default function Home() {
       }
 
       if (response.created_at) {
-        setCreatedAt(response.created_at);
+        setCreatedAt(getTimeElapsed(response.created_at));
       }
 
       setStudent(response.student.name);
@@ -69,7 +73,7 @@ export default function Home() {
       ) : (
         <>
           <PageTitle parts={[student, "Semesters"]} />
-          {createdAt && (
+          {createdAt && isValidTimeElapsed(createdAt) && (
             <p
               style={{
                 textAlign: "right",
@@ -78,7 +82,7 @@ export default function Home() {
                 marginBottom: "1rem",
               }}
             >
-              Generated {getTimeElapsed(createdAt)} ago
+              Generated {createdAt} ago
             </p>
           )}
           {semesters.filter((semester) => semester.courses.length > 0).length >

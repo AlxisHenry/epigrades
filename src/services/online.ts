@@ -203,6 +203,10 @@ export const getTimeElapsed = (date: Date | string): string => {
   );
 };
 
+export const isValidTimeElapsed = (date: string): boolean => {
+  return !date.includes("-");
+}
+
 export const clearCache = async (email: string): Promise<void> => {
   await fetch("/api/online/reset", {
     method: "POST",
