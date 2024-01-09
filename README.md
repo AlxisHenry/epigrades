@@ -13,6 +13,8 @@ This project is a more glamorous and faster **Gandalf** (the intranet of Epitech
 
 Go to [epigrades](https://epigrades.alexishenry.eu/online), enter your Microsoft Epitech credentials, give your authentication code and that's it !
 
+***Tips**: if you do not receive any notification, open your authenticator app and refresh the home screen to check for notifications.*
+
 > For more confidentiality you will have a **private token** linked to your account.
 
 ## Technical guide
