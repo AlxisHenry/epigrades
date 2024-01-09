@@ -11,7 +11,7 @@ if (!email || !password || !uuid) {
   process.exit(1);
 }
 
-const WAITING_FOR_AUTHENTICATION_TIMEOUT = 33000;
+const WAITING_FOR_AUTHENTICATION_TIMEOUT = 63000;
 const files = {
   otp: `scraper/otp/${email.split("@")[0]}.json`,
   progress: `scraper/progress/${email.split("@")[0]}.json`,
