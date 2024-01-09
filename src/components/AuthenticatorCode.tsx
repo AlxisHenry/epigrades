@@ -91,7 +91,7 @@ export default function AuthenticatorCode({ uuid }: Props) {
                 fontSize: "15px",
               }}
             >
-              If you don't receive any notification&apos; please
+              If you don&apos;t receive any notification, please
               <br /> open the app and refresh the screen
             </span>
             <span
