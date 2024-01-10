@@ -7,23 +7,36 @@ export const EMAIL_EXTENSION: string = "@epitech.eu";
 export const errors: {
   unreachableServer: string;
   invalidCredentials: string;
+  cannotClearCache: string;
 } = {
   unreachableServer: "The server is unreachable.",
   invalidCredentials: "Wrong Email or Password",
+  cannotClearCache: "Something went wrong while clearing the cache.",
 };
 
 export const paths: {
-  script: string;
+  base: string;
   reports: string;
-  progress: string;
-  otp: string;
-  authenticator: string;
+  temp: string;
 } = {
-  script: "scraper/index.js",
+  base: "scraper",
   reports: "scraper/reports",
-  progress: "scraper/progress",
-  otp: "scraper/otp",
-  authenticator: "scraper/authenticator",
+  temp: "scraper/temp",
+};
+
+export const files = {
+  script: `${paths.base}/index.js`,
+  reports: (uuid: string) => `${paths.base}/${uuid}.json`,
+  temp: {
+    otp: (uuid: string) => `${paths.temp}/otp-${uuid}.json`,
+    progress: (uuid: string) => `${paths.temp}/progress-${uuid}.json`,
+    authenticator: (uuid: string) => `${paths.temp}/authenticator-${uuid}.png`,
+    all: (uuid: string) => [
+      files.temp.otp(uuid),
+      files.temp.progress(uuid),
+      files.temp.authenticator(uuid),
+    ],
+  },
 };
 
 export const isEpitechEmail = (email: string) =>
@@ -41,6 +54,10 @@ export type ScraperResponse = {
 export type AuthenticateResponse = {
   success: boolean;
   error?: string;
+};
+
+export type CacheClearedResponse = {
+  success: boolean;
 };
 
 export const authenticateUsingEpitechAPI = async (
@@ -121,10 +138,8 @@ export const runScraper = async (
   return await response.json();
 };
 
-export const getExecutionProgress = async (
-  email: string
-): Promise<Progress> => {
-  const response = await fetch("/api/online?email=" + email, {
+export const getExecutionProgress = async (uuid: string): Promise<Progress> => {
+  const response = await fetch("/api/online?uuid=" + uuid, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -135,12 +150,12 @@ export const getExecutionProgress = async (
 };
 
 export const saveOTPCode = async (
-  email: string,
+  uuid: string,
   code: string
 ): Promise<void> => {
   await fetch("/api/online/otp", {
     method: "POST",
-    body: JSON.stringify({ email, code }),
+    body: JSON.stringify({ uuid, code }),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -205,10 +220,12 @@ export const getTimeElapsed = (date: Date | string): string => {
 
 export const isValidTimeElapsed = (date: string): boolean => {
   return !date.includes("-");
-}
+};
 
-export const clearCache = async (email: string): Promise<void> => {
-  await fetch("/api/online/reset", {
+export const clearCache = async (
+  email: string
+): Promise<CacheClearedResponse> => {
+  const response = await fetch("/api/online/reset", {
     method: "POST",
     body: JSON.stringify({ email }),
     headers: {
@@ -216,9 +233,12 @@ export const clearCache = async (email: string): Promise<void> => {
       Accept: "application/json",
     },
   });
+  return await response.json();
 };
 
-export const getAuthenticatorCodeImage = async (uuid: string): Promise<string> => {
+export const getAuthenticatorCodeImage = async (
+  uuid: string
+): Promise<string> => {
   const response = await fetch(`/api/online/authenticator?uuid=${uuid}`, {
     method: "GET",
     headers: {
@@ -228,4 +248,4 @@ export const getAuthenticatorCodeImage = async (uuid: string): Promise<string> =
   });
   const { image } = await response.json();
   return image;
-}
+};

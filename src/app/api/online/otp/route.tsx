@@ -1,4 +1,4 @@
-import { AuthenticateResponse, paths } from "@/services/online";
+import { AuthenticateResponse, files, paths } from "@/services/online";
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
 
@@ -6,14 +6,14 @@ export async function POST(
   request: NextRequest
 ): Promise<NextResponse<AuthenticateResponse>> {
   const {
-    email,
+    uuid,
     code,
   }: {
-    email: string;
+    uuid: string;
     code: string;
   } = await request.json();
 
-  const file = `${paths.otp}/${email.split("@")[0]}.json`;
+  const file = files.temp.otp(uuid);
 
   if (code.length !== 6) {
     return NextResponse.json({

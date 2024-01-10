@@ -39,7 +39,16 @@ export default function TroubleLink({
 
         setHasError(false);
 
-        await clearCache(credentials.email);
+        const { success: cacheClearedStatus } = await clearCache(
+          credentials.email
+        );
+
+        if (!cacheClearedStatus) {
+          setHasError(true);
+          setError(errors.cannotClearCache);
+          setIsLoading(false);
+          return;
+        }
 
         setIsLoading(false);
         setCacheCleared(true);

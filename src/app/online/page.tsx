@@ -69,7 +69,7 @@ export default function Home() {
       setTimeout(() => {
         const steps: string[] = [];
         let checkExecutionProgress = setInterval(async () => {
-          let state = await getExecutionProgress(credentials.email);
+          let state = await getExecutionProgress(uuid);
           if (!steps.includes(state.currentStep)) {
             setProgress(state.progress);
             setCurrentStep(state.currentStep);
@@ -135,7 +135,7 @@ export default function Home() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 setIsSavingOTPCode(true);
-                await saveOTPCode(credentials.email, code);
+                await saveOTPCode(uuid, code);
                 setIsSavingOTPCode(false);
                 setIsAskingForOTPCode(false);
               }}
@@ -145,7 +145,7 @@ export default function Home() {
             <AuthenticatorCode uuid={uuid} />
           )}
           {isFinished && <ScraperFinished uuid={uuid} />}
-          {hasFailed && <ScraperFailed email={credentials.email} />}
+          {hasFailed && <ScraperFailed uuid={uuid} />}
         </>
       ) : (
         <>

@@ -11,12 +11,13 @@ if (!email || !password || !uuid) {
   process.exit(1);
 }
 
+const TEMP_DIR = "scraper/temp";
 const WAITING_FOR_AUTHENTICATION_TIMEOUT = 63000;
 const files = {
-  otp: `scraper/otp/${email.split("@")[0]}.json`,
-  progress: `scraper/progress/${email.split("@")[0]}.json`,
+  progress: `${TEMP_DIR}/progress-${uuid}.json`,
+  otp: `${TEMP_DIR}/otp-${uuid}.json`,
+  authenticator: `${TEMP_DIR}/authenticator-${uuid}.png`,
   report: `scraper/reports/${uuid}.json`,
-  authenticator: `scraper/authenticator/${uuid}.png`,
 };
 
 if (fs.existsSync(files.progress)) {

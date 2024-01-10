@@ -1,20 +1,32 @@
-import { paths } from "@/services/online";
+import { type CacheClearedResponse, files, paths } from "@/services/online";
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
 
-type Response = {
-  success: boolean;
-};
-
-export async function POST(request: NextRequest): Promise<NextResponse<Response>> {
+export async function POST(
+  request: NextRequest
+): Promise<NextResponse<CacheClearedResponse>> {
   const { email } = await request.json();
 
-  let files = [
-    `${paths.progress}/${email.split("@")[0]}.json`,
-    `${paths.otp}/${email.split("@")[0]}.json`
-  ];
+  let uuid = null;
+  for (const report of fs.readdirSync(paths.reports)) {
+    if (report.includes(".json")) {
+      let reportJson = JSON.parse(
+        fs.readFileSync(`${paths.reports}/${report}`, "utf8")
+      );
+      if (reportJson.student.email === email) {
+        uuid = report.split(".json")[0];
+        break;
+      }
+    }
+  }
 
-  for (const file of files) {
+  if (!uuid) {
+    return NextResponse.json({
+      success: false,
+    });
+  }
+
+  for (const file of [files.reports(uuid), ...files.temp.all(uuid)]) {
     if (fs.existsSync(file)) {
       fs.unlinkSync(file);
     }

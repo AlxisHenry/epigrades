@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
-import { paths } from "@/services/online";
+import { files } from "@/services/online";
 
 export type AuthenticatorImage = {
   image: string | null;
@@ -13,7 +13,7 @@ export async function GET(
   request: NextRequest
 ): Promise<NextResponse<AuthenticatorImage>> {
   const uuid: string = request.nextUrl.searchParams.get("uuid") || "";
-  const file = `${paths.authenticator}/${uuid}.png`;
+  const file = files.temp.authenticator(uuid);
 
   if (fs.existsSync(file)) {
     return NextResponse.json({
