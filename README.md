@@ -64,12 +64,12 @@ When you run the script, you will be asked for an OTP code, which you should nor
 You just need to run the `otp.sh` script using the following command:
 
 ```bash
-$ bash scraper/otp.sh <email> <code>
+$ bash scraper/otp.sh <uuid> <code>
 ```
 
 ##### Using Microsoft Authenticator
 
-When you run the script, your A2F app will ask for a code of two digits, you can retrieve this code in the `scraper/authenticator` folder, in `png` format in a file named `<uuid>.png`.
+When you run the script, your A2F app will ask for a code of two digits, you can retrieve this code in the `scraper/temp` folder, in `png` format in a file named `authenticator-<uuid>.png`.
 
 #### Access to your grades
 
