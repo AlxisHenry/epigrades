@@ -199,7 +199,7 @@ cleanFiles();
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
-    const code = JSON.parse(fs.readFileSync(files.otp, "utf8")).code;
+    let code = JSON.parse(fs.readFileSync(files.otp, "utf8")).code;
     await page.waitForXPath(
       "/html/body/div/form[1]/div/div/div[2]/div[1]/div/div/div/div/div/div[2]/div[2]/div/div[2]/div/div[3]/div/div[3]/div/input"
     );

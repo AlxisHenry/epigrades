@@ -1,6 +1,6 @@
 import { clearCache } from "@/services/online";
 
-export const ScraperFailed = ({ uuid }: { uuid: string }) => {
+export const ScraperFailed = ({ email }: { email: string }) => {
   return (
     <div className="modal">
       <div
@@ -22,7 +22,7 @@ export const ScraperFailed = ({ uuid }: { uuid: string }) => {
           }}
           type="submit"
           onClick={async () => {
-            await clearCache(uuid);
+            await clearCache(email);
             location.href = "/online";
           }}
         >

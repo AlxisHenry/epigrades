@@ -23,8 +23,6 @@ export async function GET(
   const uuid: string = request.nextUrl.searchParams.get("uuid") || "";
   const file = files.temp.progress(uuid);
 
-  console.log(file);
-
   if (!fs.existsSync(file)) {
     return NextResponse.json({
       currentStep: "Waiting for execution",
@@ -77,8 +75,6 @@ export async function POST(
       uuid,
     });
   }
-
-  console.log(`node ${files.script} "${email}" "${password}" "${uuid}"`)
 
   exec(
     `node ${files.script} "${email}" "${password}" "${uuid}"`,

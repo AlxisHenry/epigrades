@@ -145,7 +145,7 @@ export default function Home() {
             <AuthenticatorCode uuid={uuid} />
           )}
           {isFinished && <ScraperFinished uuid={uuid} />}
-          {hasFailed && <ScraperFailed uuid={uuid} />}
+          {hasFailed && <ScraperFailed email={credentials.email} />}
         </>
       ) : (
         <>
