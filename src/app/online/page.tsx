@@ -13,15 +13,15 @@ import {
   isStep,
   steps,
 } from "@/services/online";
-import { useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import Progress from "@/components/Progress";
 import OtpForm from "@/components/OtpForm";
 import Spinner from "@/components/Spinner";
 import { ScraperFinished } from "@/components/ScraperFinished";
 import { ScraperFailed } from "@/components/ScraperFailed";
 import AuthenticatorCode from "@/components/AuthenticatorCode";
-import TroubleLink from "@/components/TroubleLink";
 import { useSearchParams } from "next/navigation";
+import OnlineForm from "@/components/OnlineForm";
 
 export default function Home() {
   const params = useSearchParams();
@@ -34,7 +34,6 @@ export default function Home() {
   const [code, setCode] = useState<string>("");
   const [isSavingOTPCode, setIsSavingOTPCode] = useState<boolean>(false);
   const [uuid, setUuid] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasFailed, setHasFailed] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -45,7 +44,7 @@ export default function Home() {
   const [error, setError] = useState<string>("");
   const [cacheCleared, setCacheCleared] = useState<boolean>(false);
   const [credentials, setCredentials] = useState<Credentials>({
-    email: "",
+    email: params.get("email") ?? "",
     password: "",
   });
 
@@ -116,11 +115,6 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    setCredentials({ ...credentials, email: params.get("email") ?? "" });
-    setIsLoading(false);
-  }, [credentials, params]);
-
   return (
     <Layout>
       <PageTitle parts={["Epigrades 🎓"]} />
@@ -164,57 +158,22 @@ export default function Home() {
           {isFinished && <ScraperFinished uuid={uuid} />}
           {hasFailed && <ScraperFailed email={credentials.email} />}
         </>
-      ) : isLoading ? (
-        <Spinner />
       ) : (
-        <form className="container" onSubmit={(e) => handleSubmit(e)}>
-          {hasError && <div className="error">{error}</div>}
-          {cacheCleared && (
-            <div className="success">Cache successfully cleared.</div>
-          )}
-          <label htmlFor="email">Email</label>
-          <input
-            type="text"
-            name="email"
-            defaultValue={credentials.email}
-            placeholder="test@epitech.eu"
-            onChange={(e) => handleChanges(e)}
+        <Suspense fallback={<Spinner />}>
+          <OnlineForm
+            credentials={credentials}
+            setHasError={setHasError}
+            setError={setError}
+            setCacheCleared={setCacheCleared}
+            handleSubmit={handleSubmit}
+            error={error}
+            hasError={hasError}
+            cacheCleared={cacheCleared}
+            isSubmitting={isSubmitting}
+            setIsSubmitting={setIsSubmitting}
+            handleChanges={handleChanges}
           />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Your password"
-            onChange={(e) => handleChanges(e)}
-          />
-          {isSubmitting ? (
-            <Spinner
-              customCss={{
-                marginTop: "20px",
-                marginLeft: "0",
-              }}
-            />
-          ) : (
-            <>
-              <TroubleLink
-                credentials={credentials}
-                setHasError={setHasError}
-                setError={setError}
-                setIsLoading={setIsSubmitting}
-                setCacheCleared={setCacheCleared}
-              />
-              <button
-                style={{
-                  maxWidth: "250px",
-                  marginTop: "10px",
-                }}
-                type="submit"
-              >
-                Let&apos;s go
-              </button>
-            </>
-          )}
-        </form>
+        </Suspense>
       )}
     </Layout>
   );
