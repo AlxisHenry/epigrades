@@ -88,6 +88,7 @@ export default function Home() {
               isStep(state.currentStep, steps.twoFactorAuthenticationCodeSent)
             ) {
               setIsAskingForOTPCode(false);
+              setIsSavingOTPCode(false);
             } else if (isStep(state.currentStep, steps.reportGenerated)) {
               clearInterval(checkExecutionProgress);
               setTimeout(() => {
@@ -154,7 +155,6 @@ export default function Home() {
                 e.preventDefault();
                 setIsSavingOTPCode(true);
                 await saveOTPCode(uuid, code);
-                setIsSavingOTPCode(false);
               }}
             />
           )}
