@@ -70,12 +70,6 @@ export async function POST(
     }
   }
 
-  if (fs.existsSync(files.reports(currentUuid))) {
-    return NextResponse.json({
-      uuid: currentUuid,
-    });
-  }
-
   exec(
     `node ${files.script} "${email}" "${password}" ${currentUuid}`,
     (err, stdout) => {
