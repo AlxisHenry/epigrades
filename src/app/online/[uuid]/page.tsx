@@ -4,12 +4,9 @@ import "@/styles/pages/online.scss";
 import Layout from "@/components/Layout";
 import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
-import { redirect, useParams } from "next/navigation";
-import {
-  getTimeElapsed,
-  isValidTimeElapsed,
-  getReport,
-} from "@/services/online";
+import { useParams } from "next/navigation";
+import moment from "moment";
+import { getReport } from "@/services/online";
 import {
   Semester,
   calculateGlobalGradeAverage,
@@ -59,7 +56,7 @@ export default function Home() {
       }
 
       if (response.created_at) {
-        setCreatedAt(getTimeElapsed(response.created_at));
+        setCreatedAt(moment(response.created_at).fromNow());
       }
 
       setStudent(response.student);
@@ -88,7 +85,7 @@ export default function Home() {
               gap: "1rem",
             }}
           >
-            {createdAt && isValidTimeElapsed(createdAt) && (
+            {createdAt && (
               <p
                 style={{
                   fontSize: "1rem",
@@ -96,7 +93,7 @@ export default function Home() {
                   marginBottom: "1rem",
                 }}
               >
-                Generated {createdAt} ago
+                Generated {createdAt}
               </p>
             )}
             <div
