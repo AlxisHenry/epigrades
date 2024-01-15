@@ -59,7 +59,8 @@
         }
         &.grade-badge--C,
         &.grade-badge--D,
-        &.grade-badge--E {
+        &.grade-badge--E,
+        &.grade-badge--Echec {
           color: var(--grade-danger);
         }
       }
