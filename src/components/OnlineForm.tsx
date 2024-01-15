@@ -56,7 +56,7 @@ export default function OnlineForm({
         <Spinner
           customCss={{
             marginTop: "20px",
-            marginLeft: "0",
+            margin: "auto",
           }}
         />
       ) : (
