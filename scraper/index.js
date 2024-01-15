@@ -27,6 +27,39 @@ if (fs.existsSync(files.progress)) {
 const ASSIGNEMENTS_URL =
   "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
 
+const semestersDates = [
+  {
+    name: "T5",
+    start: "2023-09-12",
+    end: "2024-02-12",
+  },
+  {
+    name: "T6",
+    start: "2024-02-12",
+    end: "2024-08-12",
+  },
+  {
+    name: "T7",
+    start: "2024-08-12",
+    end: "2025-02-12",
+  },
+  {
+    name: "T8",
+    start: "2025-02-12",
+    end: "2025-08-12",
+  },
+  {
+    name: "T9",
+    start: "2025-08-12",
+    end: "2026-02-12",
+  },
+  {
+    name: "T10",
+    start: "2026-02-12",
+    end: "2026-08-12",
+  },
+];
+
 const cleanFiles = () => {
   if (fs.existsSync(files.otp)) {
     fs.unlinkSync(files.otp);
@@ -258,6 +291,7 @@ cleanFiles();
     created_at: null,
   };
 
+  // For each course we retrieve the assignments
   for (let i = 0; i < coursesCount; i++) {
     const course = courses[i];
     const element = await course.$("a");
@@ -284,7 +318,19 @@ cleanFiles();
       );
 
       if (semesterName === null) {
-        semesterName = "Global";
+        for (const semesterDate of semestersDates) {
+          if (
+            new Date(semesterDate.start) <= new Date() &&
+            new Date(semesterDate.end) >= new Date()
+          ) {
+            semesterName = semesterDate.name;
+            break;
+          }
+        }
+      }
+
+      if (semesterName === null) {
+        semesterName = "-";
       }
 
       const table = await coursePage.$x(
