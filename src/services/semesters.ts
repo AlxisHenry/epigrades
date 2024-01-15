@@ -1,6 +1,6 @@
 import { sortCourses, type Course } from "./courses";
 import { isGradedDay } from "./days";
-import { retrieveGradeWithUUID } from "./online";
+import { getReport } from "./online";
 
 export type Semester = {
   name: string;
@@ -10,7 +10,7 @@ export type Semester = {
 
 export function getSemesters(): Promise<Semester[]> {
   return new Promise(async (resolve, reject) => {
-    const response = await retrieveGradeWithUUID();
+    const response = await getReport();
     resolve(sortSemesters(response?.semesters || []));
   });
 }

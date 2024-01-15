@@ -29,7 +29,7 @@ import {
 } from "chart.js";
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
-import { retrieveGradeWithUUID } from "@/services/online";
+import { getReport } from "@/services/online";
 import { NotFound } from "@/components/NotFound";
 
 type Params = {
@@ -64,7 +64,7 @@ export default function Home() {
 
   useEffect(() => {
     (async () => {
-      const response = await retrieveGradeWithUUID(uuid);
+      const response = await getReport(uuid);
       if (!response.success || !response.semesters) {
         return;
       }

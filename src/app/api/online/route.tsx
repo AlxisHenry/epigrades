@@ -1,6 +1,6 @@
 import {
   paths,
-  generateUUID,
+  uuid as uuid,
   type ScraperResponse,
   type Credentials,
   files,
@@ -49,7 +49,7 @@ export async function POST(
     throw new Error("You provided invalid credentials.");
   }
 
-  let uuid = null;
+  let currentUuid = null;
 
   for (const file of fs.readdirSync(paths.reports)) {
     if (file.includes(".json")) {
@@ -57,27 +57,27 @@ export async function POST(
         fs.readFileSync(`${paths.reports}/${file}`, "utf8")
       );
       if (report.student.email === email) {
-        uuid = file.split(".json")[0];
+        currentUuid = file.split(".json")[0];
         break;
       }
     }
   }
 
-  if (uuid === null) {
-    uuid = generateUUID();
-    while (fs.existsSync(files.reports(uuid))) {
-      uuid = generateUUID();
+  if (currentUuid === null) {
+    currentUuid = uuid();
+    while (fs.existsSync(files.reports(currentUuid))) {
+      currentUuid = uuid();
     }
   }
 
-  if (fs.existsSync(files.reports(uuid))) {
+  if (fs.existsSync(files.reports(currentUuid))) {
     return NextResponse.json({
-      uuid,
+      uuid: currentUuid,
     });
   }
 
   exec(
-    `node ${files.script} "${email}" "${password}" "${uuid}"`,
+    `node ${files.script} "${email}" "${password}" ${currentUuid}`,
     (err, stdout) => {
       if (err) {
         console.error(err);
@@ -88,6 +88,6 @@ export async function POST(
   );
 
   return NextResponse.json({
-    uuid,
+    uuid: currentUuid,
   });
 }

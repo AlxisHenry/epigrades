@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 import {
   getTimeElapsed,
   isValidTimeElapsed,
-  retrieveGradeWithUUID,
+  getReport,
 } from "@/services/online";
 import {
   Semester,
@@ -44,7 +44,7 @@ export default function Home() {
   useEffect(() => {
     setIsLoading(true);
     (async () => {
-      const response = await retrieveGradeWithUUID(uuid);
+      const response = await getReport(uuid);
       if (!response.success || !response.semesters || !response.student) {
         setIsLoading(false);
         return;

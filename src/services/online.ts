@@ -163,7 +163,7 @@ export const saveOTPCode = async (
   });
 };
 
-export const retrieveGradeWithUUID = async (
+export const getReport = async (
   uuid: string = "me"
 ): Promise<uuidResponse> => {
   const response = await fetch(`/api/online/${uuid}`, {
@@ -176,7 +176,7 @@ export const retrieveGradeWithUUID = async (
   return await response.json();
 };
 
-export const generateUUID = (): string => {
+export const uuid = (): string => {
   return crypto.randomUUID() + "-" + Date.now();
 };
 
