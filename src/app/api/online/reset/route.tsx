@@ -26,7 +26,7 @@ export async function POST(
     });
   }
 
-  for (const file of [files.reports(uuid), ...files.temp.all(uuid)]) {
+  for (const file of files.temp.all(uuid)) {
     if (fs.existsSync(file)) {
       fs.unlinkSync(file);
     }
