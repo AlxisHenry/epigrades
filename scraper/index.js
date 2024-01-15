@@ -126,7 +126,7 @@ const exit = (browser) => {
     await browser.close();
     cleanFiles();
     process.exit(0);
-  }, 1000);
+  }, 2000);
 };
 
 cleanFiles();
@@ -424,8 +424,6 @@ cleanFiles();
 
   write("Retrieving your GPA", 95);
 
-  write("Generating the report", 100, 1);
-
   grades.semesters = grades.semesters.filter((s) => s.courses.length > 0);
 
   for (const semester of grades.semesters) {
@@ -434,5 +432,7 @@ cleanFiles();
 
   grades.created_at = now();
   fs.writeFileSync(files.report, JSON.stringify(grades), "utf8");
+
+  write("Report generated", 100, 1);
   exit(browser);
 })();

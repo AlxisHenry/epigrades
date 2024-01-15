@@ -39,6 +39,14 @@ export const files = {
   },
 };
 
+export const steps = {
+  waitingForTwoFactorAuthentication: "Waiting for 2FA",
+  twoFactorAuthenticationCodeSent: "The code has been sent",
+  waitingForMicrosoftAuthenticatorValidation: "Waiting for Microsoft Authenticator validation",
+  authenticationFailed: "Authentication failed",
+  reportGenerated: "Report generated",
+}
+
 export const isEpitechEmail = (email: string) =>
   new RegExp(`^[a-zA-Z0-9._-]+${EMAIL_EXTENSION}$`, "i").test(email);
 

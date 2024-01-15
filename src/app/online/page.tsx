@@ -10,6 +10,7 @@ import {
   runScraper,
   saveOTPCode,
   validateCredentials,
+  steps,
 } from "@/services/online";
 import { useEffect, useState } from "react";
 import Progress from "@/components/Progress";
@@ -70,35 +71,42 @@ export default function Home() {
       setUuid(uuid);
       setIsRunning(true);
       setTimeout(() => {
-        const steps: string[] = [];
+        const completedSteps: string[] = [];
         let checkExecutionProgress = setInterval(async () => {
           let state = await getExecutionProgress(uuid);
-          if (!steps.includes(state.currentStep)) {
+          if (!completedSteps.includes(state.currentStep)) {
             setProgress(state.progress);
             setCurrentStep(state.currentStep);
-            if (state.currentStep.includes("Waiting for 2FA")) {
-              setIsAskingForOTPCode(true);
-              let parts = state.currentStep.split(" ");
-              setPhone(`+${parts[parts.length - 1]}`);
+            switch (state.currentStep) {
+              case steps.waitingForTwoFactorAuthentication:
+                setIsAskingForOTPCode(true);
+                let parts = state.currentStep.split(" ");
+                setPhone(`+${parts[parts.length - 1]}`);
+                break;
+              case steps.waitingForMicrosoftAuthenticatorValidation:
+                setIsAskingForAuthenticatorValidation(true);
+                break;
+              case steps.twoFactorAuthenticationCodeSent:
+                setIsAskingForOTPCode(false);
+                break;
+              case steps.reportGenerated:
+                clearInterval(checkExecutionProgress);
+                setTimeout(() => {
+                  setIsFinished(true);
+                  setIsSubmitting(false);
+                }, 1000);
+                break;
+              case steps.authenticationFailed:
+                clearInterval(checkExecutionProgress);
+                setTimeout(() => {
+                  setHasFailed(true);
+                  setIsSubmitting(false);
+                }, 1000);
+                break;
+              default:
+                break;
             }
-            if (state.currentStep.includes("report")) {
-              clearInterval(checkExecutionProgress);
-              setTimeout(() => {
-                setIsFinished(true);
-                setIsSubmitting(false);
-              }, 1000);
-            }
-            if (state.currentStep.includes("Authentication failed")) {
-              clearInterval(checkExecutionProgress);
-              setTimeout(() => {
-                setHasFailed(true);
-                setIsSubmitting(false);
-              }, 1000);
-            }
-            setIsAskingForAuthenticatorValidation(
-              state.currentStep.includes("Microsoft Authenticator")
-            );
-            steps.push(state.currentStep);
+            completedSteps.push(state.currentStep);
           }
         }, 800);
       }, 100);
@@ -145,7 +153,6 @@ export default function Home() {
                 setIsSavingOTPCode(true);
                 await saveOTPCode(uuid, code);
                 setIsSavingOTPCode(false);
-                setIsAskingForOTPCode(false);
               }}
             />
           )}
