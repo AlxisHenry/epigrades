@@ -26,7 +26,7 @@ export const paths: {
 
 export const files = {
   script: `${paths.base}/index.js`,
-  reports: (uuid: string) => `${paths.base}/${uuid}.json`,
+  reports: (uuid: string) => `${paths.base}/reports/${uuid}.json`,
   temp: {
     otp: (uuid: string) => `${paths.temp}/otp-${uuid}.json`,
     progress: (uuid: string) => `${paths.temp}/progress-${uuid}.json`,

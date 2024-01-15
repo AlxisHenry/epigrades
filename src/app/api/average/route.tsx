@@ -11,6 +11,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   let semesters: Semester[] = [];
 
   let file = files.reports(uuid);
+
   if (fs.existsSync(file)) {
     let grade = JSON.parse(fs.readFileSync(file, "utf8"));
     semesters = grade.semesters;
