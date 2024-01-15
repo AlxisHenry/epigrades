@@ -164,12 +164,13 @@ cleanFiles();
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  const hasBrowserError = await page.$x('//*[@id="debugging"]');
-
-  if (hasBrowserError.length > 0) {
-    write("Authentication failed", 5, 1);
-    exit(browser);
-  }
+  try {
+    const hasBrowserError = await page.$x('//*[@id="debugging"]');
+    if (hasBrowserError.length > 0) {
+      write("Authentication failed", 5, 1);
+      exit(browser);
+    }
+  } catch (e) {}
 
   try {
     await page.waitForXPath('//*[@id="passwordInput"]', {
