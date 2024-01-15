@@ -4,7 +4,7 @@ import {
   calculateGlobalGradeAverage,
   getSemesters,
 } from "@/services/semesters";
-import { files, paths } from "@/services/online";
+import { files } from "@/services/online";
 import fs from "fs";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {

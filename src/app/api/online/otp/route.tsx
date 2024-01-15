@@ -1,4 +1,4 @@
-import { AuthenticateResponse, files, paths } from "@/services/online";
+import { files } from "@/services/online";
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
 
