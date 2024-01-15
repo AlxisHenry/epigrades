@@ -116,7 +116,7 @@ export default function Home() {
   useEffect(() => {
     setCredentials({ ...credentials, email: params.get("email") ?? "" });
     setIsLoading(false);
-  }, []);
+  });
 
   return (
     <Layout>
