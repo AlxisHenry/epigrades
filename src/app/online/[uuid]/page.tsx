@@ -108,26 +108,23 @@ export default function Home() {
               <SyncIcon size={24} isSyncing={isSyncing} />
             </div>
           </div>
-          {semesters.filter((semester) => semester.courses.length > 0).length >
-          1 ? (
-            <div
-              style={{
-                marginTop: "2rem",
-                marginBottom: "2rem",
-              }}
-            >
-              <Cards className="is-semester-cards">
-                <Card
-                  title="Global Average"
-                  subtitle={calculateGlobalGradeAverage(semesters)}
-                />
-                <Card
-                  title="Assignments"
-                  subtitle={`${getGlobalAssignementsCount(semesters)}`}
-                />
-              </Cards>
-            </div>
-          ) : null}
+          <div
+            style={{
+              marginTop: "2rem",
+              marginBottom: "2rem",
+            }}
+          >
+            <Cards className="is-semester-cards">
+              <Card
+                title="Global Average"
+                subtitle={calculateGlobalGradeAverage(semesters)}
+              />
+              <Card
+                title="Assignments"
+                subtitle={`${getGlobalAssignementsCount(semesters)}`}
+              />
+            </Cards>
+          </div>
           {semesters.map((semester) => {
             return semester.courses.length > 0 ? (
               <div
@@ -137,16 +134,6 @@ export default function Home() {
                 }}
               >
                 <SemesterTitle title={semester.name} />
-                <Cards className="is-semester-cards">
-                  <Card
-                    title="Average"
-                    subtitle={calculateSemesterGradeAverage(semester)}
-                  />
-                  <Card
-                    title="Assignments"
-                    subtitle={getSemesterAssignementsCount(semester).toString()}
-                  />
-                </Cards>
                 {sortCourses(semester.courses).map((course, index) => {
                   return (
                     <Course
