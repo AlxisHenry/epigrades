@@ -176,7 +176,7 @@ export default function Home() {
           <input
             type="text"
             name="email"
-            value={credentials.email}
+            defaultValue={credentials.email}
             placeholder="test@epitech.eu"
             onChange={(e) => handleChanges(e)}
           />
