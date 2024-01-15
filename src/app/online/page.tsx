@@ -11,7 +11,7 @@ import {
   saveOTPCode,
   validateCredentials,
 } from "@/services/online";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Progress from "@/components/Progress";
 import OtpForm from "@/components/OtpForm";
 import Spinner from "@/components/Spinner";
@@ -19,8 +19,10 @@ import { ScraperFinished } from "@/components/ScraperFinished";
 import { ScraperFailed } from "@/components/ScraperFailed";
 import AuthenticatorCode from "@/components/AuthenticatorCode";
 import TroubleLink from "@/components/TroubleLink";
+import { useSearchParams } from "next/navigation";
 
 export default function Home() {
+  const params = useSearchParams();
   const [phone, setPhone] = useState<string>("");
   const [isAskingForOTPCode, setIsAskingForOTPCode] = useState<boolean>(false);
   const [
@@ -30,7 +32,8 @@ export default function Home() {
   const [code, setCode] = useState<string>("");
   const [isSavingOTPCode, setIsSavingOTPCode] = useState<boolean>(false);
   const [uuid, setUuid] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasFailed, setHasFailed] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isFinished, setIsFinished] = useState<boolean>(false);
@@ -52,12 +55,12 @@ export default function Home() {
     e.preventDefault();
     setIsRunning(false);
     setIsFinished(false);
-    setIsLoading(true);
+    setIsSubmitting(true);
     const { success, error } = await validateCredentials(credentials);
     if (!success) {
       setHasError(true);
       setError(error || errors.unreachableServer);
-      setIsLoading(false);
+      setIsSubmitting(false);
       return;
     }
 
@@ -82,14 +85,14 @@ export default function Home() {
               clearInterval(checkExecutionProgress);
               setTimeout(() => {
                 setIsFinished(true);
-                setIsLoading(false);
+                setIsSubmitting(false);
               }, 1000);
             }
             if (state.currentStep.includes("Authentication failed")) {
               clearInterval(checkExecutionProgress);
               setTimeout(() => {
                 setHasFailed(true);
-                setIsLoading(false);
+                setIsSubmitting(false);
               }, 1000);
             }
             setIsAskingForAuthenticatorValidation(
@@ -101,6 +104,11 @@ export default function Home() {
       }, 100);
     }
   };
+
+  useEffect(() => {
+    setCredentials({ ...credentials, email: params.get("email") ?? "" });
+    setIsLoading(false);
+  }, []);
 
   return (
     <Layout>
@@ -147,56 +155,57 @@ export default function Home() {
           {isFinished && <ScraperFinished uuid={uuid} />}
           {hasFailed && <ScraperFailed email={credentials.email} />}
         </>
+      ) : isLoading ? (
+        <Spinner />
       ) : (
-        <>
-          <form className="container" onSubmit={(e) => handleSubmit(e)}>
-            {hasError && <div className="error">{error}</div>}
-            {cacheCleared && (
-              <div className="success">Cache successfully cleared.</div>
-            )}
-            <label htmlFor="email">Email</label>
-            <input
-              type="text"
-              name="email"
-              placeholder="test@epitech.eu"
-              onChange={(e) => handleChanges(e)}
+        <form className="container" onSubmit={(e) => handleSubmit(e)}>
+          {hasError && <div className="error">{error}</div>}
+          {cacheCleared && (
+            <div className="success">Cache successfully cleared.</div>
+          )}
+          <label htmlFor="email">Email</label>
+          <input
+            type="text"
+            name="email"
+            value={credentials.email}
+            placeholder="test@epitech.eu"
+            onChange={(e) => handleChanges(e)}
+          />
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Your password"
+            onChange={(e) => handleChanges(e)}
+          />
+          {isSubmitting ? (
+            <Spinner
+              customCss={{
+                marginTop: "20px",
+                marginLeft: "0",
+              }}
             />
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Your password"
-              onChange={(e) => handleChanges(e)}
-            />
-            {isLoading ? (
-              <Spinner
-                customCss={{
-                  marginTop: "20px",
-                  marginLeft: "0",
-                }}
+          ) : (
+            <>
+              <TroubleLink
+                credentials={credentials}
+                setHasError={setHasError}
+                setError={setError}
+                setIsLoading={setIsSubmitting}
+                setCacheCleared={setCacheCleared}
               />
-            ) : (
-              <>
-                <TroubleLink
-                  credentials={credentials}
-                  setHasError={setHasError}
-                  setError={setError}
-                  setIsLoading={setIsLoading}
-                  setCacheCleared={setCacheCleared}
-                />
-                <button
-                  style={{
-                    maxWidth: "250px",
-                    marginTop: "10px",
-                  }}
-                  type="submit"
-                >
-                  Let&apos;s go
-                </button>
-              </>
-            )}
-          </form>
-        </>
+              <button
+                style={{
+                  maxWidth: "250px",
+                  marginTop: "10px",
+                }}
+                type="submit"
+              >
+                Let&apos;s go
+              </button>
+            </>
+          )}
+        </form>
       )}
     </Layout>
   );

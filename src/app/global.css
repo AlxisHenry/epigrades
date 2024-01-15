@@ -12,6 +12,7 @@
   --grade-success: #4caf50;
   --grade-warning: #ff9800;
   --grade-danger: #f44336;
+  --grey: #888;
 }
 
 * {
@@ -179,5 +180,29 @@ button:disabled:focus {
   button {
     max-width: 100%!important;
     width: 100%!important;
+  }
+}
+
+.sync {
+  fill: var(--grey);
+  transition: all 0.2s ease-in-out;
+}
+
+.sync:hover {
+  fill: var(--contrast-secondary);
+  cursor: pointer;
+}
+
+.sync.active {
+  fill: var(--contrast-secondary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

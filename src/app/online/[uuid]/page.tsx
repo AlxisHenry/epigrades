@@ -4,7 +4,7 @@ import "@/styles/pages/online.scss";
 import Layout from "@/components/Layout";
 import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import {
   getTimeElapsed,
   isValidTimeElapsed,
@@ -27,6 +27,7 @@ import {
 import { sortCourses } from "@/services/courses";
 import { NotFound } from "@/components/NotFound";
 import Loading from "@/components/Loading";
+import SyncIcon from "@/components/Icons/Sync";
 
 type Params = {
   uuid: string;
@@ -35,8 +36,15 @@ type Params = {
 export default function Home() {
   const params: Params = useParams();
   const uuid = params.uuid;
-  const [student, setStudent] = useState<string>("");
+  const [student, setStudent] = useState<{
+    name: string;
+    email: string;
+  }>({
+    name: "",
+    email: "",
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [semesters, setSemesters] = useState<Semester[] | null>(null);
   const [createdAt, setCreatedAt] = useState<null | string>(null);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number>(-1);
@@ -54,7 +62,7 @@ export default function Home() {
         setCreatedAt(getTimeElapsed(response.created_at));
       }
 
-      setStudent(response.student.name);
+      setStudent(response.student);
       setSemesters(sortSemesters(response.semesters));
       setIsLoading(false);
     })();
@@ -72,19 +80,37 @@ export default function Home() {
         <NotFound />
       ) : (
         <>
-          <PageTitle parts={[student, "Semesters"]} />
-          {createdAt && isValidTimeElapsed(createdAt) && (
-            <p
-              style={{
-                textAlign: "right",
-                fontSize: "1rem",
-                color: "#888",
-                marginBottom: "1rem",
+          <PageTitle parts={[student.name, "Semesters"]} />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "1rem",
+            }}
+          >
+            {createdAt && isValidTimeElapsed(createdAt) && (
+              <p
+                style={{
+                  fontSize: "1rem",
+                  color: "#888",
+                  marginBottom: "1rem",
+                }}
+              >
+                Generated {createdAt} ago
+              </p>
+            )}
+            <div
+              onClick={() => {
+                setIsSyncing(true);
+                setTimeout(() => {
+                  setIsSyncing(false);
+                  location.href = encodeURI(`/online?email=${student.email}`);
+                }, 1000);
               }}
             >
-              Generated {createdAt} ago
-            </p>
-          )}
+              <SyncIcon size={24} isSyncing={isSyncing} />
+            </div>
+          </div>
           {semesters.filter((semester) => semester.courses.length > 0).length >
           1 ? (
             <div
