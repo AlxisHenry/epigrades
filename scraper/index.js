@@ -426,10 +426,10 @@ cleanFiles();
 
   write("Generating the report", 100, 1);
 
+  grades.semesters = grades.semesters.filter((s) => s.courses.length > 0);
+
   for (const semester of grades.semesters) {
-    if (semester.courses.length > 0) {
-      semester.created_at = semester?.courses[0]?.created_at ?? null;
-    }
+    semester.created_at = semester?.courses[0]?.created_at ?? null;
   }
 
   grades.created_at = now();
