@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   Semester,
-  calculateGlobalGradeAverage,
-  getSemesters,
+  calculateGlobalGradeAverage
 } from "@/services/semesters";
 import { files } from "@/services/online";
 import fs from "fs";
