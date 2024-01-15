@@ -28,6 +28,12 @@
   justify-content: center;
 }
 
+@media (max-width: 768px) {
+  .modal .modal-content {
+    padding: 1.5rem;
+  }
+}
+
 @keyframes modal {
   from {
     opacity: 0;
