@@ -1,6 +1,6 @@
 import {
   paths,
-  uuid as uuid,
+  uuid,
   type ScraperResponse,
   type Credentials,
   files,
