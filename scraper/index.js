@@ -170,10 +170,7 @@ cleanFiles();
       write("Authentication failed", 5, 1);
       exit(browser);
     }
-  } catch (e) {
-    write("Authentication failed", 5, 1);
-    exit(browser);
-  }
+  } catch (e) {}
 
   try {
     await page.waitForXPath('//*[@id="passwordInput"]', {
