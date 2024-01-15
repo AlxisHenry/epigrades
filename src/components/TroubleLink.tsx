@@ -3,6 +3,8 @@ import {
   type Credentials,
   clearCache,
   validateCredentials,
+  type Alert,
+  AlertType,
 } from "@/services/online";
 
 /**
@@ -10,51 +12,51 @@ import {
  */
 export default function TroubleLink({
   credentials,
-  setHasError,
-  setError,
-  setIsLoading,
-  setCacheCleared,
-  style = {},
+  setAlert,
+  setIsSubmitting,
 }: {
   credentials: Credentials;
-  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
-  setError: React.Dispatch<React.SetStateAction<string>>;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setCacheCleared: React.Dispatch<React.SetStateAction<boolean>>;
-  style?: object;
+  setAlert: React.Dispatch<React.SetStateAction<Alert>>;
+  setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
     <span
       onClick={async () => {
-        setIsLoading(true);
+        setIsSubmitting(true);
 
         const { success, error } = await validateCredentials(credentials);
 
         if (!success) {
-          setHasError(true);
-          setError(error || errors.unreachableServer);
-          setIsLoading(false);
+          setAlert({
+            type: AlertType.error,
+            message: error || errors.unreachableServer,
+          });
+          setIsSubmitting(false);
           return;
         }
 
-        setHasError(false);
+        setAlert(null);
 
         const { success: cacheClearedStatus } = await clearCache(
           credentials.email
         );
 
         if (!cacheClearedStatus) {
-          setHasError(true);
-          setError(errors.cannotClearCache);
-          setIsLoading(false);
+          setAlert({
+            type: AlertType.error,
+            message: errors.cannotClearCache,
+          });
+          setIsSubmitting(false);
           return;
         }
 
-        setIsLoading(false);
-        setCacheCleared(true);
+        setAlert({
+          type: AlertType.success,
+          message: "Cache cleared successfully!",
+        });
+        setIsSubmitting(false);
       }}
       className="trouble"
-      style={style}
     >
       I&apos;m having trouble due to a cache issue...
     </span>

@@ -54,6 +54,16 @@ export const isStep = (currentStep: string, step: string): boolean =>
 export const isEpitechEmail = (email: string) =>
   new RegExp(`^[a-zA-Z0-9._-]+${EMAIL_EXTENSION}$`, "i").test(email);
 
+export type Alert = {
+  type: AlertType;
+  message: string;
+} | null;
+
+export enum AlertType {
+  success = "success",
+  error = "error",
+}
+
 export type Credentials = {
   email: string;
   password: string;

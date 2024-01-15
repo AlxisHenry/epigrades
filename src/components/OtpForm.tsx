@@ -39,7 +39,15 @@ export default function OtpForm({
               }
             }}
           />
-          {isSavingCode ? <Spinner /> : <button type="submit">Submit</button>}
+          {isSavingCode ? (
+            <Spinner
+              customCss={{
+                marginTop: "20px",
+              }}
+            />
+          ) : (
+            <button type="submit">Submit</button>
+          )}
         </form>
       </div>
     </div>

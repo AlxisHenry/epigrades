@@ -1,42 +1,35 @@
 "use client";
 
-import { type Credentials } from "@/services/online";
+import { type Alert, type Credentials } from "@/services/online";
 import Spinner from "./Spinner";
 import TroubleLink from "./TroubleLink";
 
 type Props = {
   credentials: Credentials;
-  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
-  setError: React.Dispatch<React.SetStateAction<string>>;
-  setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
-  setCacheCleared: React.Dispatch<React.SetStateAction<boolean>>;
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  error: string;
-  hasError: boolean;
-  cacheCleared: boolean;
+  alert: Alert;
   isSubmitting: boolean;
-  handleChanges: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
+  setAlert: React.Dispatch<React.SetStateAction<Alert>>;
+  setCredentials: React.Dispatch<React.SetStateAction<Credentials>>;
 };
 
 export default function OnlineForm({
   credentials,
-  setHasError,
-  setError,
-  setCacheCleared,
-  handleSubmit,
-  error,
-  hasError,
-  cacheCleared,
+  alert,
   isSubmitting,
+  handleSubmit,
   setIsSubmitting,
-  handleChanges,
+  setAlert,
+  setCredentials,
 }: Props) {
+  const handleChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  };
+
   return (
     <form className="container" onSubmit={(e) => handleSubmit(e)}>
-      {hasError && <div className="error">{error}</div>}
-      {cacheCleared && (
-        <div className="success">Cache successfully cleared.</div>
-      )}
+      {alert && <Alert type={alert.type} message={alert.message} />}
       <label htmlFor="email">Email</label>
       <input
         type="text"
@@ -63,10 +56,8 @@ export default function OnlineForm({
         <>
           <TroubleLink
             credentials={credentials}
-            setHasError={setHasError}
-            setError={setError}
-            setIsLoading={setIsSubmitting}
-            setCacheCleared={setCacheCleared}
+            setAlert={setAlert}
+            setIsSubmitting={setIsSubmitting}
           />
           <button
             style={{
@@ -82,3 +73,7 @@ export default function OnlineForm({
     </form>
   );
 }
+
+const Alert = ({ type, message }: { type: string; message: string }) => {
+  return <div className={type}>{message}</div>;
+};
