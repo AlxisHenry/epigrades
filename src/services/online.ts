@@ -42,10 +42,14 @@ export const files = {
 export const steps = {
   waitingForTwoFactorAuthentication: "Waiting for 2FA",
   twoFactorAuthenticationCodeSent: "The code has been sent",
-  waitingForMicrosoftAuthenticatorValidation: "Waiting for Microsoft Authenticator validation",
+  waitingForMicrosoftAuthenticatorValidation:
+    "Waiting for Microsoft Authenticator validation",
   authenticationFailed: "Authentication failed",
   reportGenerated: "Report generated",
-}
+};
+
+export const isStep = (currentStep: string, step: string): boolean =>
+  currentStep === step || currentStep.includes(step);
 
 export const isEpitechEmail = (email: string) =>
   new RegExp(`^[a-zA-Z0-9._-]+${EMAIL_EXTENSION}$`, "i").test(email);
@@ -171,9 +175,7 @@ export const saveOTPCode = async (
   });
 };
 
-export const getReport = async (
-  uuid: string = "me"
-): Promise<uuidResponse> => {
+export const getReport = async (uuid: string = "me"): Promise<uuidResponse> => {
   const response = await fetch(`/api/online/${uuid}`, {
     method: "GET",
     headers: {

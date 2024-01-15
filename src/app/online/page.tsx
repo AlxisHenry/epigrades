@@ -10,6 +10,7 @@ import {
   runScraper,
   saveOTPCode,
   validateCredentials,
+  isStep,
   steps,
 } from "@/services/online";
 import { useEffect, useState } from "react";
@@ -71,42 +72,43 @@ export default function Home() {
       setUuid(uuid);
       setIsRunning(true);
       setTimeout(() => {
-        const completedSteps: string[] = [];
+        const stepsDone: string[] = [];
         let checkExecutionProgress = setInterval(async () => {
           let state = await getExecutionProgress(uuid);
-          if (!completedSteps.includes(state.currentStep)) {
+          if (!stepsDone.includes(state.currentStep)) {
             setProgress(state.progress);
             setCurrentStep(state.currentStep);
-            switch (state.currentStep) {
-              case steps.waitingForTwoFactorAuthentication:
-                setIsAskingForOTPCode(true);
-                let parts = state.currentStep.split(" ");
-                setPhone(`+${parts[parts.length - 1]}`);
-                break;
-              case steps.waitingForMicrosoftAuthenticatorValidation:
-                setIsAskingForAuthenticatorValidation(true);
-                break;
-              case steps.twoFactorAuthenticationCodeSent:
-                setIsAskingForOTPCode(false);
-                break;
-              case steps.reportGenerated:
-                clearInterval(checkExecutionProgress);
-                setTimeout(() => {
-                  setIsFinished(true);
-                  setIsSubmitting(false);
-                }, 1000);
-                break;
-              case steps.authenticationFailed:
-                clearInterval(checkExecutionProgress);
-                setTimeout(() => {
-                  setHasFailed(true);
-                  setIsSubmitting(false);
-                }, 1000);
-                break;
-              default:
-                break;
+            if (
+              isStep(state.currentStep, steps.waitingForTwoFactorAuthentication)
+            ) {
+              setIsAskingForOTPCode(true);
+              let parts = state.currentStep.split(" ");
+              setPhone(`+${parts[parts.length - 1]}`);
+            } else if (
+              isStep(state.currentStep, steps.twoFactorAuthenticationCodeSent)
+            ) {
+              setIsAskingForOTPCode(false);
+            } else if (isStep(state.currentStep, steps.reportGenerated)) {
+              clearInterval(checkExecutionProgress);
+              setTimeout(() => {
+                setIsFinished(true);
+                setIsSubmitting(false);
+              }, 1000);
+            } else if (isStep(state.currentStep, steps.authenticationFailed)) {
+              clearInterval(checkExecutionProgress);
+              setTimeout(() => {
+                setHasFailed(true);
+                setIsSubmitting(false);
+              }, 1000);
+            } else if (
+              isStep(
+                state.currentStep,
+                steps.waitingForMicrosoftAuthenticatorValidation
+              )
+            ) {
+              setIsAskingForAuthenticatorValidation(true);
             }
-            completedSteps.push(state.currentStep);
+            stepsDone.push(state.currentStep);
           }
         }, 800);
       }, 100);
@@ -116,7 +118,7 @@ export default function Home() {
   useEffect(() => {
     setCredentials({ ...credentials, email: params.get("email") ?? "" });
     setIsLoading(false);
-  });
+  }, []);
 
   return (
     <Layout>
