@@ -73,6 +73,8 @@ const cleanFiles = () => {
 };
 
 const formatDueDate = (due_date) => {
+  if (due_date === "-") return due_date;
+
   let parsedDate = new Date(due_date);
 
   if (!isNaN(parsedDate)) {
@@ -170,7 +172,7 @@ cleanFiles();
       write("Authentication failed", 5, 1);
       exit(browser);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   try {
     await page.waitForXPath('//*[@id="passwordInput"]', {
@@ -181,7 +183,7 @@ cleanFiles();
     await page.waitForXPath('//*[@id="submitButton"]');
     const submitButton = await page.$x('//*[@id="submitButton"]');
     await submitButton[0].click();
-  } catch (e) {}
+  } catch (e) { }
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -397,7 +399,7 @@ cleanFiles();
             name: topic,
             topic,
             assignments,
-            due_date: due_date === "-" ? "-" : formatDueDate(due_date),
+            due_date: formatDueDate(due_date),
             submission,
             grade,
           });
@@ -405,16 +407,19 @@ cleanFiles();
 
       if (grades && grades.semesters) {
         const semester = grades.semesters.find((s) => s.name === semesterName);
-        if (semester) {
-          const course = semester.courses.find((c) => c.name === name);
-          if (course) {
-            let lastGrade = course.days[course.days.length - 1];
-            if (lastGrade) {
-              if (lastGrade.due_date === "-") {
-                lastGrade = course.days[course.days.length - 2];
-              }
-              course.created_at = lastGrade.due_date;
-            }
+        const course = semester?.courses.find((c) => c.name === name);
+        const lastGrade = course?.days
+          .slice()
+          .reverse()
+          .find((day) => day.due_date !== "-");
+
+        if (lastGrade) {
+          if (new Date(lastGrade.due_date) > new Date()) {
+            semester.courses = semester.courses.filter(
+              (c) => c.name !== course.name
+            );
+          } else {
+            course.created_at = lastGrade.due_date;
           }
         }
       }
