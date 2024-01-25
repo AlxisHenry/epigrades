@@ -45,20 +45,27 @@ export default function Home() {
       const semestersNames = await getSemestersNames();
       const updatedDatasets = [];
 
+      let data: string[] = [];
+      let colors: string[] = [];
+
       for (const semesterName of semestersNames) {
         let semester = await getSemester(semesterName);
-        let randomColor = Math.floor(Math.random() * 16777215).toString(16);
-        updatedDatasets.push({
-          label: semesterName,
-          data: [calculateSemesterGradeAverage(semester)],
-          backgroundColor: [`#${randomColor}`],
-          borderColor: [`#${randomColor}`],
-          borderWidth: 1,
-        });
+        colors.push(
+          `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+            Math.random() * 255
+          )}, ${Math.floor(Math.random() * 255)}, 0.5)`
+        );
+        data.push(calculateSemesterGradeAverage(semester).toString());
       }
-      
+
+      setDatasets([{
+        label: "Semester",
+        data: data,
+        backgroundColor: colors,
+        borderColor: colors,
+        borderWidth: 1,
+      }]);
       setLabels(semestersNames);
-      setDatasets(updatedDatasets);
     };
 
     initialize();
@@ -83,8 +90,8 @@ export default function Home() {
       <div className="charts">
         <Bar
           data={{
-            labels: labels,
-            datasets: datasets,
+            labels,
+            datasets,
           }}
           options={options}
         />
