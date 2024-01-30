@@ -26,7 +26,8 @@ export const paths: {
 
 export const files = {
   script: `${paths.base}/index.js`,
-  reports: (uuid: string) => `${paths.base}/reports/${uuid}.json`,
+  reports: (uuid: string, pdf: boolean = false) =>
+    `${paths.base}/reports/${uuid}.${pdf ? "pdf" : "json"}`,
   temp: {
     otp: (uuid: string) => `${paths.temp}/otp-${uuid}.json`,
     progress: (uuid: string) => `${paths.temp}/progress-${uuid}.json`,
@@ -45,7 +46,7 @@ export const steps = {
   waitingForMicrosoftAuthenticatorValidation:
     "Waiting for Microsoft Authenticator validation",
   authenticationFailed: "Authentication failed",
-  reportGenerated: "Report generated",
+  reportGenerated: "All tasks done 🚀",
 };
 
 export const isStep = (currentStep: string, step: string): boolean =>

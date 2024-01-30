@@ -14,12 +14,14 @@ export type uuidResponse = {
 };
 
 export async function GET(
-  request: NextRequest
+  request: NextRequest,
+  route: {
+    params: {
+      uuid: string;
+    };
+  }
 ): Promise<NextResponse<uuidResponse>> {
-  let url: string = request.nextUrl.toString();
-  let uuid = url.split("/").pop();
-
-  let file = `${paths.reports}/${uuid}.json`;
+  let file = `${paths.reports}/${route.params.uuid}.json`;
   if (fs.existsSync(file)) {
     let grade = JSON.parse(fs.readFileSync(file, "utf8"));
     return NextResponse.json({

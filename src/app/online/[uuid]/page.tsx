@@ -10,17 +10,13 @@ import { getReport } from "@/services/online";
 import {
   Semester,
   calculateGlobalGradeAverage,
-  calculateSemesterGradeAverage,
   sortSemesters,
 } from "@/services/semesters";
 import Course from "@/components/Course";
 import SemesterTitle from "@/components/SemesterTitle";
 import Cards from "@/components/Cards";
 import Card from "@/components/Card";
-import {
-  getGlobalAssignementsCount,
-  getSemesterAssignementsCount,
-} from "@/services/assignements";
+import { getGlobalAssignementsCount } from "@/services/assignements";
 import { sortCourses } from "@/services/courses";
 import { NotFound } from "@/components/NotFound";
 import Loading from "@/components/Loading";
@@ -96,6 +92,22 @@ export default function Home() {
                 Generated {createdAt}
               </p>
             )}
+            <div
+              onClick={async () => {
+                const response = await fetch(`/api/online/${uuid}/pdf`, {
+                  method: "GET",
+                });
+                const { base64 } = await response.json();
+                const link = document.createElement("a");
+                link.href = base64;
+                link.download = `${student.name} - Report.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+            >
+              Download PDF
+            </div>
             <div
               onClick={() => {
                 setIsSyncing(true);

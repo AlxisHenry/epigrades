@@ -1,6 +1,7 @@
 import fs from "fs";
 import puppeteer from "puppeteer";
 import Jimp from "jimp";
+import { generateReportPDF } from "./utils/pdf.js";
 
 const email = process.argv[2];
 const password = process.argv[3];
@@ -18,6 +19,7 @@ const files = {
   otp: `${TEMP_DIR}/otp-${uuid}.json`,
   authenticator: `${TEMP_DIR}/authenticator-${uuid}.png`,
   report: `scraper/reports/${uuid}.json`,
+  pdf: `scraper/reports/${uuid}.pdf`,
 };
 
 if (fs.existsSync(files.progress)) {
@@ -413,6 +415,7 @@ cleanFiles();
           .reverse()
           .find((day) => day.due_date !== "-");
 
+        // TODO: Vérifier si la première note est passée (plutot que la dernière)
         if (lastGrade) {
           if (new Date(lastGrade.due_date) > new Date()) {
             semester.courses = semester.courses.filter(
@@ -428,7 +431,8 @@ cleanFiles();
     await coursePage.close();
   }
 
-  write("Retrieving your GPA", 95);
+  // TODO: Retrieve badges
+  // TODO: Retrieve GPA
 
   grades.semesters = grades.semesters.filter((s) => s.courses.length > 0);
 
@@ -439,6 +443,10 @@ cleanFiles();
   grades.created_at = now();
   fs.writeFileSync(files.report, JSON.stringify(grades), "utf8");
 
-  write("Report generated", 100, 1);
+  write("Generating the report", 95);
+
+  generateReportPDF(grades, files.pdf);
+
+  write("All tasks done 🚀", 100);
   exit(browser);
 })();
