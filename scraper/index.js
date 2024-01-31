@@ -447,6 +447,8 @@ cleanFiles();
   // TODO: Retrieve badges
   // TODO: Retrieve GPA
 
+  write("Generating the report", 95);
+
   grades.semesters = grades.semesters.filter((s) => s.courses.length > 0);
 
   for (const semester of grades.semesters) {
@@ -455,10 +457,6 @@ cleanFiles();
 
   grades.created_at = now();
   fs.writeFileSync(files.report, JSON.stringify(grades), "utf8");
-
-  write("Generating the report", 95);
-
-  generateReportPDF(grades, files.pdf);
 
   write(`All tasks done (in ${getDuration()}) 🚀`, 100);
   exit(browser);
