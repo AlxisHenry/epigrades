@@ -1,7 +1,6 @@
 import fs from "fs";
 import puppeteer from "puppeteer";
 import Jimp from "jimp";
-import { generateReportPDF } from "./utils/pdf.js";
 
 const startTime = Date.now();
 
