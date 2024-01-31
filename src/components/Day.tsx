@@ -1,4 +1,5 @@
 import { type Day } from "@/services/days";
+import moment from "moment";
 
 export default function Day({
   name,
@@ -13,7 +14,7 @@ export default function Day({
       <td>{name}</td>
       <td>{topic}</td>
       <td>{assignments}</td>
-      <td>{due_date}</td>
+      <td>{moment(due_date).format("DD/MM/YYYY")}</td>
       <td>{submission}</td>
       <td>{grade}</td>
     </tr>
