@@ -1,4 +1,4 @@
-import { clearCache } from "@/services/online";
+import { clearCache } from "@/services/api";
 
 export const ScraperFailed = ({ email }: { email: string }) => {
   return (

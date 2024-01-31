@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
-import { getAuthenticatorCodeImage } from "@/services/online";
+import { getAuthenticatorCodeImage } from "@/services/api";
 
 type Props = {
   uuid: string;

@@ -1,11 +1,10 @@
 import {
   errors,
   type Credentials,
-  clearCache,
-  validateCredentials,
   type Alert,
   AlertType,
 } from "@/services/online";
+import { clearCache, validateCredentials } from "@/services/api";
 
 /**
  * This component is used to display a link to the user to clear the cache linked to his account.
