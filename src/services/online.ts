@@ -46,7 +46,7 @@ export const steps = {
   waitingForMicrosoftAuthenticatorValidation:
     "Waiting for Microsoft Authenticator validation",
   authenticationFailed: "Authentication failed",
-  reportGenerated: "All tasks done 🚀",
+  reportGenerated: "All tasks done",
 };
 
 export const isStep = (currentStep: string, step: string): boolean =>
@@ -228,3 +228,21 @@ export const getAuthenticatorCodeImage = async (
   const { image } = await response.json();
   return image;
 };
+
+export const getReportInBase64 = async (uuid: string): Promise<string> => {
+  const response = await fetch(`/api/online/${uuid}/pdf`, {
+    method: "GET",
+  });
+  const { base64 } = await response.json();
+  return base64;
+};
+
+export function base64ToBlob(base64: string) {
+  const bytes = window.atob(base64);
+  const ab = new ArrayBuffer(bytes.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < bytes.length; i++) {
+    ia[i] = bytes.charCodeAt(i);
+  }
+  return new Blob([ab], { type: "application/pdf" });
+}

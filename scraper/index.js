@@ -3,6 +3,8 @@ import puppeteer from "puppeteer";
 import Jimp from "jimp";
 import { generateReportPDF } from "./utils/pdf.js";
 
+const startTime = Date.now();
+
 const email = process.argv[2];
 const password = process.argv[3];
 const uuid = process.argv[4];
@@ -124,6 +126,17 @@ const getStudentName = (email) => {
     })
     .join(" ");
 };
+
+const getDuration = () => {
+  const duration = parseInt((Date.now() - startTime) / 1000);
+  if (duration > 60) {
+    return `${parseInt(duration / 60)}m${duration % 60}s`;
+  } else if (duration === 60) {
+    return "1m";
+  }
+
+  return duration + "s";
+}
 
 const exit = (browser) => {
   setTimeout(async () => {
@@ -447,6 +460,6 @@ cleanFiles();
 
   generateReportPDF(grades, files.pdf);
 
-  write("All tasks done 🚀", 100);
+  write(`All tasks done (in ${getDuration()}) 🚀`, 100);
   exit(browser);
 })();
