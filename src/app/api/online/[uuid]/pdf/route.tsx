@@ -18,6 +18,6 @@ export async function GET(
 	let report = fs.readFileSync(files.reports(uuid, true));
 
 	return NextResponse.json({
-		base64: `data:application/pdf;base64,${report.toString("base64")}`,
+		base64: `${report.toString("base64")}`,
 	});
 }

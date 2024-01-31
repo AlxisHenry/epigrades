@@ -1,12 +1,11 @@
 "use client";
 
-import "@/styles/pages/online.scss";
 import Layout from "@/components/Layout";
 import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import moment from "moment";
-import { getReport } from "@/services/online";
+import { base64ToBlob, getReport, getReportInBase64 } from "@/services/online";
 import {
   Semester,
   calculateGlobalGradeAverage,
@@ -20,7 +19,10 @@ import { getGlobalAssignementsCount } from "@/services/assignements";
 import { sortCourses } from "@/services/courses";
 import { NotFound } from "@/components/NotFound";
 import Loading from "@/components/Loading";
-import SyncIcon from "@/components/Icons/Sync";
+import SyncIcon from "@/components/Icons/SyncIcon";
+import DownloadIcon from "@/components/Icons/DownloadIcon";
+import download from "downloadjs";
+import Spinner from "@/components/Spinner";
 
 type Params = {
   uuid: string;
@@ -37,6 +39,7 @@ export default function Home() {
     email: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [semesters, setSemesters] = useState<Semester[] | null>(null);
   const [createdAt, setCreatedAt] = useState<null | string>(null);
@@ -93,22 +96,6 @@ export default function Home() {
               </p>
             )}
             <div
-              onClick={async () => {
-                const response = await fetch(`/api/online/${uuid}/pdf`, {
-                  method: "GET",
-                });
-                const { base64 } = await response.json();
-                const link = document.createElement("a");
-                link.href = base64;
-                link.download = `${student.name} - Report.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-              }}
-            >
-              Download PDF
-            </div>
-            <div
               onClick={() => {
                 setIsSyncing(true);
                 setTimeout(() => {
@@ -118,6 +105,28 @@ export default function Home() {
               }}
             >
               <SyncIcon size={24} isSyncing={isSyncing} />
+            </div>
+            <div
+              onClick={async () => {
+                setIsDownloading(true);
+                download(
+                  base64ToBlob(await getReportInBase64(uuid)),
+                  `${student.name} - Report.pdf`,
+                  "application/pdf"
+                );
+                setIsDownloading(false);
+              }}
+            >
+              {isDownloading ? (
+                <Spinner
+                  customCss={{
+                    width: "24px",
+                    height: "24px",
+                  }}
+                />
+              ) : (
+                <DownloadIcon size={24} />
+              )}
             </div>
           </div>
           <div
