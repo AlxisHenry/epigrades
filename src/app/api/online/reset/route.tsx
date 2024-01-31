@@ -1,4 +1,9 @@
-import { type CacheClearedResponse, files, paths } from "@/services/online";
+import {
+  type CacheClearedResponse,
+  files,
+  paths,
+  type Report,
+} from "@/services/online";
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
 
@@ -8,13 +13,13 @@ export async function POST(
   const { email } = await request.json();
 
   let uuid = null;
-  for (const report of fs.readdirSync(paths.reports)) {
-    if (report.includes(".json")) {
-      let reportJson = JSON.parse(
-        fs.readFileSync(`${paths.reports}/${report}`, "utf8")
+  for (const file of fs.readdirSync(paths.reports)) {
+    if (file.includes(".json")) {
+      let report: Report = JSON.parse(
+        fs.readFileSync(`${paths.reports}/${file}`, "utf8")
       );
-      if (reportJson.student.email === email) {
-        uuid = report.split(".json")[0];
+      if (report.student.email === email) {
+        uuid = file.split(".json")[0];
         break;
       }
     }

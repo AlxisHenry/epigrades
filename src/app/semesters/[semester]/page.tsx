@@ -4,7 +4,7 @@ import "@/styles/pages/semester.scss";
 import {
   type Semester,
   getSemester,
-  calculateSemesterGradeAverage,
+  calculateAverage,
 } from "@/services/semesters";
 import { sortCourses, type Course as CourseType } from "@/services/courses";
 import { useEffect, useState } from "react";
@@ -38,7 +38,7 @@ export default function Home() {
       const semester = await getSemester(params.semester);
       setSemester(semester);
       setCourses(sortCourses(semester?.courses));
-      setSemesterGradeAverage(calculateSemesterGradeAverage(semester));
+      setSemesterGradeAverage(calculateAverage(semester));
       setSemesterAsssignementsCount(getSemesterAssignementsCount(semester));
       setLoading(false);
     };

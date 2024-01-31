@@ -5,10 +5,10 @@ import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import moment from "moment";
-import { base64ToBlob, getReport, getReportInBase64 } from "@/services/online";
+import { base64ToBlob } from "@/services/online";
 import {
   Semester,
-  calculateGlobalGradeAverage,
+  calculateAverage,
   sortSemesters,
 } from "@/services/semesters";
 import Course from "@/components/Course";
@@ -23,6 +23,7 @@ import SyncIcon from "@/components/Icons/SyncIcon";
 import DownloadIcon from "@/components/Icons/DownloadIcon";
 import download from "downloadjs";
 import Spinner from "@/components/Spinner";
+import { getReport, getReportInBase64 } from "@/services/api";
 
 type Params = {
   uuid: string;
@@ -48,18 +49,18 @@ export default function Home() {
   useEffect(() => {
     setIsLoading(true);
     (async () => {
-      const response = await getReport(uuid);
-      if (!response.success || !response.semesters || !response.student) {
+      const { success, report } = await getReport(uuid);
+      if (!success || !report) {
         setIsLoading(false);
         return;
       }
 
-      if (response.created_at) {
-        setCreatedAt(moment(response.created_at).fromNow());
+      if (report.created_at) {
+        setCreatedAt(moment(report.created_at).fromNow());
       }
 
-      setStudent(response.student);
-      setSemesters(sortSemesters(response.semesters));
+      setStudent(report.student);
+      setSemesters(sortSemesters(report.semesters));
       setIsLoading(false);
     })();
   }, [uuid]);
@@ -138,7 +139,7 @@ export default function Home() {
             <Cards className="is-semester-cards">
               <Card
                 title="Global Average"
-                subtitle={calculateGlobalGradeAverage(semesters)}
+                subtitle={calculateAverage(semesters)}
               />
               <Card
                 title="Assignments"

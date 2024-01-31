@@ -5,7 +5,7 @@ import { type Semester, getSemester } from "@/services/semesters";
 import {
   type Course as CourseType,
   getCourse,
-  calculateCourseGradeAverage,
+  calculateAverage,
 } from "@/services/courses";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -68,7 +68,7 @@ export default function Home() {
       setSemester(s);
       setCourse(c);
       setCourseGrade(getCourseGrade(course));
-      setCourseGradeAverage(calculateCourseGradeAverage(course));
+      setCourseGradeAverage(calculateAverage(course));
       setCourseAssignementsCount(getCourseAssignementsCount(course));
       setLoading(false);
     };

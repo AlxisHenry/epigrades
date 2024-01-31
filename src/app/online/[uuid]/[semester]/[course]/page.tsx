@@ -4,7 +4,7 @@ import "@/styles/pages/course.scss";
 import { type Semester } from "@/services/semesters";
 import {
   type Course as CourseType,
-  calculateCourseGradeAverage,
+  calculateAverage,
 } from "@/services/courses";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -29,7 +29,7 @@ import {
 } from "chart.js";
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
-import { getReport } from "@/services/online";
+import { getReport } from "@/services/api";
 import { NotFound } from "@/components/NotFound";
 
 type Params = {
@@ -64,24 +64,24 @@ export default function Home() {
 
   useEffect(() => {
     (async () => {
-      const response = await getReport(uuid);
-      if (!response.success || !response.semesters) {
+      const { success, report } = await getReport(uuid);
+      if (!success || !report) {
         return;
       }
 
       setSemester(
-        response.semesters.find(
+        report.semesters.find(
           (s) => s.name.toLowerCase() === params.semester
         ) ?? null
       );
       setCourse(
-        response.semesters
+        report.semesters
           .find((s) => s.name.toLowerCase() === params.semester)
           ?.courses.find((c) => c.id === params.course) ?? null
       );
-      setStudent(response?.student?.name || "");
+      setStudent(report?.student?.name || "");
       setCourseGrade(getCourseGrade(course));
-      setCourseGradeAverage(calculateCourseGradeAverage(course));
+      setCourseGradeAverage(calculateAverage(course));
       setCourseAssignementsCount(getCourseAssignementsCount(course));
       setLoading(false);
     })();

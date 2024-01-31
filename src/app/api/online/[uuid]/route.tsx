@@ -1,17 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
-import { Semester } from "@/services/semesters";
-import { paths } from "@/services/online";
-
-export type uuidResponse = {
-  success: boolean;
-  semesters?: Semester[];
-  student?: {
-    email: string;
-    name: string;
-  };
-  created_at?: string | null;
-};
+import { type Report, paths, type uuidResponse } from "@/services/online";
 
 export async function GET(
   request: NextRequest,
@@ -22,13 +11,12 @@ export async function GET(
   }
 ): Promise<NextResponse<uuidResponse>> {
   let file = `${paths.reports}/${route.params.uuid}.json`;
+
   if (fs.existsSync(file)) {
-    let grade = JSON.parse(fs.readFileSync(file, "utf8"));
+    let report: Report = JSON.parse(fs.readFileSync(file, "utf8"));
     return NextResponse.json({
       success: true,
-      semesters: grade.semesters,
-      student: grade.student,
-      created_at: grade.created_at || null,
+      report
     });
   }
 
