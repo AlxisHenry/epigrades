@@ -110,8 +110,16 @@ export default function Home() {
             <div
               onClick={async () => {
                 setIsDownloading(true);
+
+                const base64 = await getReportInBase64(uuid)
+
+                if (!base64) {
+                  setIsDownloading(false);
+                  return;
+                }
+
                 download(
-                  base64ToBlob(await getReportInBase64(uuid)),
+                  base64ToBlob(base64),
                   `${student.name} - Report.pdf`,
                   "application/pdf"
                 );

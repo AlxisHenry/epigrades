@@ -30,6 +30,7 @@ export const files = {
     otp: (uuid: string) => `${paths.temp}/otp-${uuid}.json`,
     progress: (uuid: string) => `${paths.temp}/progress-${uuid}.json`,
     authenticator: (uuid: string) => `${paths.temp}/authenticator-${uuid}.png`,
+    report: (uuid: string) => `${paths.temp}/report-${uuid}.pdf`,
     all: (uuid: string) => [
       files.temp.otp(uuid),
       files.temp.progress(uuid),
@@ -90,6 +91,10 @@ export type CacheClearedResponse = {
 export type uuidResponse = {
   success: boolean;
   report?: Report;
+};
+
+export type EncodedPDFResponse = {
+  base64: string | null;
 };
 
 export type Report = {
