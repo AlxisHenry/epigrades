@@ -22,8 +22,8 @@ Go to [epigrades](https://epigrades.alexishenry.eu/online), enter your Microsoft
 First, you need to clone the repository.
 
 ```bash
-$ git clone https://github.com/AlxisHenry/epitech-grades.git
-$ cd epitech-grades
+$ git clone https://github.com/AlxisHenry/epigrades.git
+$ cd epigrades
 ```
 
 ### Install javascript dependencies
@@ -71,7 +71,7 @@ $ bash scraper/otp.sh <uuid> <code>
 
 When you run the script, your A2F app will ask for a code of two digits, you can retrieve this code in the `scraper/temp` folder, in `png` format in a file named `authenticator-<uuid>.png`.
 
-#### Access to your grades
+#### Access to your report
 
 When the script is finished, you can access with the web application to your grades with the following url:
 
@@ -85,7 +85,7 @@ For example, the default file is named `me.json`, so the url will be:
 
 **The `uuid` parameter is the name of the file in the `scraper/reports` folder.**
 
-You can use the API to get your grades in JSON format with the following command:
+You can use the API to get your report in JSON format with the following command:
 
 ```bash
 $ curl -X GET http://localhost:3000/api/online/<uuid>
@@ -102,6 +102,16 @@ $ curl -X GET http://localhost:3000/api/average?uuid=<uuid>
 Without the `uuid` parameter, the API will return by default the average of the `me.json` file.
 
 **Note:** If the given `uuid` is not found, the API will return `-1`.
+
+#### Report (in PDF format)
+
+You can get your report (in PDF format) encoded in base64 using the following endpoint:
+
+```bash
+$ curl -X GET http://localhost:3000/api/online/<uuid>/pdf
+```
+
+**Note:** If the given `uuid` is not found, the API will return null instead of the base64.
 
 ### Configure the selenium bot (deprecated)
 
