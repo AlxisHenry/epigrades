@@ -424,16 +424,16 @@ cleanFiles();
           .slice()
           .reverse()
           .find((day) => day.due_date !== "-");
+        const firstGrade = course?.days.find((day) => day.due_date !== "-");
 
-        // TODO: Vérifier si la première note est passée (plutot que la dernière)
+        if (firstGrade && new Date(firstGrade.due_date) > new Date()) {
+          semester.courses = semester.courses.filter(
+            (c) => c.name !== course.name
+          );
+        }
+
         if (lastGrade) {
-          if (new Date(lastGrade.due_date) > new Date()) {
-            semester.courses = semester.courses.filter(
-              (c) => c.name !== course.name
-            );
-          } else {
-            course.created_at = lastGrade.due_date;
-          }
+          course.created_at = lastGrade.due_date;
         }
       }
     }
