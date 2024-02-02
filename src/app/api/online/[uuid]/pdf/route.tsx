@@ -1,11 +1,17 @@
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
-import { type Report, files, type EncodedPDFResponse, Student } from "@/services/online";
+import {
+	type Report,
+	files,
+	type EncodedPDFResponse,
+	type Student,
+} from "@/services/online";
 import PDFDocument from "pdfkit";
-import { calculateAverage } from "@/services/courses";
+import { calculateAverage, sortCourses } from "@/services/courses";
 import {
 	Semester,
 	calculateAverage as calculateSemesterAverage,
+	sortSemesters,
 } from "@/services/semesters";
 import { getCourseGrade, getMoreRecurentGrade } from "@/services/grades";
 import moment from "moment";
@@ -57,7 +63,11 @@ const fonts = {
 
 const formatDate = (date: string) => moment(date).format("DD/MM/YYYY");
 
-const header = (doc: PDFKit.PDFDocument, semester: Semester, student: Student) => {
+const header = (
+	doc: PDFKit.PDFDocument,
+	semester: Semester,
+	student: Student
+) => {
 	doc
 		.font(fonts.daytona.bold)
 		.fontSize(40)
@@ -69,9 +79,14 @@ const header = (doc: PDFKit.PDFDocument, semester: Semester, student: Student) =
 	doc
 		.font(fonts.daytona.thin)
 		.fontSize(14)
-		.text(`Bulletin d'${student.name} pour le semestre ${semester.name}`, 0, 80, {
-			align: "center",
-		})
+		.text(
+			`Bulletin d'${student.name} pour le semestre ${semester.name}`,
+			0,
+			80,
+			{
+				align: "center",
+			}
+		)
 		.moveDown();
 
 	let { start, end } = semestersDates.find((s) => s.name === semester.name) || {
@@ -82,16 +97,9 @@ const header = (doc: PDFKit.PDFDocument, semester: Semester, student: Student) =
 	doc
 		.font(fonts.daytona.thin)
 		.fontSize(14)
-		.text(
-			`Période du ${formatDate(start)} au ${formatDate(
-				end
-			)}`,
-			0,
-			100,
-			{
-				align: "center",
-			}
-		);
+		.text(`Période du ${formatDate(start)} au ${formatDate(end)}`, 0, 100, {
+			align: "center",
+		});
 };
 
 const footer = (doc: PDFKit.PDFDocument) => {
@@ -138,14 +146,11 @@ const pdf = (uuid: string, grades: Report): Promise<string> => {
 
 		let x = 50;
 
-		for (let semester of grades.semesters) {
+		for (let semester of sortSemesters(grades.semesters)) {
 			header(report, semester, grades.student);
 			footer(report);
 
-			report
-				.font(fonts.daytona.bold)
-				.fontSize(16)
-				.text(``, x, 120);
+			report.font(fonts.daytona.bold).fontSize(16).text(``, x, 120);
 
 			if (!semester.courses.length) continue;
 
@@ -173,7 +178,7 @@ const pdf = (uuid: string, grades: Report): Promise<string> => {
 
 			report.moveDown();
 
-			for (let course of semester.courses) {
+			for (let course of sortCourses(semester.courses)) {
 				let courseAverage = calculateAverage(course),
 					grade = getCourseGrade(course);
 
@@ -212,7 +217,7 @@ const pdf = (uuid: string, grades: Report): Promise<string> => {
 			report.moveDown();
 
 			let semesterAverage = calculateSemesterAverage(semester);
-			currentY = report.y
+			currentY = report.y;
 
 			report
 				.font(fonts.daytona.bold)
@@ -238,8 +243,8 @@ const pdf = (uuid: string, grades: Report): Promise<string> => {
 
 			currentY = report.y;
 
-			report.
-				font(fonts.daytona.bold)
+			report
+				.font(fonts.daytona.bold)
 				.fontSize(16)
 				.text(`Crédits accumulés`, x, currentY + 10);
 
