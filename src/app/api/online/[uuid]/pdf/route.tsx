@@ -274,6 +274,7 @@ export async function GET(
 
 	if (!fs.existsSync(file)) {
 		return NextResponse.json({
+			filename: null,
 			base64: null,
 		});
 	}
@@ -281,6 +282,9 @@ export async function GET(
 	let report: Report = JSON.parse(fs.readFileSync(file, "utf8"));
 
 	return NextResponse.json({
+		filename: `Bulletin-${report.student.name
+			.split(" ")
+			.join("-")}_${moment().format("DDMMYYYY")}.pdf`,
 		base64: await pdf(uuid, report),
 	});
 }

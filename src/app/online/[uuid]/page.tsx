@@ -111,18 +111,14 @@ export default function Home() {
               onClick={async () => {
                 setIsDownloading(true);
 
-                const base64 = await getReportInBase64(uuid)
+                const { filename, base64 } = await getReportInBase64(uuid);
 
-                if (!base64) {
+                if (!base64 || !filename) {
                   setIsDownloading(false);
                   return;
                 }
 
-                download(
-                  base64ToBlob(base64),
-                  `${student.name} - Report.pdf`,
-                  "application/pdf"
-                );
+                download(base64ToBlob(base64), filename, "application/pdf");
                 setIsDownloading(false);
               }}
             >

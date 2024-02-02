@@ -8,6 +8,7 @@ import {
 	type Progress,
 	errors,
 	isEpitechEmail,
+	type EncodedPDFResponse,
 } from "../online";
 
 export const authenticateUsingEpitechAPI = async (
@@ -152,10 +153,9 @@ export const getAuthenticatorCodeImage = async (
 	return image;
 };
 
-export const getReportInBase64 = async (uuid: string): Promise<string> => {
+export const getReportInBase64 = async (uuid: string): Promise<EncodedPDFResponse> => {
 	const response = await fetch(`/api/online/${uuid}/pdf`, {
 		method: "GET",
 	});
-	const { base64 } = await response.json();
-	return base64;
+	return await response.json();
 };

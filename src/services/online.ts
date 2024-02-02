@@ -94,6 +94,7 @@ export type uuidResponse = {
 };
 
 export type EncodedPDFResponse = {
+  filename: string | null;
   base64: string | null;
 };
 
