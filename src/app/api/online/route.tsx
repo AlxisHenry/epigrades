@@ -13,7 +13,6 @@ import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
 import { authenticateUsingEpitechAPI } from "@/services/api";
 
-
 export async function GET(
   request: NextRequest
 ): Promise<NextResponse<Progress>> {
@@ -46,7 +45,8 @@ export async function POST(
     throw new Error("You provided invalid credentials.");
   }
 
-  let currentUuid = null;
+  let currentUuid = null,
+    state = false;
 
   for (const file of fs.readdirSync(paths.reports)) {
     if (file.includes(".json")) {
@@ -55,9 +55,19 @@ export async function POST(
       );
       if (report.student.email === email) {
         currentUuid = file.split(".json")[0];
+        state = true;
         break;
       }
     }
+  }
+
+  const check: boolean = request.nextUrl.searchParams.get("check") === "true";
+
+  if (state && check) {
+    return NextResponse.json({
+      state,
+      uuid: currentUuid,
+    });
   }
 
   if (currentUuid === null) {
@@ -79,6 +89,7 @@ export async function POST(
   );
 
   return NextResponse.json({
+    state,
     uuid: currentUuid,
   });
 }

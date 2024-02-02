@@ -76,7 +76,8 @@ export type Credentials = {
 };
 
 export type ScraperResponse = {
-  uuid: string;
+  state: boolean;
+  uuid: string | null;
 };
 
 export type AuthenticateResponse = {

@@ -22,13 +22,16 @@ import { useSearchParams } from "next/navigation";
 import OnlineForm from "@/components/OnlineForm";
 import {
   getExecutionProgress,
+  hasReport,
   runScraper,
   saveOTPCode,
   validateCredentials,
 } from "@/services/api";
+import { HasReport } from "@/components/HasReport";
 
 export default function Home() {
   const params = useSearchParams();
+  const [alreadyHasReport, setAlreadyHasReport] = useState<boolean>(false);
   const [alert, setAlert] = useState<Alert>(null);
   const [phone, setPhone] = useState<string>("");
   const [code, setCode] = useState<string>("");
@@ -50,18 +53,33 @@ export default function Home() {
     password: "",
   });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setAlert(null);
-    setIsSubmitting(true);
-    const { success, error } = await validateCredentials(credentials);
-    if (!success) {
-      setAlert({
-        type: AlertType.error,
-        message: error || errors.unreachableServer,
-      });
-      setIsSubmitting(false);
-      return;
+  const handleSubmit = async (
+    fromModal: boolean = false
+  ) => {
+    if (!fromModal) {
+      setAlert(null);
+      setIsSubmitting(true);
+
+      const { success, error } = await validateCredentials(credentials);
+
+      if (!success) {
+        setAlert({
+          type: AlertType.error,
+          message: error || errors.unreachableServer,
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      const { state, uuid } = await hasReport(credentials);
+
+      if (state) {
+        if (uuid) {
+          setUuid(uuid);
+          setAlreadyHasReport(true);
+          return;
+        }
+      }
     }
 
     const { uuid } = await runScraper(credentials);
@@ -175,6 +193,13 @@ export default function Home() {
             setAlert={setAlert}
             setCredentials={setCredentials}
           />
+          {alreadyHasReport && (
+            <HasReport
+              email={credentials.email}
+              uuid={uuid}
+              generateNewReport={handleSubmit}
+            />
+          )}
         </Suspense>
       )}
     </Layout>

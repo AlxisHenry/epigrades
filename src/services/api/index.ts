@@ -125,6 +125,20 @@ export const getReport = async (uuid: string = "me"): Promise<uuidResponse> => {
 	return await response.json();
 };
 
+export const hasReport = async (
+	credentials: Credentials
+): Promise<ScraperResponse> => {
+	const response = await fetch(`/api/online?check=true`, {
+		method: "POST",
+		body: JSON.stringify(credentials),
+		headers: {
+			"Content-Type": "application/json",
+			Accept: "application/json",
+		},
+	});
+	return await response.json();
+};
+
 export const clearCache = async (
 	email: string
 ): Promise<CacheClearedResponse> => {
@@ -153,7 +167,9 @@ export const getAuthenticatorCodeImage = async (
 	return image;
 };
 
-export const getReportInBase64 = async (uuid: string): Promise<EncodedPDFResponse> => {
+export const getReportInBase64 = async (
+	uuid: string
+): Promise<EncodedPDFResponse> => {
 	const response = await fetch(`/api/online/${uuid}/pdf`, {
 		method: "GET",
 	});

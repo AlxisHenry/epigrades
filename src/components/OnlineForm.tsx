@@ -8,7 +8,7 @@ type Props = {
   credentials: Credentials;
   alert: Alert;
   isSubmitting: boolean;
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleSubmit: () => void;
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
   setAlert: React.Dispatch<React.SetStateAction<Alert>>;
   setCredentials: React.Dispatch<React.SetStateAction<Credentials>>;
@@ -28,7 +28,13 @@ export default function OnlineForm({
   };
 
   return (
-    <form className="container" onSubmit={(e) => handleSubmit(e)}>
+    <form
+      className="container"
+      onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+    >
       {alert && <Alert type={alert.type} message={alert.message} />}
       <label htmlFor="email">Email</label>
       <input
