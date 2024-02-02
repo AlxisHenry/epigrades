@@ -98,12 +98,14 @@ export type EncodedPDFResponse = {
 };
 
 export type Report = {
-  student: {
-    email: string;
-    name: string;
-  },
+  student: Student,
   semesters: Semester[];
   created_at: string;
+}
+
+export type Student = {
+  email: string;
+  name: string;
 }
 
 export const uuid = (): string => {
