@@ -119,11 +119,9 @@ const now = () => {
 
 const getStudentName = (email) => {
   let parts = email.split("@")[0].split(".");
-  return parts
-    .map((part) => {
-      return part.charAt(0).toUpperCase() + part.slice(1);
-    })
-    .join(" ");
+  return `${parts[1].toUpperCase()} ${parts[0]
+    .charAt(0)
+    .toUpperCase()}${parts[0].slice(1)}`;
 };
 
 const getDuration = () => {
@@ -135,7 +133,7 @@ const getDuration = () => {
   }
 
   return duration + "s";
-}
+};
 
 const exit = (browser) => {
   setTimeout(async () => {
@@ -294,7 +292,7 @@ cleanFiles();
     "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[4]/ul"
   );
 
-  const courses = await list[0].$$("li");
+  const courses = await list[0]?.$$("li");
   const coursesCount = courses.length;
 
   write("Starting to retrieve your graded courses", 20);
@@ -353,7 +351,7 @@ cleanFiles();
       const table = await coursePage.$x(
         "/html/body/div[5]/div[1]/div[2]/section/div/table"
       );
-      const tableRows = await table[0].$$("tr");
+      const tableRows = await table[0]?.$$("tr");
       const tableRowsCount = tableRows.length;
 
       if (!grades.semesters.find((s) => s.name === semesterName)) {
@@ -366,7 +364,7 @@ cleanFiles();
 
       for (let i = 1; i < tableRowsCount; i++) {
         const row = tableRows[i];
-        const rowColumns = await row.$$("td");
+        const rowColumns = await row?.$$("td");
         if (rowColumns.length <= 0) continue;
         const topic = await coursePage.evaluate(
           (el) => el?.textContent ?? "",
