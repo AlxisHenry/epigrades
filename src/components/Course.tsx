@@ -1,4 +1,4 @@
-import ArrowIcon from "./Icons/Arrow";
+import ArrowIcon from "./Icons/ArrowIcon";
 import CourseLink from "./CourseLink";
 import { type Semester } from "@/services/semesters";
 import CourseTable from "./CourseTable";

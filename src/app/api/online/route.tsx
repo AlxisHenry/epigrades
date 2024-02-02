@@ -5,17 +5,14 @@ import {
   type Credentials,
   files,
   isEpitechEmail,
-  authenticateUsingEpitechAPI,
+  Report,
+  type Progress,
 } from "@/services/online";
 import { exec } from "child_process";
 import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
+import { authenticateUsingEpitechAPI } from "@/services/api";
 
-export type Progress = {
-  currentStep: string;
-  progress: number;
-  status: number;
-};
 
 export async function GET(
   request: NextRequest
@@ -53,7 +50,7 @@ export async function POST(
 
   for (const file of fs.readdirSync(paths.reports)) {
     if (file.includes(".json")) {
-      let report = JSON.parse(
+      let report: Report = JSON.parse(
         fs.readFileSync(`${paths.reports}/${file}`, "utf8")
       );
       if (report.student.email === email) {

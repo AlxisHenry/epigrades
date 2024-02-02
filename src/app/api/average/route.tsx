@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  Semester,
-  calculateGlobalGradeAverage
-} from "@/services/semesters";
-import { files } from "@/services/online";
+import { Semester, calculateAverage } from "@/services/semesters";
+import { Report, files } from "@/services/online";
 import fs from "fs";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -13,11 +10,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   let file = files.reports(uuid);
 
   if (fs.existsSync(file)) {
-    let grade = JSON.parse(fs.readFileSync(file, "utf8"));
-    semesters = grade.semesters;
+    let report: Report = JSON.parse(fs.readFileSync(file, "utf8"));
+    semesters = report.semesters;
   }
 
   return NextResponse.json({
-    average: +calculateGlobalGradeAverage(semesters) || -1,
+    average: +calculateAverage(semesters) || -1,
   });
 }

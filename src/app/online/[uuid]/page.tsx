@@ -1,30 +1,29 @@
 "use client";
 
-import "@/styles/pages/online.scss";
 import Layout from "@/components/Layout";
 import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import moment from "moment";
-import { getReport } from "@/services/online";
+import { base64ToBlob } from "@/services/online";
 import {
   Semester,
-  calculateGlobalGradeAverage,
-  calculateSemesterGradeAverage,
+  calculateAverage,
   sortSemesters,
 } from "@/services/semesters";
 import Course from "@/components/Course";
 import SemesterTitle from "@/components/SemesterTitle";
 import Cards from "@/components/Cards";
 import Card from "@/components/Card";
-import {
-  getGlobalAssignementsCount,
-  getSemesterAssignementsCount,
-} from "@/services/assignements";
+import { getGlobalAssignementsCount } from "@/services/assignements";
 import { sortCourses } from "@/services/courses";
 import { NotFound } from "@/components/NotFound";
 import Loading from "@/components/Loading";
-import SyncIcon from "@/components/Icons/Sync";
+import SyncIcon from "@/components/Icons/SyncIcon";
+import DownloadIcon from "@/components/Icons/DownloadIcon";
+import download from "downloadjs";
+import Spinner from "@/components/Spinner";
+import { getReport, getReportInBase64 } from "@/services/api";
 
 type Params = {
   uuid: string;
@@ -41,6 +40,7 @@ export default function Home() {
     email: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [semesters, setSemesters] = useState<Semester[] | null>(null);
   const [createdAt, setCreatedAt] = useState<null | string>(null);
@@ -49,18 +49,18 @@ export default function Home() {
   useEffect(() => {
     setIsLoading(true);
     (async () => {
-      const response = await getReport(uuid);
-      if (!response.success || !response.semesters || !response.student) {
+      const { success, report } = await getReport(uuid);
+      if (!success || !report) {
         setIsLoading(false);
         return;
       }
 
-      if (response.created_at) {
-        setCreatedAt(moment(response.created_at).fromNow());
+      if (report.created_at) {
+        setCreatedAt(moment(report.created_at).fromNow());
       }
 
-      setStudent(response.student);
-      setSemesters(sortSemesters(response.semesters));
+      setStudent(report.student);
+      setSemesters(sortSemesters(report.semesters));
       setIsLoading(false);
     })();
   }, [uuid]);
@@ -107,6 +107,36 @@ export default function Home() {
             >
               <SyncIcon size={24} isSyncing={isSyncing} />
             </div>
+            <div
+              onClick={async () => {
+                setIsDownloading(true);
+
+                const base64 = await getReportInBase64(uuid)
+
+                if (!base64) {
+                  setIsDownloading(false);
+                  return;
+                }
+
+                download(
+                  base64ToBlob(base64),
+                  `${student.name} - Report.pdf`,
+                  "application/pdf"
+                );
+                setIsDownloading(false);
+              }}
+            >
+              {isDownloading ? (
+                <Spinner
+                  customCss={{
+                    width: "24px",
+                    height: "24px",
+                  }}
+                />
+              ) : (
+                <DownloadIcon size={24} />
+              )}
+            </div>
           </div>
           <div
             style={{
@@ -117,7 +147,7 @@ export default function Home() {
             <Cards className="is-semester-cards">
               <Card
                 title="Global Average"
-                subtitle={calculateGlobalGradeAverage(semesters)}
+                subtitle={calculateAverage(semesters)}
               />
               <Card
                 title="Assignments"

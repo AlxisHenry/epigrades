@@ -168,9 +168,11 @@ button:disabled:focus {
   .error_section h1 {
     font-size: 5rem;
   }
+
   .error_section p {
     font-size: 1.5rem;
   }
+
   .error_section button {
     max-width: 180px;
   }
@@ -178,8 +180,8 @@ button:disabled:focus {
 
 @media screen and (max-width: 520px) {
   button {
-    max-width: 100%!important;
-    width: 100%!important;
+    max-width: 100% !important;
+    width: 100% !important;
   }
 }
 
@@ -202,7 +204,18 @@ button:disabled:focus {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
+}
+
+.download-icon {
+  fill: var(--grey);
+  transition: all 0.2s ease-in-out;
+}
+
+.download-icon:hover {
+  fill: var(--contrast-secondary);
+  cursor: pointer;
 }

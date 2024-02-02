@@ -1,6 +1,6 @@
 import { sortCourses, type Course } from "./courses";
 import { isGradedDay } from "./days";
-import { getReport } from "./online";
+import { getReport } from "./api";
 
 export type Semester = {
   name: string;
@@ -11,7 +11,7 @@ export type Semester = {
 export function getSemesters(): Promise<Semester[]> {
   return new Promise(async (resolve, reject) => {
     const response = await getReport();
-    resolve(sortSemesters(response?.semesters || []));
+    resolve(sortSemesters(response.report?.semesters || []));
   });
 }
 
@@ -51,37 +51,35 @@ export async function getSemestersCount(): Promise<number> {
   return semesters.length;
 }
 
-export function calculateSemesterGradeAverage(
-  semester: Semester | null
+export function calculateAverage(
+  semester: Semester | Semester[] | null
 ): string {
   if (semester === null) return "-";
-  let grade = 0,
-    gradesCount = 0;
-  semester.courses.forEach((course) => {
-    course.days.map((day) => {
-      if (isGradedDay(day)) {
-        grade += parseFloat(day.grade);
-        gradesCount++;
-      }
-    });
-  });
-  if (gradesCount === 0) return "-";
-  return (grade / gradesCount).toFixed(2);
-}
 
-export function calculateGlobalGradeAverage(semesters: Semester[]): string {
-  let grade = 0,
-    gradesCount = 0;
-  semesters.forEach((semester) => {
+  let sum = 0,
+    assignementsCount = 0;
+
+  if (Array.isArray(semester)) {
+    semester.forEach((s) => {
+      s.courses.forEach((course) => {
+        course.days.map((day) => {
+          if (isGradedDay(day)) {
+            sum += parseFloat(day.grade);
+            assignementsCount++;
+          }
+        });
+      });
+    });
+  } else {
     semester.courses.forEach((course) => {
       course.days.map((day) => {
         if (isGradedDay(day)) {
-          grade += parseFloat(day.grade);
-          gradesCount++;
+          sum += parseFloat(day.grade);
+          assignementsCount++;
         }
       });
     });
-  });
-  if (gradesCount === 0) return "-";
-  return (grade / gradesCount).toFixed(2);
+  }
+  if (assignementsCount === 0) return "-";
+  return (sum / assignementsCount).toFixed(2);
 }

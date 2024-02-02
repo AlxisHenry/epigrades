@@ -2,6 +2,8 @@ import fs from "fs";
 import puppeteer from "puppeteer";
 import Jimp from "jimp";
 
+const startTime = Date.now();
+
 const email = process.argv[2];
 const password = process.argv[3];
 const uuid = process.argv[4];
@@ -18,6 +20,7 @@ const files = {
   otp: `${TEMP_DIR}/otp-${uuid}.json`,
   authenticator: `${TEMP_DIR}/authenticator-${uuid}.png`,
   report: `scraper/reports/${uuid}.json`,
+  pdf: `scraper/reports/${uuid}.pdf`,
 };
 
 if (fs.existsSync(files.progress)) {
@@ -122,6 +125,17 @@ const getStudentName = (email) => {
     })
     .join(" ");
 };
+
+const getDuration = () => {
+  const duration = parseInt((Date.now() - startTime) / 1000);
+  if (duration > 60) {
+    return `${parseInt(duration / 60)}m${duration % 60}s`;
+  } else if (duration === 60) {
+    return "1m";
+  }
+
+  return duration + "s";
+}
 
 const exit = (browser) => {
   setTimeout(async () => {
@@ -413,6 +427,7 @@ cleanFiles();
           .reverse()
           .find((day) => day.due_date !== "-");
 
+        // TODO: Vérifier si la première note est passée (plutot que la dernière)
         if (lastGrade) {
           if (new Date(lastGrade.due_date) > new Date()) {
             semester.courses = semester.courses.filter(
@@ -428,7 +443,10 @@ cleanFiles();
     await coursePage.close();
   }
 
-  write("Retrieving your GPA", 95);
+  // TODO: Retrieve badges
+  // TODO: Retrieve GPA
+
+  write("Generating the report", 95);
 
   grades.semesters = grades.semesters.filter((s) => s.courses.length > 0);
 
@@ -439,6 +457,6 @@ cleanFiles();
   grades.created_at = now();
   fs.writeFileSync(files.report, JSON.stringify(grades), "utf8");
 
-  write("Report generated", 100, 1);
+  write(`All tasks done (in ${getDuration()}) 🚀`, 100);
   exit(browser);
 })();

@@ -6,10 +6,6 @@ import PageTitle from "@/components/PageTitle";
 import {
   type Credentials,
   errors,
-  getExecutionProgress,
-  runScraper,
-  saveOTPCode,
-  validateCredentials,
   isStep,
   steps,
   type Alert,
@@ -24,6 +20,12 @@ import { ScraperFailed } from "@/components/ScraperFailed";
 import AuthenticatorCode from "@/components/AuthenticatorCode";
 import { useSearchParams } from "next/navigation";
 import OnlineForm from "@/components/OnlineForm";
+import {
+  getExecutionProgress,
+  runScraper,
+  saveOTPCode,
+  validateCredentials,
+} from "@/services/api";
 
 export default function Home() {
   const params = useSearchParams();

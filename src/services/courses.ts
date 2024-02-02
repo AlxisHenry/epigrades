@@ -38,7 +38,7 @@ export function getCourse(id: string): Promise<Course | null> {
   });
 }
 
-export function calculateCourseGradeAverage(course: Course | null): string {
+export function calculateAverage(course: Course | null): string {
   if (course === null) return "-";
   let grade = 0,
     countOfGrades = 0;

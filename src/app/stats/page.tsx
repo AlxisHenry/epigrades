@@ -11,7 +11,7 @@ import {
   Legend,
 } from "chart.js";
 import {
-  calculateSemesterGradeAverage,
+  calculateAverage,
   getSemester,
   getSemestersNames,
 } from "@/services/semesters";
@@ -43,7 +43,6 @@ export default function Home() {
   useEffect(() => {
     const initialize = async () => {
       const semestersNames = await getSemestersNames();
-      const updatedDatasets = [];
 
       let data: string[] = [];
       let colors: string[] = [];
@@ -55,16 +54,18 @@ export default function Home() {
             Math.random() * 255
           )}, ${Math.floor(Math.random() * 255)}, 0.5)`
         );
-        data.push(calculateSemesterGradeAverage(semester).toString());
+        data.push(calculateAverage(semester));
       }
 
-      setDatasets([{
-        label: "Semester",
-        data: data,
-        backgroundColor: colors,
-        borderColor: colors,
-        borderWidth: 1,
-      }]);
+      setDatasets([
+        {
+          label: "Semester",
+          data: data,
+          backgroundColor: colors,
+          borderColor: colors,
+          borderWidth: 1,
+        },
+      ]);
       setLabels(semestersNames);
     };
 

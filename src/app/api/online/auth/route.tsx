@@ -1,8 +1,8 @@
+import { authenticateUsingEpitechAPI } from "@/services/api";
 import {
   type Credentials,
   type AuthenticateResponse,
   errors,
-  authenticateUsingEpitechAPI,
   isEpitechEmail,
 } from "@/services/online";
 import { NextResponse, NextRequest } from "next/server";
