@@ -80,7 +80,7 @@ const header = (
     .font(fonts.daytona.thin)
     .fontSize(14)
     .text(
-      `Bulletin d'${student.name} pour le semestre ${semester.name}`,
+      `Bulletin de ${student.name} pour le semestre ${semester.name}`,
       0,
       80,
       {
