@@ -239,7 +239,7 @@ const pdf = (uuid: string, grades: Report): Promise<string> => {
       report
         .font(fonts.daytona.sm)
         .fontSize(14)
-        .text(getGradeAverage(semester), x + 351, currentY + 10);
+        .text(getGradeAverage(semester) || "N/A", x + 351, currentY + 10);
 
       currentY = report.y;
 
