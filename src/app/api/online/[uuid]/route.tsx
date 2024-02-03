@@ -16,7 +16,7 @@ export async function GET(
     let report: Report = JSON.parse(fs.readFileSync(file, "utf8"));
     return NextResponse.json({
       success: true,
-      report
+      report,
     });
   }
 
