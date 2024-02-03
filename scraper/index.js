@@ -306,7 +306,6 @@ cleanFiles();
     created_at: null,
   };
 
-  // For each course we retrieve the assignments
   for (let i = 0; i < coursesCount; i++) {
     const course = courses[i];
     const element = await course.$("a");
@@ -317,7 +316,7 @@ cleanFiles();
 
     write(`${name} (${i + 1}/${coursesCount})`, 20 + (i / coursesCount) * 70);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const courseNotAvailable = await coursePage.$x(
       "/html/body/div[4]/div/div[2]/section/div/div[1]"
