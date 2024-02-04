@@ -316,7 +316,7 @@ cleanFiles();
 
     write(`${name} (${i + 1}/${coursesCount})`, 20 + (i / coursesCount) * 70);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const courseNotAvailable = await coursePage.$x(
       "/html/body/div[4]/div/div[2]/section/div/div[1]"
