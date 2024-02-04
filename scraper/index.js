@@ -247,8 +247,6 @@ cleanFiles();
       await browser.close();
       process.exit(0);
     }
-
-    write("The code has been sent", 10);
   } else {
     write("Retrieving the code needed for the authentication", 10);
     await page.screenshot({ path: files.authenticator });

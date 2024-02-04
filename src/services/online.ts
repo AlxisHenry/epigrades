@@ -41,9 +41,9 @@ export const files = {
 
 export const steps = {
   waitingForTwoFactorAuthentication: "Waiting for 2FA",
-  twoFactorAuthenticationCodeSent: "The code has been sent",
   waitingForMicrosoftAuthenticatorValidation:
     "Waiting for Microsoft Authenticator validation",
+  logged: "Logged successfully to the intranet",
   authenticationFailed: "Authentication failed",
   reportGenerated: "All tasks done",
 };

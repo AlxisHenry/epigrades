@@ -53,9 +53,7 @@ export default function Home() {
     password: "",
   });
 
-  const handleSubmit = async (
-    fromModal: boolean = false
-  ) => {
+  const handleSubmit = async (fromModal: boolean = false) => {
     if (!fromModal) {
       setAlert(null);
       setIsSubmitting(true);
@@ -108,10 +106,9 @@ export default function Home() {
             setIsAskingForOTPCode(true);
             let parts = state.currentStep.split(" ");
             setPhone(`+${parts[parts.length - 1]}`);
-          } else if (
-            isStep(state.currentStep, steps.twoFactorAuthenticationCodeSent)
-          ) {
+          } else if (isStep(state.currentStep, steps.logged)) {
             setIsAskingForOTPCode(false);
+            setIsAskingForAuthenticatorValidation(false);
             setIsSavingOTPCode(false);
           } else if (isStep(state.currentStep, steps.reportGenerated)) {
             clearInterval(checkExecutionProgress);
