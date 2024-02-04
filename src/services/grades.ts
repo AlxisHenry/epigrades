@@ -7,7 +7,7 @@ export enum Grade {
   B = "B",
   C = "C",
   D = "D",
-  E = "Echec"
+  E = "Echec",
 }
 
 export function isValidGrade(grade: string): boolean {
@@ -28,29 +28,36 @@ export function getCourseGrade(course: Course | null): string {
   return "-";
 }
 
-export function getMoreRecurentGrade(semester: Semester): string {
-  let grades: string[] = semester.courses.map((course) => getCourseGrade(course));
-  let gradeCount: { [key: string]: number } = {};
+export function getGradeAverage(semester: Semester): string {
+  let grades: string[] = semester.courses
+    .map((course) => getCourseGrade(course))
+    .filter((grade) => isValidGrade(grade));
+
+  let points: { [key: string]: number } = {
+    A: 1,
+    B: 0.8,
+    C: 0.6,
+    D: 0.2,
+    Echec: -0.4,
+  };
+
+  let total: number = 0;
 
   for (let grade of grades) {
-    if (grade !== "-") {
-      if (gradeCount[grade]) {
-        gradeCount[grade] += 1;
-      } else {
-        gradeCount[grade] = 1;
-      }
+    total += points[grade];
+  }
+
+  let average = total / grades.length,
+    closestGrade: string = "",
+    closestDifference: number = Infinity;
+
+  for (let grade in points) {
+    let difference = Math.abs(average - points[grade]);
+    if (difference < closestDifference) {
+      closestDifference = difference;
+      closestGrade = grade;
     }
   }
 
-  let maxGrade: string = "-";
-  let maxCount: number = 0;
-
-  for (let grade in gradeCount) {
-    if (gradeCount[grade] > maxCount) {
-      maxGrade = grade;
-      maxCount = gradeCount[grade];
-    }
-  }
-
-  return maxGrade;
+  return closestGrade;
 }
