@@ -113,54 +113,6 @@ $ curl -X GET http://localhost:3000/api/online/<uuid>/pdf
 
 **Note:** If the given `uuid` is not found, the API will return null instead of the base64.
 
-### Configure the selenium bot (deprecated)
-
-**Note:** this bot is not maintained anymore, but you can still use it if you want. (I recommend you to use the puppeteer bot)
-
-```bash
-$ cd bot
-$ cp .env.example .env
-$ cat .env
-MICROSOFT_EMAIL="example@gmail.com"
-MICROSOFT_PASSWORD="password"
-CHROMEDRIVER_PATH="./drivers/chromedriver.exe"
-WEBSITE_URL="https://www.microsoft.com/en-us/software-download/windows10ISO"
-```
-
-- Replace the `MICROSOFT_EMAIL` and `MICROSOFT_PASSWORD` environments variables with your microsoft credentials.
-- Replace `WEBSITE_URL` with the link to gandalf login page.
-
-#### Reset the `grades.json` file using the sample.
-
-```
-$ cp grades.sample.json grades.json
-```
-
-#### Optionally you can use a python virtual environment to run the bot.
-
-```bash
-$ python3 -m venv venv
-$ venv/Scripts/activate
-```
-
-#### Install the needed packages
-
-```bash
-$ pip install -r requirements.txt
-```
-
-#### Install the chromedriver
-
-Go to `https://googlechromelabs.github.io/chrome-for-testing/#stable` and download the chromedriver for your version of chrome. Then put it in the `drivers` folder (name it `chromedriver.exe`).
-
-#### Now you just need to run the `main.py` ! 🐡
-
-```bash
-$ py main.py
-```
-
-During the script, you will be asked for an OTP code, which you should normally receive by phone. Your Microsoft account must be linked to your telephone number if you turn on 2FA. So you just need to enter the code in your terminal when asked.
-
 ## Technologies
 
 ![](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&color=20232a)
