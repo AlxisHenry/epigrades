@@ -27,10 +27,16 @@ if (fs.existsSync(files.progress)) {
   process.exit(0);
 }
 
+const DEFAULT_SEMESTER_NAME = "-";
 const ASSIGNEMENTS_URL =
   "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
 
 const semestersDates = [
+  {
+    name: "-",
+    start: null,
+    end: null,
+  },
   {
     name: "T5",
     start: "2023-09-12",
@@ -112,9 +118,7 @@ const now = () => {
     })
     .toString();
   let [date, time] = fullDate.replace(" AM", "").split(" ");
-  let [day, month, year] = date.split("/");
-  let [hours, minutes, seconds] = time.split(":");
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return `${date.split("/").join("-")} ${time}`;
 };
 
 const getStudentName = (email) => {
@@ -184,7 +188,7 @@ cleanFiles();
       write("Authentication failed", 5, 1);
       exit(browser);
     }
-  } catch (e) { }
+  } catch (e) {}
 
   try {
     await page.waitForXPath('//*[@id="passwordInput"]', {
@@ -195,7 +199,7 @@ cleanFiles();
     await page.waitForXPath('//*[@id="submitButton"]');
     const submitButton = await page.$x('//*[@id="submitButton"]');
     await submitButton[0].click();
-  } catch (e) { }
+  } catch (e) {}
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -300,7 +304,11 @@ cleanFiles();
       email,
       name: getStudentName(email),
     },
-    semesters: [],
+    semesters: semestersDates.map((s) => ({
+      name: s.name,
+      courses: [],
+      created_at: null,
+    })),
     created_at: null,
   };
 
@@ -321,28 +329,19 @@ cleanFiles();
     );
 
     if (!(courseNotAvailable.length > 0)) {
-      const semester = await coursePage.$x(
-        "/html/body/div[5]/div[1]/div[1]/div/nav/ol/li[4]/span/a/span"
-      );
-      let semesterName = await coursePage.evaluate(
-        (el) => el?.textContent ?? null,
-        semester[0]
-      );
-
-      if (semesterName === null) {
-        for (const semesterDate of semestersDates) {
-          if (
-            new Date(semesterDate.start) <= new Date() &&
-            new Date(semesterDate.end) >= new Date()
-          ) {
-            semesterName = semesterDate.name;
-            break;
-          }
-        }
-      }
-
-      if (semesterName === null) {
-        semesterName = "-";
+      if (
+        !grades.semesters
+          .find((s) => s.name === DEFAULT_SEMESTER_NAME)
+          ?.courses.find((c) => c.name === name)
+      ) {
+        grades.semesters
+          .find((s) => s.name === DEFAULT_SEMESTER_NAME)
+          ?.courses.push({
+            id: link.split("=")[1],
+            name: name,
+            days: [],
+            created_at: null,
+          });
       }
 
       const table = await coursePage.$x(
@@ -351,18 +350,12 @@ cleanFiles();
       const tableRows = await table[0]?.$$("tr");
       const tableRowsCount = tableRows.length;
 
-      if (!grades.semesters.find((s) => s.name === semesterName)) {
-        grades.semesters.push({
-          name: semesterName,
-          courses: [],
-          created_at: null,
-        });
-      }
-
       for (let i = 1; i < tableRowsCount; i++) {
         const row = tableRows[i];
         const rowColumns = await row?.$$("td");
+
         if (rowColumns.length <= 0) continue;
+
         const topic = await coursePage.evaluate(
           (el) => el?.textContent ?? "",
           rowColumns[0]
@@ -383,28 +376,14 @@ cleanFiles();
           (el) => el?.textContent ?? "",
           rowColumns[4]
         );
+
         if (!topic && !assignments && !due_date && !submission && !grade)
           continue;
 
-        if (
-          !grades.semesters
-            .find((s) => s.name === semesterName)
-            .courses.find((c) => c.name === name)
-        ) {
-          grades.semesters
-            .find((s) => s.name === semesterName)
-            .courses.push({
-              id: link.split("=")[1],
-              name: name,
-              days: [],
-              created_at: null,
-            });
-        }
-
         grades.semesters
-          .find((s) => s.name === semesterName)
-          .courses.find((c) => c.name === name)
-          .days.push({
+          .find((s) => s.name === DEFAULT_SEMESTER_NAME)
+          ?.courses.find((c) => c.name === name)
+          ?.days.push({
             name: topic,
             topic,
             assignments,
@@ -415,23 +394,58 @@ cleanFiles();
       }
 
       if (grades && grades.semesters) {
-        const semester = grades.semesters.find((s) => s.name === semesterName);
-        const course = semester?.courses.find((c) => c.name === name);
+        const semester = grades.semesters.find(
+          (s) => s.name === DEFAULT_SEMESTER_NAME
+        );
+        const course = semester?.courses?.find((c) => c.name === name);
+
         const lastGrade = course?.days
           .slice()
           .reverse()
           .find((day) => day.due_date !== "-");
+
         const firstGrade = course?.days.find((day) => day.due_date !== "-");
 
-        if (firstGrade && new Date(firstGrade.due_date) > new Date()) {
-          semester.courses = semester.courses.filter(
-            (c) => c.name !== course.name
-          );
+        if (firstGrade) {
+          if (new Date(firstGrade.due_date) > new Date()) {
+            semester.courses = semester.courses.filter(
+              (c) => c.name !== course.name
+            );
+          } else {
+            for (const semesterDate of semestersDates) {
+              if (!semesterDate.start || !semesterDate.end) continue;
+              if (
+                new Date(firstGrade.due_date) >= new Date(semesterDate.start) &&
+                new Date(firstGrade.due_date) <= new Date(semesterDate.end)
+              ) {
+                console.log(
+                  "Pushing",
+                  course.name,
+                  "to",
+                  semesterDate.name,
+                  "and removing from",
+                  DEFAULT_SEMESTER_NAME,
+                  "because",
+                  firstGrade.due_date,
+                  "is between",
+                  semesterDate.start,
+                  "and",
+                  semesterDate.end
+                );
+
+                grades.semesters
+                  .find((s) => s.name === semester.name)
+                  ?.courses.push(course);
+
+                grades.semesters = grades.semesters
+                  .find((s) => s.name === DEFAULT_SEMESTER_NAME)
+                  ?.courses.filter((c) => c.name !== course.name);
+              }
+            }
+          }
         }
 
-        if (lastGrade) {
-          course.created_at = lastGrade.due_date;
-        }
+        if (lastGrade) course.created_at = lastGrade.due_date;
       }
     }
 
