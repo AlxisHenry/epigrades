@@ -63,7 +63,7 @@ export async function POST(
 
   const check: boolean = request.nextUrl.searchParams.get("check") === "true";
 
-  if (state && check) {
+  if (check) {
     return NextResponse.json({
       state,
       uuid: currentUuid,
