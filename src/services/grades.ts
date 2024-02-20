@@ -19,7 +19,7 @@ export function getCourseGrade(course: Course | null): string {
 
   let lastDay: Day = course.days[course.days.length - 1];
 
-  if (lastDay.due_date === "-") {
+  if (lastDay?.due_date === "-") {
     if (Object.values(Grade).includes(lastDay.grade as Grade)) {
       return lastDay.grade;
     }
