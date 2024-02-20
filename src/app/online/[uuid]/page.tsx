@@ -56,7 +56,10 @@ export default function Home() {
       }
 
       if (report.created_at) {
-        setCreatedAt(moment(report.created_at).fromNow());
+        console.log(report.created_at);
+        setCreatedAt(
+          moment(report.created_at, "DD-MM-YYYY hh:mm:ss").fromNow()
+        );
       }
 
       setStudent(report.student);
