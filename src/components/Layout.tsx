@@ -1,6 +1,10 @@
-import Sidebar from "./Sidebar";
+import { Sidebar } from "./Sidebar";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface Props {
+  children: React.ReactNode;
+}
+
+export function Layout({ children }: Props) {
   return (
     <>
       <Sidebar />

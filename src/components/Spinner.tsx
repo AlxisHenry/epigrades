@@ -1,3 +1,7 @@
-export default function Spinner({ customCss }: { customCss?: {} }) {
+interface Props {
+  customCss?: {};
+}
+
+export function Spinner({ customCss }: Props) {
   return <div className="loading__spinner" style={customCss}></div>;
 }

@@ -1,8 +1,6 @@
-"use client";
-
 import { type Alert, type Credentials } from "@/services/online";
-import Spinner from "./Spinner";
-import TroubleLink from "./TroubleLink";
+import { Spinner } from "../Spinner";
+import TroubleLink from "../TroubleLink";
 
 type Props = {
   credentials: Credentials;
@@ -14,7 +12,7 @@ type Props = {
   setCredentials: React.Dispatch<React.SetStateAction<Credentials>>;
 };
 
-export default function OnlineForm({
+export function OnlineForm({
   credentials,
   alert,
   isSubmitting,
@@ -80,6 +78,11 @@ export default function OnlineForm({
   );
 }
 
-const Alert = ({ type, message }: { type: string; message: string }) => {
-  return <div className={type}>{message}</div>;
-};
+interface AlertProps {
+  type: string;
+  message: string;
+}
+
+const Alert = ({ type, message }: AlertProps) => (
+  <div className={type}>{message}</div>
+);

@@ -1,15 +1,13 @@
-"use client";
+import { Spinner} from "../Spinner";
 
-import Spinner from "./Spinner";
-
-type Props = {
+interface Props {
   phone: string;
   setCode: (code: string) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   isSavingCode: boolean;
 };
 
-export default function OtpForm({
+export function OtpForm({
   phone,
   setCode,
   onSubmit,

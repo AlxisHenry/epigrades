@@ -1,9 +1,10 @@
 "use client";
 
 import "@/styles/pages/home.scss";
-import Layout from "@/components/Layout";
-import PageTitle from "@/components/PageTitle";
+
 import Link from "next/link";
+
+import { Layout, PageTitle } from "@/components";
 
 export default function Home() {
   return (

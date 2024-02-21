@@ -12,3 +12,4 @@ export { LinkArrow } from "./LinkArrow";
 export { MagicIcon } from "./MagicIcon";
 export { SchoolIcon } from "./SchoolIcon";
 export { SyncIcon } from "./SyncIcon";
+export { MenuIcon } from "./MenuIcon";
