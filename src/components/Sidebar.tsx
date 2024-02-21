@@ -3,11 +3,8 @@ import SidebarDropdown, { type DropdownItemProps } from "./SidebarDropdown";
 import SidebarToggle from "./SidebarToggle";
 import { getSemester, getSemestersNames } from "@/services/semesters";
 import { useEffect, useState } from "react";
-import BarChartIcon from "./Icons/BarChartIcon";
-import HomeIcon from "./Icons/HomeIcon";
-import SchoolIcon from "./Icons/SchoolIcon";
+import { BarChartIcon, HomeIcon, MagicIcon, SchoolIcon } from "@/components/icons";
 import { usePathname } from "next/navigation";
-import MagicIcon from "./Icons/MagicIcon";
 
 export default function Sidebar() {
   const [semesters, setSemesters] = useState<DropdownItemProps[]>([]);

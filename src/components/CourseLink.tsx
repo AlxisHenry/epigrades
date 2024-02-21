@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LinkArrow } from "./Icons/LinkArrow";
+import { LinkArrow } from "./icons/LinkArrow";
 
 type Props = {
   isOnline?: boolean;

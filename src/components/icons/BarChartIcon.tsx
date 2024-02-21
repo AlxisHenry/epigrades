@@ -1,14 +1,12 @@
 import React from "react";
+import { Icon } from "./index.js";
 
-export default function BarChartIcon({
-  size = 48,
-}: {
-  size?: number;
-}): JSX.Element {
+export function BarChartIcon({ size = 48 }: Icon): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       height={size}
+      fill="currentColor"
       viewBox="0 -960 960 960"
       width={size}
     >

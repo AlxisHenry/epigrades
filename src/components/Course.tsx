@@ -1,9 +1,9 @@
-import ArrowIcon from "./Icons/ArrowIcon";
 import CourseLink from "./CourseLink";
 import { type Semester } from "@/services/semesters";
 import CourseTable from "./CourseTable";
 import { type Course } from "@/services/courses";
 import { getCourseGrade, isValidGrade } from "@/services/grades";
+import { ArrowIcon } from "@/components/icons";
 
 type Props = {
   isOnline?: boolean;

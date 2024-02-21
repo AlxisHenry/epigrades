@@ -1,13 +1,10 @@
 import React from "react";
 
-export default function InfoIcon({
-  size = 48,
-}: {
-  size?: number;
-}): JSX.Element {
+export function InfoIcon({ size = 48 }: { size?: number }): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
       height={size}
       viewBox="0 -960 960 960"
       width={size}
