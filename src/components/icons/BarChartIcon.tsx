@@ -5,7 +5,6 @@ export function BarChartIcon({ size = 48 }: Icon): JSX.Element {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       height={size}
-      fill="none"
       viewBox="0 -960 960 960"
       width={size}
     >
