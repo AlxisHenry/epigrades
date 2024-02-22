@@ -55,6 +55,7 @@ export function Sidebar() {
           text: "Semesters",
           icon: <SchoolIcon />,
           items: semesters,
+          isDropdown: true
         },
         {
           route: "/stats",
