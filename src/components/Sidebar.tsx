@@ -27,33 +27,9 @@ interface Item {
 }
 
 export function Sidebar() {
-  const [semesters, setSemesters] = useState<DropdownItem[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [items, setItems] = useState<Item[]>([]);
   const pathname = usePathname();
-
-  const items: Item[] = [
-    {
-      route: "/",
-      text: "Home",
-      icon: <HomeIcon />,
-    },
-    {
-      route: "/semesters",
-      text: "Semesters",
-      icon: <SchoolIcon />,
-      items: semesters,
-    },
-    {
-      route: "/stats",
-      text: "Statistics",
-      icon: <BarChartIcon />,
-    },
-    {
-      route: "/online",
-      text: "Online",
-      icon: <MagicIcon />,
-    },
-  ];
 
   useEffect(() => {
     const initialize = async () => {
@@ -67,7 +43,30 @@ export function Sidebar() {
           text: semesterName,
           route: `/semesters/${semesterName}`,
         }));
-      setSemesters(semesters);
+
+      setItems([
+        {
+          route: "/",
+          text: "Home",
+          icon: <HomeIcon />,
+        },
+        {
+          route: "/semesters",
+          text: "Semesters",
+          icon: <SchoolIcon />,
+          items: semesters,
+        },
+        {
+          route: "/stats",
+          text: "Statistics",
+          icon: <BarChartIcon />,
+        },
+        {
+          route: "/online",
+          text: "Online",
+          icon: <MagicIcon />,
+        },
+      ]);
     };
 
     initialize();
@@ -86,13 +85,13 @@ export function Sidebar() {
         />
         <div className="sidebar__items">
           {items.map((item, index) => {
-            return item.isDropdown && item.items ? (
+            return item.isDropdown ? (
               <SidebarDropdown
                 pathname={pathname}
                 key={index}
                 text={item.text}
                 icon={item.icon}
-                items={item.items}
+                items={item.items || []}
               />
             ) : (
               <SidebarItem
