@@ -5,7 +5,20 @@ import "@/styles/pages/course.scss";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  PointElement,
+  LineElement,
+  Legend,
+} from "chart.js";
 
+import { getCourseGrade } from "@/services/grades";
+import { isGradedDay } from "@/services/days";
 import { type Semester, getSemester } from "@/services/semesters";
 import {
   type Course as CourseType,
@@ -23,20 +36,6 @@ import {
   Cards,
   Card,
 } from "@/components";
-
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  PointElement,
-  LineElement,
-  Legend,
-} from "chart.js";
-import { getCourseGrade } from "@/services/grades";
-import { isGradedDay } from "@/services/days";
 
 type Params = {
   semester: string;
