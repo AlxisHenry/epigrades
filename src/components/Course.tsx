@@ -1,10 +1,12 @@
+import NextLink from "next/link";
+import moment from "moment";
+
 import { type Semester } from "@/services/semesters";
 import { type Course } from "@/services/courses";
 import { getCourseGrade, isValidGrade } from "@/services/grades";
-import { ArrowIcon, LinkArrow } from "@/components/icons";
 import { Day as DayType, isValidDay } from "@/services/days";
-import NextLink from "next/link";
-import moment from "moment";
+
+import { ArrowIcon, LinkArrow } from "@/components/icons";
 
 interface Props {
   isOnline?: boolean;

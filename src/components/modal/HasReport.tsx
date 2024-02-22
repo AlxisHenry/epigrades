@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Spinner } from "@/components/Spinner";
+
+import { Spinner } from "@/components";
 
 interface Props {
   uuid: string;

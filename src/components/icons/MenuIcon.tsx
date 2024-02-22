@@ -1,7 +1,6 @@
-import React from "react";
-import { Icon } from "./index.js";
+import { Icon } from "@/components/icons";
 
-export function MenuIcon({ size = 50 }: Icon): React.ReactElement {
+export function MenuIcon({ size = 50 }: Icon): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -1,6 +1,8 @@
-import { Icon } from "./index.js";
+import React from "react";
 
-export function LinkArrow({ size = 20 }: Icon) {
+import { Icon } from "@/components/icons";
+
+export function LinkArrow({ size = 20 }: Icon): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
+
 import { getSemester, getSemestersNames } from "@/services/semesters";
+
 import {
   BarChartIcon,
   HomeIcon,
@@ -8,7 +11,6 @@ import {
   MenuIcon,
   SchoolIcon,
 } from "@/components/icons";
-import Link from "next/link";
 
 interface DropdownItem {
   route: string;

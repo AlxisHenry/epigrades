@@ -1,4 +1,4 @@
-import { Icon } from "./index.js";
+import { Icon } from "@/components/icons";
 
 export function SchoolIcon({ size = 48 }: Icon): JSX.Element {
   return (

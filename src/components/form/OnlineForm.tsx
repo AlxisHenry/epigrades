@@ -1,8 +1,8 @@
 import { type Alert, type Credentials } from "@/services/online";
-import { Spinner } from "../Spinner";
-import TroubleLink from "../TroubleLink";
 
-type Props = {
+import { Spinner, TroubleLink } from "@/components";
+
+interface Props {
   credentials: Credentials;
   alert: Alert;
   isSubmitting: boolean;
@@ -10,7 +10,7 @@ type Props = {
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
   setAlert: React.Dispatch<React.SetStateAction<Alert>>;
   setCredentials: React.Dispatch<React.SetStateAction<Credentials>>;
-};
+}
 
 export function OnlineForm({
   credentials,

@@ -1,5 +1,4 @@
-import React from "react";
-import { Icon } from "./index.js";
+import { Icon } from "@/components/icons";
 
 export function DownloadIcon({ size = 48 }: Icon): JSX.Element {
   return (
