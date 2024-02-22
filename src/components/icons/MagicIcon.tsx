@@ -1,8 +1,6 @@
-export default function MagicIcon({
-  size = 48,
-}: {
-  size?: number;
-}): JSX.Element {
+import { Icon } from "@/components/icons";
+
+export function MagicIcon({ size = 48 }: Icon): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

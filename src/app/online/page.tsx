@@ -1,8 +1,10 @@
 "use client";
 
 import "@/styles/pages/online.scss";
-import Layout from "@/components/Layout";
-import PageTitle from "@/components/PageTitle";
+
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
 import {
   type Credentials,
   errors,
@@ -11,15 +13,6 @@ import {
   type Alert,
   AlertType,
 } from "@/services/online";
-import { Suspense, useState } from "react";
-import Progress from "@/components/Progress";
-import OtpForm from "@/components/OtpForm";
-import Spinner from "@/components/Spinner";
-import { ScraperFinished } from "@/components/ScraperFinished";
-import { ScraperFailed } from "@/components/ScraperFailed";
-import AuthenticatorCode from "@/components/AuthenticatorCode";
-import { useSearchParams } from "next/navigation";
-import OnlineForm from "@/components/OnlineForm";
 import {
   getExecutionProgress,
   hasReport,
@@ -27,7 +20,15 @@ import {
   saveOTPCode,
   validateCredentials,
 } from "@/services/api";
-import { HasReport } from "@/components/HasReport";
+
+import {
+  HasReport,
+  AuthenticatorCode,
+  ScraperFailed,
+  ScraperFinished,
+} from "@/components/modal";
+import { OnlineForm, OtpForm } from "@/components/form";
+import { Layout, PageTitle, Spinner, Progress } from "@/components";
 
 export default function Home() {
   const params = useSearchParams();
@@ -191,11 +192,7 @@ export default function Home() {
             setCredentials={setCredentials}
           />
           {alreadyHasReport && (
-            <HasReport
-              email={credentials.email}
-              uuid={uuid}
-              generateNewReport={handleSubmit}
-            />
+            <HasReport uuid={uuid} generateNewReport={handleSubmit} />
           )}
         </Suspense>
       )}

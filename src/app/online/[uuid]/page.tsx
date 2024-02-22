@@ -1,29 +1,32 @@
 "use client";
 
-import Layout from "@/components/Layout";
-import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import moment from "moment";
+import download from "downloadjs";
+
 import { base64ToBlob } from "@/services/online";
 import {
   Semester,
   calculateAverage,
   sortSemesters,
 } from "@/services/semesters";
-import Course from "@/components/Course";
-import SemesterTitle from "@/components/SemesterTitle";
-import Cards from "@/components/Cards";
-import Card from "@/components/Card";
 import { getGlobalAssignementsCount } from "@/services/assignements";
 import { sortCourses } from "@/services/courses";
-import { NotFound } from "@/components/NotFound";
-import Loading from "@/components/Loading";
-import SyncIcon from "@/components/Icons/SyncIcon";
-import DownloadIcon from "@/components/Icons/DownloadIcon";
-import download from "downloadjs";
-import Spinner from "@/components/Spinner";
 import { getReport, getReportInBase64 } from "@/services/api";
+
+import {
+  Loading,
+  Course,
+  NotFound,
+  PageTitle,
+  Layout,
+  Cards,
+  Card,
+  SemesterTitle,
+  Spinner,
+} from "@/components";
+import { SyncIcon, DownloadIcon } from "@/components/icons";
 
 type Params = {
   uuid: string;

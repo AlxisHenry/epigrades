@@ -1,21 +1,9 @@
 "use client";
 
 import "@/styles/pages/course.scss";
-import { type Semester, getSemester } from "@/services/semesters";
-import {
-  type Course as CourseType,
-  getCourse,
-  calculateAverage,
-} from "@/services/courses";
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import PageTitle from "@/components/PageTitle";
-import Loading from "@/components/Loading";
-import CourseTable from "@/components/CourseTable";
-import Layout from "@/components/Layout";
-import Cards from "@/components/Cards";
-import Card from "@/components/Card";
-import { getCourseAssignementsCount } from "@/services/assignements";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -28,9 +16,26 @@ import {
   LineElement,
   Legend,
 } from "chart.js";
+
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
-import { NotFound } from "@/components/NotFound";
+import { type Semester, getSemester } from "@/services/semesters";
+import {
+  type Course as CourseType,
+  getCourse,
+  calculateAverage,
+} from "@/services/courses";
+import { getCourseAssignementsCount } from "@/services/assignements";
+
+import {
+  NotFound,
+  PageTitle,
+  Loading,
+  Table,
+  Layout,
+  Cards,
+  Card,
+} from "@/components";
 
 type Params = {
   semester: string;
@@ -161,7 +166,7 @@ export default function Home() {
             />
           </Cards>
           <div className="table__container">
-            <CourseTable days={course!.days} />
+            <Table days={course!.days} />
           </div>
           {data.labels.length > 0 ? (
             <div className="charts">

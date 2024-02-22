@@ -1,6 +1,8 @@
-import { clearCache } from "@/services/api";
+interface Props {
+  uuid: string;
+}
 
-export const ScraperFailed = ({ email }: { email: string }) => {
+export function ScraperFinished({ uuid }: Props) {
   return (
     <div className="modal">
       <div
@@ -13,22 +15,21 @@ export const ScraperFailed = ({ email }: { email: string }) => {
           gap: "1rem",
         }}
       >
-        <h2>Authentication failed</h2>
-        <p>We were unable to authenticate you. Please try again later.</p>
+        <h2>Report generated</h2>
+        <p>
+          Your report is ready ! You can now open it by clicking on the button.
+        </p>
         <button
           style={{
             marginTop: "20px",
             width: "100%",
           }}
           type="submit"
-          onClick={async () => {
-            await clearCache(email);
-            location.href = "/online";
-          }}
+          onClick={() => (location.href = `/online/${uuid}`)}
         >
-          Let me out !
+          Open report
         </button>
       </div>
     </div>
   );
-};
+}

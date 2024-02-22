@@ -1,10 +1,6 @@
-import React from "react";
+import { Icon } from "@/components/icons";
 
-export default function BarChartIcon({
-  size = 48,
-}: {
-  size?: number;
-}): JSX.Element {
+export function BarChartIcon({ size = 48 }: Icon): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

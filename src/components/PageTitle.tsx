@@ -1,12 +1,12 @@
 import Link from "next/link";
 
-type Props = {
+interface Props {
   parts: string[];
   clickable?: number[];
   customLink?: string;
-};
+}
 
-export default function PageTitle({ parts, clickable, customLink }: Props) {
+export function PageTitle({ parts, clickable, customLink }: Props) {
   const isLast = (part: string) => parts.length - 1 === parts.indexOf(part);
 
   return (

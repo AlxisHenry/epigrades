@@ -1,16 +1,17 @@
-import React from "react";
-
-export default function SyncIcon({
-  size = 48,
-  isSyncing = false,
-}: {
+interface SyncIcon {
   size?: number;
   isSyncing?: boolean;
-}): JSX.Element {
+}
+
+export function SyncIcon({
+  size = 48,
+  isSyncing = false,
+}: SyncIcon): JSX.Element {
   return (
     <svg
       className={`sync ${isSyncing ? "active" : ""}`}
       xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
       height={size}
       width={size}
       viewBox="0 0 512 512"

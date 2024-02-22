@@ -1,22 +1,27 @@
 "use client";
 
 import "@/styles/pages/semester.scss";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+
 import {
   type Semester,
   getSemester,
   calculateAverage,
 } from "@/services/semesters";
 import { sortCourses, type Course as CourseType } from "@/services/courses";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Course from "@/components/Course";
-import PageTitle from "@/components/PageTitle";
-import Loading from "@/components/Loading";
-import Layout from "@/components/Layout";
-import Card from "@/components/Card";
-import Cards from "@/components/Cards";
 import { getSemesterAssignementsCount } from "@/services/assignements";
-import { NotFound } from "@/components/NotFound";
+
+import {
+  Course,
+  PageTitle,
+  Loading,
+  Layout,
+  Card,
+  Cards,
+  NotFound,
+} from "@/components";
 
 type Params = {
   semester: string;

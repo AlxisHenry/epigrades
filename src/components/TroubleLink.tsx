@@ -6,18 +6,17 @@ import {
 } from "@/services/online";
 import { clearCache, validateCredentials } from "@/services/api";
 
-/**
- * This component is used to display a link to the user to clear the cache linked to his account.
- */
-export default function TroubleLink({
-  credentials,
-  setAlert,
-  setIsSubmitting,
-}: {
+interface Props {
   credentials: Credentials;
   setAlert: React.Dispatch<React.SetStateAction<Alert>>;
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+}
+
+export function TroubleLink({
+  credentials,
+  setAlert,
+  setIsSubmitting,
+}: Props) {
   return (
     <span
       onClick={async () => {

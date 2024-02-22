@@ -1,4 +1,4 @@
-export const NotFound = () => {
+export function NotFound() {
   return (
     <div className="error_section">
       <h1>404</h1>
@@ -12,4 +12,4 @@ export const NotFound = () => {
       </button>
     </div>
   );
-};
+}

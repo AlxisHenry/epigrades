@@ -1,15 +1,11 @@
-"use client";
-
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import Spinner from "./Spinner";
+
 import { getAuthenticatorCodeImage } from "@/services/api";
 
-type Props = {
-  uuid: string;
-};
+import { Spinner } from "@/components";
 
-export default function AuthenticatorCode({ uuid }: Props) {
+export function AuthenticatorCode({ uuid }: { uuid: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [image, setImage] = useState<string | null>(null);
   const [timer, setTimer] = useState<number>(60);

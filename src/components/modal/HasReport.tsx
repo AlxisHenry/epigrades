@@ -1,15 +1,13 @@
 import { useState } from "react";
-import Spinner from "./Spinner";
 
-export const HasReport = ({
-  email,
-  uuid,
-  generateNewReport,
-}: {
-  email: string;
+import { Spinner } from "@/components";
+
+interface Props {
   uuid: string;
   generateNewReport: (fromModal: boolean) => void;
-}) => {
+}
+
+export function HasReport({ uuid, generateNewReport }: Props) {
   const [disabled, setDisabled] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -79,4 +77,4 @@ export const HasReport = ({
       </div>
     </div>
   );
-};
+}
