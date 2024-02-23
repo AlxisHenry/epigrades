@@ -21,6 +21,7 @@ const files = {
   authenticator: `${TEMP_DIR}/authenticator-${uuid}.png`,
   report: `scraper/reports/${uuid}.json`,
   pdf: `scraper/reports/${uuid}.pdf`,
+  semesters: "scraper/semesters.json",
 };
 
 if (fs.existsSync(files.progress)) {
@@ -30,39 +31,7 @@ if (fs.existsSync(files.progress)) {
 const DEFAULT_SEMESTER_NAME = "-";
 const ASSIGNEMENTS_URL =
   "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
-
-const semestersDates = [
-  {
-    name: "T5",
-    start: "2023-09-12 00:00:00",
-    end: "2024-02-12 00:00:00",
-  },
-  {
-    name: "T6",
-    start: "2024-02-12 00:00:00",
-    end: "2024-08-12 00:00:00",
-  },
-  {
-    name: "T7",
-    start: "2024-08-12 00:00:00",
-    end: "2025-02-12 00:00:00",
-  },
-  {
-    name: "T8",
-    start: "2025-02-12 00:00:00",
-    end: "2025-08-12 00:00:00",
-  },
-  {
-    name: "T9",
-    start: "2025-08-12 00:00:00",
-    end: "2026-02-12 00:00:00",
-  },
-  {
-    name: "T10",
-    start: "2026-02-12 00:00:00",
-    end: "2026-08-12 00:00:00",
-  },
-];
+const semestersDates = JSON.parse(fs.readFileSync(files.semesters, "utf8"));
 
 const cleanFiles = () => {
   if (fs.existsSync(files.otp)) {

@@ -1,12 +1,14 @@
 import { NextResponse, NextRequest } from "next/server";
+import PDFDocument from "pdfkit";
+import moment from "moment";
 import fs from "fs";
+
 import {
   type Report,
   files,
   type EncodedPDFResponse,
   type Student,
 } from "@/services/online";
-import PDFDocument from "pdfkit";
 import { calculateAverage, sortCourses } from "@/services/courses";
 import {
   Semester,
@@ -14,43 +16,10 @@ import {
   sortSemesters,
 } from "@/services/semesters";
 import { getCourseGrade, getGradeAverage } from "@/services/grades";
-import moment from "moment";
 
 const FONTS_DIR = "public/fonts";
 
-const semestersDates = [
-  {
-    name: "T5",
-    start: "2023-09-12",
-    end: "2024-02-12",
-  },
-  {
-    name: "T6",
-    start: "2024-02-12",
-    end: "2024-08-12",
-  },
-  {
-    name: "T7",
-    start: "2024-08-12",
-    end: "2025-02-12",
-  },
-  {
-    name: "T8",
-    start: "2025-02-12",
-    end: "2025-08-12",
-  },
-  {
-    name: "T9",
-    start: "2025-08-12",
-    end: "2026-02-12",
-  },
-  {
-    name: "T10",
-    start: "2026-02-12",
-    end: "2026-08-12",
-  },
-];
-
+const semestersDates = JSON.parse(files.semesters);
 const fonts = {
   daytona: {
     regular: `${FONTS_DIR}/DaytonaPro-Regular.ttf`,
@@ -117,36 +86,37 @@ const footer = (doc: PDFKit.PDFDocument) => {
 };
 
 const pdf = (uuid: string, grades: Report): Promise<string> => {
-  const report = new PDFDocument({
-    font: fonts.daytona.regular,
-    margins: {
-      top: 20,
-      bottom: 20,
-      left: 20,
-      right: 20,
-    },
-  });
-
   return new Promise<string>((resolve, reject) => {
-    let file = files.temp.report(uuid);
     let pendingStepCount = 2;
 
-    const stepFinished = () => {
+    const stepFinished = (file: string) => {
       if (--pendingStepCount == 0) {
         resolve(fs.readFileSync(file, "base64"));
         fs.unlinkSync(file);
       }
     };
 
-    const stream = fs.createWriteStream(file);
-    stream.on("close", stepFinished);
-    report.pipe(stream);
-
     let semestersCount = grades.semesters.length;
 
     let x = 50;
 
     for (let semester of sortSemesters(grades.semesters)) {
+      const file = files.temp.report(uuid, semester.name);
+
+      const report = new PDFDocument({
+        font: fonts.daytona.regular,
+        margins: {
+          top: 20,
+          bottom: 20,
+          left: 20,
+          right: 20,
+        },
+      });
+
+      const stream = fs.createWriteStream(file);
+      stream.on("close", stepFinished);
+      report.pipe(stream);
+
       header(report, semester, grades.student);
       footer(report);
 
@@ -253,11 +223,12 @@ const pdf = (uuid: string, grades: Report): Promise<string> => {
         .fontSize(14)
         .text(`N/A`, x + 451, currentY + 10);
 
-      if (--semestersCount > 0) report.addPage();
-    }
+      report.end();
 
-    report.end();
-    stepFinished();
+      if (semestersCount === 0) stepFinished(file);
+
+      semestersCount--;
+    }
   });
 };
 
