@@ -112,6 +112,12 @@ export type Student = {
   name: string;
 };
 
+export type SemesterDate = {
+  name: string;
+  start: string;
+  end: string;
+};
+
 export const uuid = (): string => {
   return crypto.randomUUID() + "-" + Date.now();
 };

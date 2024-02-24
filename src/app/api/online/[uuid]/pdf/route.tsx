@@ -4,12 +4,13 @@ import moment from "moment";
 import fs from "fs";
 
 import {
-  type Report,
   files,
+  type Report,
   type EncodedPDFResponse,
   type Student,
+  type SemesterDate,
 } from "@/services/online";
-import { calculateAverage, sortCourses } from "@/services/courses";
+import { Course, calculateAverage, sortCourses } from "@/services/courses";
 import {
   Semester,
   calculateAverage as calculateSemesterAverage,
@@ -19,7 +20,6 @@ import { getCourseGrade, getGradeAverage } from "@/services/grades";
 
 const FONTS_DIR = "public/fonts";
 
-const semestersDates = JSON.parse(files.semesters);
 const fonts = {
   daytona: {
     regular: `${FONTS_DIR}/DaytonaPro-Regular.ttf`,
@@ -30,7 +30,20 @@ const fonts = {
   },
 };
 
-const formatDate = (date: string) => moment(date).format("DD/MM/YYYY");
+const semestersDates: SemesterDate[] = JSON.parse(
+  fs.readFileSync(files.semesters, "utf8")
+);
+
+const getFilename = (student: Student, isZip: boolean): string => {
+  let name = student.name.split(" ").join("-"),
+    date = moment().format("DDMMYYYY"),
+    ext = isZip ? "zip" : "pdf";
+  return `Bulletin-${name}_${date}.${ext}`;
+};
+
+const isZip = (base64: string): boolean => base64.startsWith("UEsDBBQAAAAIA");
+
+const formatDate = (date: string): string => moment(date).format("DD/MM/YYYY");
 
 const header = (
   doc: PDFKit.PDFDocument,
@@ -85,7 +98,11 @@ const footer = (doc: PDFKit.PDFDocument) => {
     );
 };
 
-const pdf = (uuid: string, grades: Report): Promise<string> => {
+const displaySemester = (semester: Semester) => {};
+
+const displayCourse = (course: Course) => {};
+
+const extract = (uuid: string, grades: Report): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
     let pendingStepCount = 2;
 
@@ -240,22 +257,28 @@ export async function GET(
     };
   }
 ): Promise<NextResponse<EncodedPDFResponse>> {
-  let { uuid } = route.params;
-  let file = files.reports(uuid);
+  try {
+    let { uuid } = route.params;
+    let file = files.reports(uuid);
 
-  if (!fs.existsSync(file)) {
+    if (!fs.existsSync(file)) {
+      return NextResponse.json({
+        filename: null,
+        base64: null,
+      });
+    }
+
+    let report: Report = JSON.parse(fs.readFileSync(file, "utf8"));
+    let base64 = await extract(uuid, report);
+
+    return NextResponse.json({
+      filename: getFilename(report.student, isZip(base64)),
+      base64,
+    });
+  } catch (e) {
     return NextResponse.json({
       filename: null,
       base64: null,
     });
   }
-
-  let report: Report = JSON.parse(fs.readFileSync(file, "utf8"));
-
-  return NextResponse.json({
-    filename: `Bulletin-${report.student.name
-      .split(" ")
-      .join("-")}_${moment().format("DDMMYYYY")}.pdf`,
-    base64: await pdf(uuid, report),
-  });
 }
