@@ -143,11 +143,16 @@ const extract = async (
             });
           });
       } else {
-        let semester = reports[0].split("-")[2].split(".")[0];
+        let report = reports[0];
+
+        let semester = report.split("-")[2].split(".")[0],
+          base64 = fs.readFileSync(report, "base64");
+
+        fs.existsSync(report) && fs.unlinkSync(report);
 
         resolve({
           filename: getFilename(grades.student, false, semester),
-          base64: fs.readFileSync(reports[0], "base64"),
+          base64,
         });
       }
     };
