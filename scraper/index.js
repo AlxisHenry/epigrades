@@ -29,8 +29,10 @@ if (fs.existsSync(files.progress)) {
 }
 
 const DEFAULT_SEMESTER_NAME = "-";
-const ASSIGNEMENTS_URL =
-  "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
+const urls = {
+  assignments: "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]",
+  course: "https://gandalf.epitech.eu/course/view.php?id=[id]",
+}
 const semestersDates = JSON.parse(fs.readFileSync(files.semesters, "utf8"));
 
 const cleanFiles = () => {
@@ -275,6 +277,7 @@ cleanFiles();
         created_at: null,
       },
     ],
+    future_courses: [],
     created_at: null,
   };
 
@@ -286,7 +289,7 @@ cleanFiles();
     const currentPage = await browser.newPage();
 
     await currentPage.goto(
-      ASSIGNEMENTS_URL.replace("[id]", link.split("=")[1])
+      urls.assignments.replace("[id]", link.split("=")[1])
     );
 
     write(`${name} (${i + 1}/${coursesCount})`, 20 + (i / coursesCount) * 70);
@@ -358,6 +361,53 @@ cleanFiles();
 
     await currentPage.close();
   }
+
+  const courseOverviewFilter = await page.$x(
+    "/html/body/div[5]/div[1]/div/section/div/aside/div[2]/div[2]/div/div[1]/div[1]/button"
+  );
+
+  if (courseOverviewFilter.length > 0) {
+    await courseOverviewFilter[0].click();
+
+    const futureFilter = await page.$x(
+      "/html/body/div[5]/div[1]/div/section/div/aside/div[2]/div[2]/div/div[1]/div[1]/ul/li[5]"
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    if (futureFilter.length > 0) {
+      const futureCoursesIds = [];
+
+      await futureFilter[0].click();
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const futureCoursesContainer = await page.$x(
+        "/html/body/div[5]/div[1]/div/section/div/aside/div[2]/div[2]/div/div[2]/div/div/div[1]/div/div"
+      );
+
+      const futureCoursesCards = await futureCoursesContainer[0]?.$$("div");
+
+      for (let i = 0; i < futureCoursesCards.length; i++) {
+        const id = await page.evaluate(
+          (el) => el.getAttribute("data-course-id"),
+          futureCoursesCards[i]
+        );
+        futureCoursesIds.push(id);
+      }
+
+      for (let i = 0; i < futureCoursesIds.length; i++) {
+        const currentPage = await browser.newPage();
+
+        await currentPage.goto(
+          urls.course.replace("[id]", futureCoursesIds[i])
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        await currentPage.close();
+      }
+    }
 
   // TODO: Retrieve badges
   // TODO: Retrieve GPA
