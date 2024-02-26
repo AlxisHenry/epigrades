@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import PDFDocument from "pdfkit";
 import moment from "moment";
 import fs from "fs";
+import JSZip from "jszip";
 
 import {
   files,
@@ -34,14 +35,17 @@ const semestersDates: SemesterDate[] = JSON.parse(
   fs.readFileSync(files.semesters, "utf8")
 );
 
-const getFilename = (student: Student, isZip: boolean): string => {
+const getFilename = (
+  student: Student,
+  isZip: boolean,
+  semester: string | null = null
+): string => {
   let name = student.name.split(" ").join("-"),
     date = moment().format("DDMMYYYY"),
     ext = isZip ? "zip" : "pdf";
-  return `Bulletin-${name}_${date}.${ext}`;
+  if (!semester) return `Bulletin-${name}_${date}.${ext}`;
+  return `Bulletin-${name}_${semester}_${date}.${ext}`;
 };
-
-const isZip = (base64: string): boolean => base64.startsWith("UEsDBBQAAAAIA");
 
 const formatDate = (date: string): string => moment(date).format("DD/MM/YYYY");
 
@@ -98,27 +102,60 @@ const footer = (doc: PDFKit.PDFDocument) => {
     );
 };
 
-const displaySemester = (semester: Semester) => {};
-
-const displayCourse = (course: Course) => {};
-
-const extract = (uuid: string, grades: Report): Promise<string> => {
-  return new Promise<string>((resolve, reject) => {
-    let pendingStepCount = 2;
-
-    const stepFinished = (file: string) => {
-      if (--pendingStepCount == 0) {
-        resolve(fs.readFileSync(file, "base64"));
-        fs.unlinkSync(file);
-      }
-    };
+const extract = async (
+  uuid: string,
+  grades: Report
+): Promise<EncodedPDFResponse> => {
+  return new Promise<EncodedPDFResponse>((resolve, reject) => {
+    const reports: string[] = [];
 
     let semestersCount = grades.semesters.length;
 
-    let x = 50;
+    const finished = (): void => {
+      if (reports.length > 1) {
+        const zip = files.temp.zip(uuid);
+        const jszip = new JSZip();
+
+        reports.forEach((report) => {
+          let semester = report.split("-")[2].split(".")[0];
+          jszip.file(
+            getFilename(grades.student, false, semester),
+            fs.readFileSync(report)
+          );
+        });
+
+        jszip
+          .generateNodeStream({
+            type: "nodebuffer",
+            streamFiles: true,
+          })
+          .pipe(fs.createWriteStream(zip))
+          .on("finish", () => {
+            let encoded = fs.readFileSync(zip, "base64");
+
+            [...reports, files.temp.zip(uuid)].forEach(
+              (report) => fs.existsSync(report) && fs.unlinkSync(report)
+            );
+
+            resolve({
+              filename: getFilename(grades.student, true),
+              base64: encoded,
+            });
+          });
+      } else {
+        let semester = reports[0].split("-")[2].split(".")[0];
+
+        resolve({
+          filename: getFilename(grades.student, false, semester),
+          base64: fs.readFileSync(reports[0], "base64"),
+        });
+      }
+    };
 
     for (let semester of sortSemesters(grades.semesters)) {
       const file = files.temp.report(uuid, semester.name);
+
+      reports.push(file);
 
       const report = new PDFDocument({
         font: fonts.daytona.regular,
@@ -131,8 +168,10 @@ const extract = (uuid: string, grades: Report): Promise<string> => {
       });
 
       const stream = fs.createWriteStream(file);
-      stream.on("close", stepFinished);
+      stream.on("close", finished);
       report.pipe(stream);
+
+      let x = 50;
 
       header(report, semester, grades.student);
       footer(report);
@@ -242,7 +281,7 @@ const extract = (uuid: string, grades: Report): Promise<string> => {
 
       report.end();
 
-      if (semestersCount === 0) stepFinished(file);
+      if (semestersCount === 0) finished();
 
       semestersCount--;
     }
@@ -257,28 +296,23 @@ export async function GET(
     };
   }
 ): Promise<NextResponse<EncodedPDFResponse>> {
+  const failed = {
+    filename: null,
+    base64: null,
+  };
+
   try {
     let { uuid } = route.params;
     let file = files.reports(uuid);
 
     if (!fs.existsSync(file)) {
-      return NextResponse.json({
-        filename: null,
-        base64: null,
-      });
+      return NextResponse.json(failed);
     }
 
-    let report: Report = JSON.parse(fs.readFileSync(file, "utf8"));
-    let base64 = await extract(uuid, report);
-
-    return NextResponse.json({
-      filename: getFilename(report.student, isZip(base64)),
-      base64,
-    });
+    return NextResponse.json(
+      await extract(uuid, JSON.parse(fs.readFileSync(file, "utf8")))
+    );
   } catch (e) {
-    return NextResponse.json({
-      filename: null,
-      base64: null,
-    });
+    return NextResponse.json(failed);
   }
 }
