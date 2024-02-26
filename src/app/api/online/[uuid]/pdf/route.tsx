@@ -1,55 +1,25 @@
 import { NextResponse, NextRequest } from "next/server";
+import PDFDocument from "pdfkit";
+import moment from "moment";
 import fs from "fs";
+import JSZip from "jszip";
+
 import {
-  type Report,
   files,
+  type Report,
   type EncodedPDFResponse,
   type Student,
+  type SemesterDate,
 } from "@/services/online";
-import PDFDocument from "pdfkit";
-import { calculateAverage, sortCourses } from "@/services/courses";
+import { Course, calculateAverage, sortCourses } from "@/services/courses";
 import {
   Semester,
   calculateAverage as calculateSemesterAverage,
   sortSemesters,
 } from "@/services/semesters";
 import { getCourseGrade, getGradeAverage } from "@/services/grades";
-import moment from "moment";
 
 const FONTS_DIR = "public/fonts";
-
-const semestersDates = [
-  {
-    name: "T5",
-    start: "2023-09-12",
-    end: "2024-02-12",
-  },
-  {
-    name: "T6",
-    start: "2024-02-12",
-    end: "2024-08-12",
-  },
-  {
-    name: "T7",
-    start: "2024-08-12",
-    end: "2025-02-12",
-  },
-  {
-    name: "T8",
-    start: "2025-02-12",
-    end: "2025-08-12",
-  },
-  {
-    name: "T9",
-    start: "2025-08-12",
-    end: "2026-02-12",
-  },
-  {
-    name: "T10",
-    start: "2026-02-12",
-    end: "2026-08-12",
-  },
-];
 
 const fonts = {
   daytona: {
@@ -61,7 +31,23 @@ const fonts = {
   },
 };
 
-const formatDate = (date: string) => moment(date).format("DD/MM/YYYY");
+const semestersDates: SemesterDate[] = JSON.parse(
+  fs.readFileSync(files.semesters, "utf8")
+);
+
+const getFilename = (
+  student: Student,
+  isZip: boolean,
+  semester: string | null = null
+): string => {
+  let name = student.name.split(" ").join("-"),
+    date = moment().format("DDMMYYYY"),
+    ext = isZip ? "zip" : "pdf";
+  if (!semester) return `Bulletin-${name}_${date}.${ext}`;
+  return `Bulletin-${name}_${semester}_${date}.${ext}`;
+};
+
+const formatDate = (date: string): string => moment(date).format("DD/MM/YYYY");
 
 const header = (
   doc: PDFKit.PDFDocument,
@@ -116,37 +102,77 @@ const footer = (doc: PDFKit.PDFDocument) => {
     );
 };
 
-const pdf = (uuid: string, grades: Report): Promise<string> => {
-  const report = new PDFDocument({
-    font: fonts.daytona.regular,
-    margins: {
-      top: 20,
-      bottom: 20,
-      left: 20,
-      right: 20,
-    },
-  });
-
-  return new Promise<string>((resolve, reject) => {
-    let file = files.temp.report(uuid);
-    let pendingStepCount = 2;
-
-    const stepFinished = () => {
-      if (--pendingStepCount == 0) {
-        resolve(fs.readFileSync(file, "base64"));
-        fs.unlinkSync(file);
-      }
-    };
-
-    const stream = fs.createWriteStream(file);
-    stream.on("close", stepFinished);
-    report.pipe(stream);
+const extract = async (
+  uuid: string,
+  grades: Report
+): Promise<EncodedPDFResponse> => {
+  return new Promise<EncodedPDFResponse>((resolve, reject) => {
+    const reports: string[] = [];
 
     let semestersCount = grades.semesters.length;
 
-    let x = 50;
+    const finished = (): void => {
+      if (reports.length > 1) {
+        const zip = files.temp.zip(uuid);
+        const jszip = new JSZip();
+
+        reports.forEach((report) => {
+          let semester = report.split("-")[2].split(".")[0];
+          jszip.file(
+            getFilename(grades.student, false, semester),
+            fs.readFileSync(report)
+          );
+        });
+
+        jszip
+          .generateNodeStream({
+            type: "nodebuffer",
+            streamFiles: true,
+          })
+          .pipe(fs.createWriteStream(zip))
+          .on("finish", () => {
+            let encoded = fs.readFileSync(zip, "base64");
+
+            [...reports, files.temp.zip(uuid)].forEach(
+              (report) => fs.existsSync(report) && fs.unlinkSync(report)
+            );
+
+            resolve({
+              filename: getFilename(grades.student, true),
+              base64: encoded,
+            });
+          });
+      } else {
+        let semester = reports[0].split("-")[2].split(".")[0];
+
+        resolve({
+          filename: getFilename(grades.student, false, semester),
+          base64: fs.readFileSync(reports[0], "base64"),
+        });
+      }
+    };
 
     for (let semester of sortSemesters(grades.semesters)) {
+      const file = files.temp.report(uuid, semester.name);
+
+      reports.push(file);
+
+      const report = new PDFDocument({
+        font: fonts.daytona.regular,
+        margins: {
+          top: 20,
+          bottom: 20,
+          left: 20,
+          right: 20,
+        },
+      });
+
+      const stream = fs.createWriteStream(file);
+      stream.on("close", finished);
+      report.pipe(stream);
+
+      let x = 50;
+
       header(report, semester, grades.student);
       footer(report);
 
@@ -253,11 +279,12 @@ const pdf = (uuid: string, grades: Report): Promise<string> => {
         .fontSize(14)
         .text(`N/A`, x + 451, currentY + 10);
 
-      if (--semestersCount > 0) report.addPage();
-    }
+      report.end();
 
-    report.end();
-    stepFinished();
+      if (semestersCount === 0) finished();
+
+      semestersCount--;
+    }
   });
 };
 
@@ -269,22 +296,23 @@ export async function GET(
     };
   }
 ): Promise<NextResponse<EncodedPDFResponse>> {
-  let { uuid } = route.params;
-  let file = files.reports(uuid);
+  const failed = {
+    filename: null,
+    base64: null,
+  };
 
-  if (!fs.existsSync(file)) {
-    return NextResponse.json({
-      filename: null,
-      base64: null,
-    });
+  try {
+    let { uuid } = route.params;
+    let file = files.reports(uuid);
+
+    if (!fs.existsSync(file)) {
+      return NextResponse.json(failed);
+    }
+
+    return NextResponse.json(
+      await extract(uuid, JSON.parse(fs.readFileSync(file, "utf8")))
+    );
+  } catch (e) {
+    return NextResponse.json(failed);
   }
-
-  let report: Report = JSON.parse(fs.readFileSync(file, "utf8"));
-
-  return NextResponse.json({
-    filename: `Bulletin-${report.student.name
-      .split(" ")
-      .join("-")}_${moment().format("DDMMYYYY")}.pdf`,
-    base64: await pdf(uuid, report),
-  });
 }

@@ -25,12 +25,15 @@ export const paths: {
 
 export const files = {
   script: `${paths.base}/index.js`,
+  semesters: `${paths.base}/semesters.json`,
   reports: (uuid: string) => `${paths.base}/reports/${uuid}.json`,
   temp: {
     otp: (uuid: string) => `${paths.temp}/otp-${uuid}.json`,
     progress: (uuid: string) => `${paths.temp}/progress-${uuid}.json`,
     authenticator: (uuid: string) => `${paths.temp}/authenticator-${uuid}.png`,
-    report: (uuid: string) => `${paths.temp}/report-${uuid}.pdf`,
+    report: (uuid: string, semester: string) =>
+      `${paths.temp}/report-${uuid}-${semester}.pdf`,
+    zip: (uuid: string) => `${paths.temp}/report-${uuid}.zip`,
     all: (uuid: string) => [
       files.temp.otp(uuid),
       files.temp.progress(uuid),
@@ -100,15 +103,21 @@ export type EncodedPDFResponse = {
 };
 
 export type Report = {
-  student: Student,
+  student: Student;
   semesters: Semester[];
   created_at: string;
-}
+};
 
 export type Student = {
   email: string;
   name: string;
-}
+};
+
+export type SemesterDate = {
+  name: string;
+  start: string;
+  end: string;
+};
 
 export const uuid = (): string => {
   return crypto.randomUUID() + "-" + Date.now();
