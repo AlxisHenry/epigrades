@@ -398,6 +398,8 @@ cleanFiles();
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (futureFilter.length > 0) {
+      write("Retrieving your future courses", 90);
+
       const futureCourses = [];
 
       await futureFilter[0].click();
