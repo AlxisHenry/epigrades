@@ -29,8 +29,10 @@ if (fs.existsSync(files.progress)) {
 }
 
 const DEFAULT_SEMESTER_NAME = "-";
-const ASSIGNEMENTS_URL =
-  "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]";
+const urls = {
+  assignments: "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]",
+  course: "https://gandalf.epitech.eu/course/view.php?id=[id]",
+};
 const semestersDates = JSON.parse(fs.readFileSync(files.semesters, "utf8"));
 
 const cleanFiles = () => {
@@ -61,6 +63,18 @@ const formatDueDate = (due_date) => {
   }
 
   return parsedDate;
+};
+
+const formatCourseTitle = (title) => {
+  const words = title.split(" ");
+  let formattedTitle = "";
+
+  for (let i = 0; i < words.length; i++) {
+    formattedTitle += words[i].charAt(0) + words[i].slice(1).toLowerCase();
+    if (i < words.length - 1) formattedTitle += " ";
+  }
+
+  return formattedTitle;
 };
 
 const write = (currentStep, progress, status = 0) => {
@@ -116,7 +130,7 @@ cleanFiles();
 (async () => {
   write("Launching the browser", 0);
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: false,
     defaultViewport: null,
     args: ["--disable-features=site-per-process", "--window-size=1280,1080"],
   });
@@ -275,6 +289,7 @@ cleanFiles();
         created_at: null,
       },
     ],
+    future_courses: [],
     created_at: null,
   };
 
@@ -286,7 +301,7 @@ cleanFiles();
     const currentPage = await browser.newPage();
 
     await currentPage.goto(
-      ASSIGNEMENTS_URL.replace("[id]", link.split("=")[1])
+      urls.assignments.replace("[id]", link.split("=")[1])
     );
 
     write(`${name} (${i + 1}/${coursesCount})`, 20 + (i / coursesCount) * 70);
@@ -298,11 +313,21 @@ cleanFiles();
     );
 
     if (!(courseNotAvailable.length > 0)) {
+      const titleContainer = await currentPage.$x(
+        "/html/body/div[5]/header/div[2]/div/div[1]/div/div[2]/h1"
+      );
+
+      const title = await currentPage.evaluate(
+        (el) => el.textContent,
+        titleContainer[0]
+      );
+
       grades.semesters
         .find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
         .courses.push({
           id: link.split("=")[1],
           name: name,
+          title,
           days: [],
           created_at: null,
         });
@@ -357,6 +382,107 @@ cleanFiles();
     }
 
     await currentPage.close();
+  }
+
+  const courseOverviewFilter = await page.$x(
+    "/html/body/div[5]/div[1]/div/section/div/aside/div[2]/div[2]/div/div[1]/div[1]/button"
+  );
+
+  if (courseOverviewFilter.length > 0) {
+    await courseOverviewFilter[0].click();
+
+    const futureFilter = await page.$x(
+      "/html/body/div[5]/div[1]/div/section/div/aside/div[2]/div[2]/div/div[1]/div[1]/ul/li[5]"
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    if (futureFilter.length > 0) {
+      const futureCourses = [];
+
+      await futureFilter[0].click();
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const futureCoursesContainer = await page.$x(
+        "/html/body/div[5]/div[1]/div/section/div/aside/div[2]/div[2]/div/div[2]/div/div/div[1]/div/div"
+      );
+
+      const futureCoursesCards = await futureCoursesContainer[0]?.$$("div");
+
+      for (let i = 0; i < futureCoursesCards.length; i++) {
+        const courseBody = await futureCoursesCards[i]?.$(
+          ".course-info-container"
+        );
+
+        if (!courseBody) continue;
+
+        const id = await page.evaluate(
+          (el) => el.getAttribute("data-course-id"),
+          futureCoursesCards[i]
+        );
+
+        if (!id) continue;
+
+        const nameContainer = await courseBody.$$(
+          ".text-muted > div:last-child"
+        );
+
+        if (!nameContainer) continue;
+
+        const name = await page.evaluate(
+          (el) => el.textContent,
+          nameContainer[0]
+        );
+
+        if (!name) continue;
+
+        if (!futureCourses.find((c) => c.id === id))
+          futureCourses.push({
+            id,
+            name: name.replace("\n", "").trim(),
+          });
+      }
+
+      for (let i = 0; i < futureCourses.length; i++) {
+        const currentPage = await browser.newPage();
+
+        const { id, name } = futureCourses[i];
+
+        await currentPage.goto(urls.course.replace("[id]", id));
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        const isRestricted = await currentPage.$x(
+          "/html/body/div[5]/div[1]/div[2]/section/div/div/ul/li[3]/div[3]/div[1]/div/div/strong"
+        );
+
+        if (isRestricted.length > 0) {
+          const startDate = await currentPage.evaluate(
+            (el) => el.textContent,
+            isRestricted[0]
+          );
+
+          const courseTitleContainer = await currentPage.$x(
+            "/html/body/div[5]/header/div[2]/div/div[1]/div/div[2]/h1"
+          );
+
+          const courseTitle = await currentPage.evaluate(
+            (el) => el.textContent,
+            courseTitleContainer[0]
+          );
+
+          grades.future_courses.push({
+            id: id,
+            name: name,
+            title: formatCourseTitle(courseTitle) ?? null,
+            start_date: startDate,
+          });
+        }
+
+        await currentPage.close();
+      }
+    }
   }
 
   // TODO: Retrieve badges

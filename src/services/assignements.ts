@@ -1,6 +1,6 @@
-import { type Course } from "./courses";
-import { isGradedDay } from "./days";
-import { type Semester } from "./semesters";
+import { type Course } from "@/services/courses";
+import { isGradedDay } from "@/services/days";
+import { type Semester } from "@/services/semesters";
 
 export function getGlobalAssignementsCount(semesters: Semester[]): number {
   let count = 0;
