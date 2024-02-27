@@ -11,3 +11,4 @@ export { SemesterTitle } from "./SemesterTitle";
 export { Sidebar } from "./Sidebar";
 export { Spinner } from "./Spinner";
 export { TroubleLink } from "./TroubleLink";
+export { FutureCourse } from "./FutureCourse";

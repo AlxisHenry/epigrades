@@ -92,20 +92,6 @@ export default function Home() {
       ) : (
         <>
           <PageTitle parts={[student.name, "Semesters"]} />
-          <div>
-            {futureCourses && futureCourses.length > 0 ? (
-              <div
-                style={{
-                  marginBottom: "2rem",
-                }}
-              >
-                <SemesterTitle title="Incoming Courses" />
-                {futureCourses.map((course) => {
-                  return <FutureCourse course={course} key={course.id} />;
-                })}
-              </div>
-            ) : null}
-          </div>
           <div
             style={{
               display: "flex",
@@ -178,6 +164,20 @@ export default function Home() {
                 subtitle={`${getGlobalAssignementsCount(semesters)}`}
               />
             </Cards>
+          </div>
+          <div>
+            {futureCourses && futureCourses.length > 0 ? (
+              <div
+                style={{
+                  marginBottom: "2rem",
+                }}
+              >
+                <SemesterTitle title="Incoming courses" />
+                {futureCourses.map((course) => {
+                  return <FutureCourse course={course} key={course.id} />;
+                })}
+              </div>
+            ) : null}
           </div>
           {semesters.map((semester) => {
             return semester.courses.length > 0 ? (

@@ -3,14 +3,14 @@
   color: var(--color-primary-dark);
   text-decoration: none;
 
-	&:not(.course__link--title) {
+  &:not(.course__link--title) {
     margin-top: 0.5rem;
-		font-size: 1.2rem;
-		font-weight: 400;
-		display: block;
-		transition: all 0.3s ease-in-out;
+    font-size: 1.2rem;
+    font-weight: 400;
+    display: block;
+    transition: all 0.3s ease-in-out;
     align-self: flex-end;
-	}
+  }
 
   &.course__link--title {
     text-decoration: none;
@@ -32,7 +32,7 @@
     color: var(--color-primary-light);
 
     .underline {
-        width: 100%;
+      width: 100%;
     }
 
     svg {
@@ -44,7 +44,7 @@
 @media screen and (max-width: 560px) {
   .course__link {
     &.course__link--title {
-      font-size: 1.1rem;
+      // font-size: 1.1rem;
     }
   }
 }
@@ -52,7 +52,7 @@
 @media screen and (max-width: 380px) {
   .course__link {
     &.course__link--title {
-      font-size: .8rem;
+      font-size: 1rem;
     }
   }
 }

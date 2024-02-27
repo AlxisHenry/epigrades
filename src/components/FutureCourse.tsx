@@ -7,14 +7,18 @@ interface Props {
 }
 
 export function FutureCourse({ course }: Props): JSX.Element {
-  let name = course.title ? `${course.title} (${course.name})` : course.name;
+  let inSevenDays = moment(course.start_date).diff(moment(), "days") <= 7;
 
   return (
     <div className={`course future-course`}>
       <div className="course__header">
-        {name} starts {moment(course.start_date).fromNow()} (
-        {moment(course.start_date).format("DD/MM/YYYY, hh:mm")})
-        <span className="course__soon"></span>
+        <p>
+          {course.title} starts {moment(course.start_date).fromNow()}{" "}
+          <span className={`future-course-date ${!inSevenDays && "orange"}`}>
+            {moment(course.start_date).format("DD/MM/YYYY, hh:mm")}
+          </span>
+        </p>
+        <span className={`course__soon ${!inSevenDays && "orange"}`}></span>
       </div>
     </div>
   );

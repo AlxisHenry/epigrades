@@ -31,8 +31,6 @@ export function Course({
     toggleDropdown();
   };
 
-  const name = course.title ? `${course.title} (${course.name})` : course.name;
-
   return (
     <div className={`course ${isOpen ? "course--open" : ""}`}>
       <div className="course__header" onClick={handleClick}>
@@ -41,7 +39,7 @@ export function Course({
           uuid={uuid}
           semester={semester?.name}
           id={course.id}
-          content={name}
+          content={course.title}
           title={true}
         />
         <div className="course__header-right">

@@ -9,23 +9,23 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
 
-.modal .modal-content {
-  margin-right: 2rem;
-  margin-left: 2rem;
-  animation: modal 0.3s ease-in-out;
-  width: 100%;
-  min-height: 250px;
-  max-width: 500px;
-  background-color: var(--color-primary);
-  border-radius: var(--border-radius);
-  padding: 3.2rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  color: var(--contrast-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .modal-content {
+    margin-right: 2rem;
+    margin-left: 2rem;
+    animation: modal 0.3s ease-in-out;
+    width: 100%;
+    min-height: 250px;
+    max-width: 500px;
+    background-color: var(--color-primary);
+    border-radius: var(--border-radius);
+    padding: 3.2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    color: var(--contrast-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 768px) {
