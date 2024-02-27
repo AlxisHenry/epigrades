@@ -4,13 +4,7 @@ import Link from "next/link";
 
 import { getSemester, getSemestersNames } from "@/services/semesters";
 
-import {
-  BarChartIcon,
-  HomeIcon,
-  MagicIcon,
-  MenuIcon,
-  SchoolIcon,
-} from "@/components/icons";
+import { HomeIcon, MagicIcon, MenuIcon } from "@/components/icons";
 
 interface DropdownItem {
   route: string;
@@ -49,18 +43,6 @@ export function Sidebar() {
           route: "/",
           text: "Home",
           icon: <HomeIcon />,
-        },
-        {
-          route: "/semesters",
-          text: "Semesters",
-          icon: <SchoolIcon />,
-          items: semesters,
-          isDropdown: true
-        },
-        {
-          route: "/stats",
-          text: "Statistics",
-          icon: <BarChartIcon />,
         },
         {
           route: "/online",
