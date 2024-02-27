@@ -1,6 +1,6 @@
-import { sortCourses, type Course } from "./courses";
-import { isGradedDay } from "./days";
-import { getReport } from "./api";
+import { sortCourses, type Course } from "@/services/courses";
+import { isGradedDay } from "@/services/days";
+import { getReport } from "@/services/api";
 
 export type Semester = {
   name: string;

@@ -9,7 +9,7 @@ import {
   errors,
   isEpitechEmail,
   type EncodedPDFResponse,
-} from "../online";
+} from "@/services/online";
 
 export const authenticateUsingEpitechAPI = async (
   credentials: Credentials

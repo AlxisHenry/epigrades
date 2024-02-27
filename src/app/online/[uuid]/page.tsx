@@ -7,12 +7,16 @@ import download from "downloadjs";
 
 import { base64ToBlob } from "@/services/online";
 import {
-  Semester,
+  type Semester,
   calculateAverage,
   sortSemesters,
 } from "@/services/semesters";
 import { getGlobalAssignementsCount } from "@/services/assignements";
-import { sortCourses } from "@/services/courses";
+import {
+  type FutureCourse as FutureCourseType,
+  sortCourses,
+  sortFutureCourses,
+} from "@/services/courses";
 import { getReport, getReportInBase64 } from "@/services/api";
 
 import {
@@ -27,6 +31,7 @@ import {
   Spinner,
 } from "@/components";
 import { SyncIcon, DownloadIcon } from "@/components/icons";
+import { FutureCourse } from "@/components/FutureCourse";
 
 type Params = {
   uuid: string;
@@ -47,6 +52,9 @@ export default function Home() {
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [semesters, setSemesters] = useState<Semester[] | null>(null);
   const [createdAt, setCreatedAt] = useState<null | string>(null);
+  const [futureCourses, setFutureCourses] = useState<null | FutureCourseType[]>(
+    null
+  );
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number>(-1);
 
   useEffect(() => {
@@ -66,6 +74,7 @@ export default function Home() {
 
       setStudent(report.student);
       setSemesters(sortSemesters(report.semesters));
+      setFutureCourses(sortFutureCourses(report.future_courses));
       setIsLoading(false);
     })();
   }, [uuid]);
@@ -83,6 +92,20 @@ export default function Home() {
       ) : (
         <>
           <PageTitle parts={[student.name, "Semesters"]} />
+          <div>
+            {futureCourses && futureCourses.length > 0 ? (
+              <div
+                style={{
+                  marginBottom: "2rem",
+                }}
+              >
+                <SemesterTitle title="Incoming Courses" />
+                {futureCourses.map((course) => {
+                  return <FutureCourse course={course} key={course.id} />;
+                })}
+              </div>
+            ) : null}
+          </div>
           <div
             style={{
               display: "flex",

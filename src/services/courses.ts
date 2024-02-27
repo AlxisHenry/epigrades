@@ -1,11 +1,20 @@
-import { type Day, isGradedDay } from "./days";
-import { type Semester, getSemesters } from "./semesters";
+import { type Day, isGradedDay } from "@/services/days";
+import { type Semester, getSemesters } from "@/services/semesters";
+import moment from "moment";
 
 export type Course = {
   id: string;
   name: string;
+  title: string;
   days: Day[];
   created_at: string;
+};
+
+export type FutureCourse = {
+  id: string;
+  name: string;
+  title: string;
+  start_date: string;
 };
 
 export function sortCourses(courses: undefined | null | Course[]): Course[] {
@@ -15,6 +24,21 @@ export function sortCourses(courses: undefined | null | Course[]): Course[] {
     if (a.created_at < b.created_at) return 1;
     return 0;
   });
+}
+
+export function sortFutureCourses(
+  courses: undefined | null | FutureCourse[]
+): FutureCourse[] {
+  if (!courses) return [];
+  return courses
+    .sort((a, b) => {
+      let aDate = new Date(a.start_date),
+        bDate = new Date(b.start_date);
+      if (aDate > bDate) return 1;
+      if (aDate < bDate) return -1;
+      return 0;
+    })
+    .filter((c) => moment(c.start_date).isBefore(moment().add(7, "week")));
 }
 
 export async function getCourses(): Promise<Course[]> {

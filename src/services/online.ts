@@ -1,4 +1,5 @@
-import { type Semester } from "./semesters";
+import { type FutureCourse } from "@/services/courses";
+import { type Semester } from "@/services/semesters";
 
 export const AUTH_API_ENDPOINT: string = "https://console.bocal.org/auth/login";
 export const EMAIL_EXTENSION: string = "@epitech.eu";
@@ -105,6 +106,7 @@ export type EncodedPDFResponse = {
 export type Report = {
   student: Student;
   semesters: Semester[];
+  future_courses: FutureCourse[];
   created_at: string;
 };
 

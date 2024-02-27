@@ -1,6 +1,6 @@
-import { type Course } from "./courses";
-import { type Day } from "./days";
-import { Semester } from "./semesters";
+import { type Course } from "@/services/courses";
+import { type Day } from "@/services/days";
+import { Semester } from "@/services/semesters";
 
 export enum Grade {
   A = "A",

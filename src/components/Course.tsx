@@ -39,7 +39,7 @@ export function Course({
           uuid={uuid}
           semester={semester?.name}
           id={course.id}
-          content={course.name}
+          content={`${course.title} (${course.name})`}
           title={true}
         />
         <div className="course__header-right">

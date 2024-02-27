@@ -1,4 +1,4 @@
-import { type Course, getCourses } from "./courses";
+import { type Course, getCourses } from "@/services/courses";
 
 export type Day = {
   name: string;
