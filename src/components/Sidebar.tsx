@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-
-import { getSemester, getSemestersNames } from "@/services/semesters";
 
 import { HomeIcon, MagicIcon, MenuIcon } from "@/components/icons";
 
@@ -22,38 +20,19 @@ interface Item {
 
 export function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([
+    {
+      route: "/",
+      text: "Guide",
+      icon: <HomeIcon />,
+    },
+    {
+      route: "/online",
+      text: "Online",
+      icon: <MagicIcon />,
+    },
+  ]);
   const pathname = usePathname();
-
-  useEffect(() => {
-    const initialize = async () => {
-      const semestersNames = await getSemestersNames();
-      const semesters = semestersNames
-        .filter(async (semestersName) => {
-          let semester = await getSemester(semestersName);
-          return semester?.courses.length;
-        })
-        .map((semesterName) => ({
-          text: semesterName,
-          route: `/semesters/${semesterName}`,
-        }));
-
-      setItems([
-        {
-          route: "/",
-          text: "Home",
-          icon: <HomeIcon />,
-        },
-        {
-          route: "/online",
-          text: "Online",
-          icon: <MagicIcon />,
-        },
-      ]);
-    };
-
-    initialize();
-  }, []);
 
   return (
     <>
