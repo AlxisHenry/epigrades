@@ -1,6 +1,6 @@
 import { Icon } from "@/components/icons";
 
-export function BookIcon({ size = 48 }: Icon): JSX.Element {
+export function Book({ size = 48 }: Icon): JSX.Element {
   return (
     <svg
       width={size}

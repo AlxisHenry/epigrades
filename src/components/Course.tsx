@@ -6,7 +6,7 @@ import { type Course } from "@/services/courses";
 import { getCourseGrade, isValidGrade } from "@/services/grades";
 import { Day as DayType, isValidDay } from "@/services/days";
 
-import { ArrowIcon, LinkArrow } from "@/components/icons";
+import { Arrow, LinkArrow } from "@/components/icons";
 
 interface Props {
   isOnline?: boolean;
@@ -45,7 +45,7 @@ export function Course({
         <div className="course__header-right">
           <Badge grade={getCourseGrade(course)} />
           <div className="course__arrow">
-            <ArrowIcon />
+            <Arrow />
           </div>
         </div>
       </div>

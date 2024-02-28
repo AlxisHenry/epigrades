@@ -3,14 +3,14 @@ export interface Icon {
   direction?: "up" | "down" | "left" | "right";
 }
 
-export { ArrowIcon } from "./ArrowIcon";
-export { BarChartIcon } from "./BarChartIcon";
-export { DownloadIcon } from "./DownloadIcon";
-export { HomeIcon } from "./HomeIcon";
-export { InfoIcon } from "./InfoIcon";
+export { Arrow } from "./Arrow";
+export { BarChart } from "./BarChart";
+export { Download } from "./Download";
+export { Home } from "./Home";
+export { About } from "./About";
 export { LinkArrow } from "./LinkArrow";
-export { MagicIcon } from "./MagicIcon";
-export { SchoolIcon } from "./SchoolIcon";
-export { SyncIcon } from "./SyncIcon";
-export { MenuIcon } from "./MenuIcon";
-export { BookIcon } from "./BookIcon";
+export { Magic } from "./Magic";
+export { School } from "./School";
+export { Sync } from "./Sync";
+export { Dots } from "./Dots";
+export { Book } from "./Book";

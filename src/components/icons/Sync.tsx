@@ -3,7 +3,7 @@ interface SyncIcon {
   isSyncing?: boolean;
 }
 
-export function SyncIcon({
+export function Sync({
   size = 48,
   isSyncing = false,
 }: SyncIcon): JSX.Element {

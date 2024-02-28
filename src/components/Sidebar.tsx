@@ -2,7 +2,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-import { HomeIcon, MagicIcon, MenuIcon } from "@/components/icons";
+import { Home, Magic, Dots } from "@/components/icons";
 
 interface DropdownItem {
   route: string;
@@ -18,37 +18,39 @@ interface Item {
   items?: DropdownItem[];
 }
 
+const items: Item[] = [
+  {
+    route: "/",
+    text: "Guide",
+    icon: <Home />,
+  },
+  {
+    route: "/online",
+    text: "Online",
+    icon: <Magic />,
+  },
+];
+
 export function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  const [items, setItems] = useState<Item[]>([
-    {
-      route: "/",
-      text: "Guide",
-      icon: <HomeIcon />,
-    },
-    {
-      route: "/online",
-      text: "Online",
-      icon: <MagicIcon />,
-    },
-  ]);
+
   const pathname = usePathname();
 
   return (
     <>
-      <SidebarToggle
+      <Toggle
         setIsSidebarOpen={setIsSidebarOpen}
         isSidebarOpen={isSidebarOpen}
       />
       <nav className={"sidebar" + (isSidebarOpen ? " sidebar--open" : "")}>
-        <SidebarToggle
+        <Toggle
           setIsSidebarOpen={setIsSidebarOpen}
           isSidebarOpen={isSidebarOpen}
         />
         <div className="sidebar__items">
           {items.map((item, index) => {
             return item.isDropdown ? (
-              <SidebarDropdown
+              <Dropdown
                 pathname={pathname}
                 key={index}
                 text={item.text}
@@ -56,7 +58,7 @@ export function Sidebar() {
                 items={item.items || []}
               />
             ) : (
-              <SidebarItem
+              <Item
                 pathname={pathname}
                 key={index}
                 route={item.route}
@@ -71,7 +73,7 @@ export function Sidebar() {
   );
 }
 
-function SidebarItem({
+function Item({
   route,
   pathname,
   icon,
@@ -99,7 +101,7 @@ function SidebarItem({
   );
 }
 
-function SidebarDropdown({
+function Dropdown({
   pathname,
   text,
   icon,
@@ -140,7 +142,7 @@ function SidebarDropdown({
         }
       >
         {items.map((item, index) => (
-          <SidebarItem
+          <Item
             pathname={pathname}
             key={index}
             route={item.route}
@@ -152,7 +154,7 @@ function SidebarDropdown({
   );
 }
 
-function SidebarToggle({
+function Toggle({
   setIsSidebarOpen,
   isSidebarOpen,
 }: {
@@ -162,7 +164,7 @@ function SidebarToggle({
   return (
     <div className="sidebar__toggle">
       <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-        <MenuIcon />
+        <Dots />
       </button>
     </div>
   );
