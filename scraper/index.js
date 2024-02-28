@@ -290,6 +290,7 @@ cleanFiles();
       },
     ],
     future_courses: [],
+    upcoming_events: [],
     created_at: null,
   };
 
@@ -483,6 +484,88 @@ cleanFiles();
         }
 
         await currentPage.close();
+      }
+    }
+  }
+
+  const eventsLink = await page.$x(
+    "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[3]/a"
+  );
+
+  if (eventsLink.length > 0) {
+    write("Retrieving upcoming events", 95);
+
+    await eventsLink[0].click();
+
+    await page.waitForXPath(
+      "/html/body/div[5]/div[1]/div[2]/section/div/div/div[1]/div/div[2]/div"
+    );
+
+    const eventList = await page.$x(
+      "/html/body/div[5]/div[1]/div[2]/section/div/div/div[1]/div/div[2]/div"
+    );
+
+    if (eventList.length > 0) {
+      const events = await eventList[0]?.$$("div.event");
+
+      for (let i = 0; i < events.length; i++) {
+        const currentEvent = events[i];
+
+        if (!currentEvent) continue;
+
+        const title = await page.evaluate(
+          (el) => el.getAttribute("data-event-title"),
+          currentEvent
+        );
+
+        const courseId = await page.evaluate(
+          (el) => el.getAttribute("data-course-id"),
+          currentEvent
+        );
+
+        const id = await page.evaluate(
+          (el) => el.getAttribute("data-event-id"),
+          currentEvent
+        );
+
+        const component = await page.evaluate(
+          (el) => el.getAttribute("data-event-component"),
+          currentEvent
+        );
+
+        const dateElement = await currentEvent.$(
+          "div:first-child .row:first-child"
+        );
+
+        const fullDate = await page.evaluate(
+          (el) => el.textContent,
+          dateElement
+        );
+
+        if (!title || !courseId || !id || !component || !fullDate) continue;
+
+        if (
+          ["feedback", "bootstrap"].some((word) =>
+            title.toLowerCase().includes(word)
+          )
+        )
+          continue;
+
+        const [_, date, time] = fullDate.replace("\n", "").trim().split(", ");
+        const [d, M] = date.split(" ");
+        const day = d.length === 1 ? `0${d}` : d;
+        let month = new Date(`${M} 1, 2021`).getMonth() + 1;
+        month = month.length === 1 ? `0${month}` : month;
+
+        grades.upcoming_events.push({
+          title,
+          course_id: courseId,
+          id,
+          component,
+          date: `${new Date().getFullYear()}/${month}/${day}`,
+          time,
+          is_review: time.includes("»"),
+        });
       }
     }
   }
