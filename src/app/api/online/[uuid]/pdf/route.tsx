@@ -1,8 +1,8 @@
-import { NextResponse, NextRequest } from "next/server";
 import PDFDocument from "pdfkit";
 import moment from "moment";
 import fs from "fs";
 import JSZip from "jszip";
+import { NextResponse, NextRequest } from "next/server";
 
 import {
   files,
@@ -10,10 +10,10 @@ import {
   type EncodedPDFResponse,
   type Student,
   type SemesterDate,
+  type Semester,
 } from "@/services/online";
-import { Course, calculateAverage, sortCourses } from "@/services/courses";
+import { calculateAverage, sortCourses } from "@/services/courses";
 import {
-  Semester,
   calculateAverage as calculateSemesterAverage,
   sortSemesters,
 } from "@/services/semesters";

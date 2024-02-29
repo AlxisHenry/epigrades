@@ -1,16 +1,17 @@
-import {
-  paths,
-  uuid,
-  type ScraperResponse,
-  type Credentials,
-  files,
-  isEpitechEmail,
-  Report,
-  type Progress,
-} from "@/services/online";
+import fs from "fs";
 import { exec } from "child_process";
 import { NextResponse, NextRequest } from "next/server";
-import fs from "fs";
+
+import {
+  type Progress,
+  type ScraperResponse,
+  type Credentials,
+  type Report,
+  files,
+  isEpitechEmail,
+  paths,
+  uuid,
+} from "@/services/online";
 import { authenticateUsingEpitechAPI } from "@/services/api";
 
 export async function GET(

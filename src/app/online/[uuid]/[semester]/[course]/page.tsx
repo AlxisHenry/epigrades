@@ -21,11 +21,8 @@ import { getCourseAssignementsCount } from "@/services/assignements";
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
 import { getReport } from "@/services/api";
-import { type Semester } from "@/services/semesters";
-import {
-  type Course as CourseType,
-  calculateAverage,
-} from "@/services/courses";
+import { calculateAverage } from "@/services/courses";
+import type { Course as CourseType, Semester } from "@/services/online";
 
 import {
   PageTitle,

@@ -1,11 +1,12 @@
+import fs from "fs";
+import { NextResponse, NextRequest } from "next/server";
+
 import {
   type CacheClearedResponse,
+  type Report,
   files,
   paths,
-  type Report,
 } from "@/services/online";
-import { NextResponse, NextRequest } from "next/server";
-import fs from "fs";
 
 export async function POST(
   request: NextRequest
