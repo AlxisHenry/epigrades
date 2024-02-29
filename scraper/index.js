@@ -555,7 +555,7 @@ cleanFiles();
         if (!title || !courseId || !id || !component || !fullDate) continue;
 
         if (
-          ["feedback", "bootstrap"].some((word) =>
+          ["review", "feedback", "bootstrap"].some((word) =>
             title.toLowerCase().includes(word)
           )
         )

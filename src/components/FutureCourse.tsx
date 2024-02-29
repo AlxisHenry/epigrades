@@ -2,24 +2,27 @@ import moment from "moment";
 
 import { type FutureCourse as FutureCourseType } from "@/services/online";
 
+import { Notification } from "@/components";
+
 interface Props {
   course: FutureCourseType;
 }
 
 export function FutureCourse({ course }: Props): JSX.Element {
-  let inSevenDays = moment(course.start_date).diff(moment(), "days") <= 7;
+  const _ = moment(course.start_date);
+  const inSevenDays = _.diff(moment(), "days") <= 7;
 
-  return (
-    <div className={`course future-course`}>
-      <div className="course__header">
-        <p>
-          {course.title} starts {moment(course.start_date).fromNow()}{" "}
-          <span className={`future-course-date ${!inSevenDays && "orange"}`}>
-            {moment(course.start_date).format("DD/MM/YYYY, hh:mm")}
-          </span>
-        </p>
-        <span className={`course__soon ${!inSevenDays && "orange"}`}></span>
-      </div>
-    </div>
-  );
+  const title = (): string => {
+    let isPast = _.isBefore(moment());
+
+    if (isPast) {
+      return `${course.title} started ${_.fromNow()}`;
+    }
+
+    return `${course.title} starts ${_.fromNow()}`;
+  };
+
+  const date = _.format("DD/MM/YYYY hh:mm A");
+
+  return <Notification title={title()} date={date} inSevenDays={inSevenDays} />;
 }

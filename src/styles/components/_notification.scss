@@ -1,14 +1,17 @@
-.future-course {
+.notification {
+  line-height: 1.5;
+  
   .course__header {
     font-size: 1rem;
     cursor: default;
 
-    p .future-course-date {
+    p .notification-date {
+      white-space: nowrap;
       font-size: 0.8rem;
       color: #fff;
       padding: 0.35rem 0.35rem;
       border-radius: .7rem;
-      background-color: #54d15e;
+      background-color: #1ED760;
       margin-left: 0.5rem;
 
       &.orange {
@@ -17,7 +20,7 @@
     }
   }
 
-  .course__soon {
+  .soon {
     max-width: 15px;
     min-width: 15px;
     width: 15px;
@@ -34,7 +37,7 @@
 }
 
 @media screen and (max-width: 540px) {
-  .future-course-date {
+  .notification-date {
     display: none;
   }
 }

@@ -5,15 +5,12 @@ import { useParams } from "next/navigation";
 import moment from "moment";
 import download from "downloadjs";
 
-import { base64ToBlob } from "@/services/online";
 import { calculateAverage, sortSemesters } from "@/services/semesters";
 import { getGlobalAssignementsCount } from "@/services/assignements";
 import { sortCourses, sortFutureCourses } from "@/services/courses";
 import { getReport, getReportInBase64 } from "@/services/api";
-import type {
-  FutureCourse as FutureCourseType,
-  Semester,
-} from "@/services/online";
+import { base64ToBlob, type Report } from "@/services/online";
+import { sortEvents } from "@/services/events";
 
 import {
   Loading,
@@ -24,11 +21,11 @@ import {
   Cards,
   Card,
   SemesterTitle,
+  Event,
   Spinner,
+  FutureCourse,
 } from "@/components";
 import { SyncIcon, DownloadIcon } from "@/components/icons";
-import { FutureCourse } from "@/components/FutureCourse";
-import { from } from "puppeteer-core/lib/esm/third_party/rxjs/rxjs.js";
 
 type Params = {
   uuid: string;
@@ -37,58 +34,46 @@ type Params = {
 export default function Home() {
   const params: Params = useParams();
   const uuid = params.uuid;
-  const [student, setStudent] = useState<{
-    name: string;
-    email: string;
-  }>({
-    name: "",
-    email: "",
-  });
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
-  const [semesters, setSemesters] = useState<Semester[] | null>(null);
-  const [createdAt, setCreatedAt] = useState<null | string>(null);
-  const [futureCourses, setFutureCourses] = useState<null | FutureCourseType[]>(
-    null
-  );
+  const [currentReport, setCurrentReport] = useState<Report | null>(null);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number>(-1);
 
   useEffect(() => {
-    setIsLoading(true);
-    (async () => {
+    const initialize = async () => {
+      setIsLoading(true);
+
       const { success, report } = await getReport(uuid);
+
       if (!success || !report) {
         setIsLoading(false);
         return;
       }
 
-      if (report.created_at) {
-        setCreatedAt(
-          moment(report.created_at, "DD-MM-YYYY hh:mm:ss").fromNow()
-        );
-      }
-
-      setStudent(report.student);
-      setSemesters(sortSemesters(report.semesters));
-      setFutureCourses(sortFutureCourses(report.future_courses));
+      setCurrentReport(report);
       setIsLoading(false);
-    })();
+    };
+
+    initialize();
   }, [uuid]);
 
   const toggleDropdown = (i: number) => {
     setOpenDropdownIndex(i === openDropdownIndex ? -1 : i);
   };
 
+  const isValid = (array: any[]) => array && array.length > 0;
+
   return (
     <Layout>
       {isLoading ? (
         <Loading />
-      ) : !semesters ? (
+      ) : !currentReport?.semesters ? (
         <NotFound />
       ) : (
         <>
-          <PageTitle parts={[student.name, "Semesters"]} />
+          <PageTitle parts={[currentReport?.student.name, "Semesters"]} />
           <div
             style={{
               display: "flex",
@@ -96,7 +81,7 @@ export default function Home() {
               gap: "1rem",
             }}
           >
-            {createdAt && (
+            {currentReport?.created_at && (
               <p
                 style={{
                   fontSize: "1rem",
@@ -104,7 +89,11 @@ export default function Home() {
                   marginBottom: "1rem",
                 }}
               >
-                Generated {createdAt}
+                Generated&nbsp;
+                {moment(
+                  currentReport?.created_at,
+                  "DD-MM-YYYY hh:mm:ss"
+                ).fromNow()}
               </p>
             )}
             <div
@@ -112,7 +101,9 @@ export default function Home() {
                 setIsSyncing(true);
                 setTimeout(() => {
                   setIsSyncing(false);
-                  location.href = encodeURI(`/online?email=${student.email}`);
+                  location.href = encodeURI(
+                    `/online?email=${currentReport?.student.email}`
+                  );
                 }, 1000);
               }}
             >
@@ -154,29 +145,47 @@ export default function Home() {
             <Cards className="is-semester-cards">
               <Card
                 title="Global Average"
-                subtitle={calculateAverage(semesters)}
+                subtitle={calculateAverage(currentReport?.semesters)}
               />
               <Card
                 title="Assignments"
-                subtitle={`${getGlobalAssignementsCount(semesters)}`}
+                subtitle={`${getGlobalAssignementsCount(
+                  currentReport?.semesters
+                )}`}
               />
             </Cards>
-          </div>
+          </div>{" "}
           <div>
-            {futureCourses && futureCourses.length > 0 ? (
+            {isValid(currentReport?.upcoming_events) ? (
+              <div
+                style={{
+                  marginBottom: "2rem",
+                }}
+              >
+                <SemesterTitle title="Upcoming events" />
+                {sortEvents(currentReport?.upcoming_events).map((event) => {
+                  return <Event event={event} key={event.id} />;
+                })}
+              </div>
+            ) : null}
+          </div>{" "}
+          <div>
+            {isValid(currentReport?.future_courses) ? (
               <div
                 style={{
                   marginBottom: "2rem",
                 }}
               >
                 <SemesterTitle title="Incoming courses" />
-                {futureCourses.map((course) => {
-                  return <FutureCourse course={course} key={course.id} />;
-                })}
+                {sortFutureCourses(currentReport?.future_courses).map(
+                  (course) => {
+                    return <FutureCourse course={course} key={course.id} />;
+                  }
+                )}
               </div>
             ) : null}
           </div>
-          {semesters.map((semester) => {
+          {sortSemesters(currentReport?.semesters).map((semester) => {
             return semester.courses.length > 0 ? (
               <div
                 key={semester.name}
