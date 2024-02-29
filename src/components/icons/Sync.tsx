@@ -3,10 +3,7 @@ interface SyncIcon {
   isSyncing?: boolean;
 }
 
-export function SyncIcon({
-  size = 48,
-  isSyncing = false,
-}: SyncIcon): JSX.Element {
+export function Sync({ size = 48, isSyncing = false }: SyncIcon): JSX.Element {
   return (
     <svg
       className={`sync ${isSyncing ? "active" : ""}`}

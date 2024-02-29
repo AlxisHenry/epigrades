@@ -1,6 +1,6 @@
 import { Icon } from "@/components/icons";
 
-export function HomeIcon({ size = 48 }: Icon): JSX.Element {
+export function Home({ size = 48 }: Icon): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

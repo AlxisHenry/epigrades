@@ -25,7 +25,7 @@ import {
   Spinner,
   FutureCourse,
 } from "@/components";
-import { SyncIcon, DownloadIcon } from "@/components/icons";
+import { Sync, Download } from "@/components/icons";
 
 type Params = {
   uuid: string;
@@ -107,7 +107,7 @@ export default function Home() {
                 }, 1000);
               }}
             >
-              <SyncIcon size={24} isSyncing={isSyncing} />
+              <Sync size={24} isSyncing={isSyncing} />
             </div>
             <div
               onClick={async () => {
@@ -132,7 +132,7 @@ export default function Home() {
                   }}
                 />
               ) : (
-                <DownloadIcon size={24} />
+                <Download size={24} />
               )}
             </div>
           </div>

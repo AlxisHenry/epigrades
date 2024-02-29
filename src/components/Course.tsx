@@ -5,7 +5,7 @@ import { getCourseGrade, isValidGrade } from "@/services/grades";
 import { isValidDay } from "@/services/days";
 import type { Semester, Course, Day as DayType } from "@/services/online";
 
-import { ArrowIcon, LinkArrow } from "@/components/icons";
+import { Arrow, Link as LinkIcon } from "@/components/icons";
 
 interface Props {
   isOnline?: boolean;
@@ -44,7 +44,7 @@ export function Course({
         <div className="course__header-right">
           <Badge grade={getCourseGrade(course)} />
           <div className="course__arrow">
-            <ArrowIcon />
+            <Arrow />
           </div>
         </div>
       </div>
@@ -107,7 +107,7 @@ function Link({
       as={getAs()}
     >
       <div>
-        {content} <LinkArrow />
+        {content} <LinkIcon />
       </div>
       <div className="underline"></div>
     </NextLink>
@@ -128,30 +128,21 @@ export function Table({ days }: { days: DayType[] }) {
         </tr>
       </thead>
       <tbody>
-        {days.map(
-          (day: DayType) => isValidDay(day) && <Day {...day} key={day.name} />
-        )}
+        {days.map((day) => isValidDay(day) && <Day day={day} key={day.name} />)}
       </tbody>
     </table>
   );
 }
 
-function Day({
-  name,
-  topic,
-  assignments,
-  due_date,
-  submission,
-  grade,
-}: DayType) {
+function Day({ day }: { day: DayType }) {
   return (
     <tr>
-      <td>{name}</td>
-      <td>{topic}</td>
-      <td>{assignments}</td>
-      <td>{moment(due_date).format("DD/MM/YYYY")}</td>
-      <td>{submission}</td>
-      <td>{grade}</td>
+      <td>{day.name}</td>
+      <td>{day.topic}</td>
+      <td>{day.assignments}</td>
+      <td>{moment(day.due_date).format("DD/MM/YYYY")}</td>
+      <td>{day.submission}</td>
+      <td>{day.grade}</td>
     </tr>
   );
 }

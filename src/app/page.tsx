@@ -11,6 +11,9 @@ export default function Home() {
     <Layout>
       <PageTitle parts={["Welcome ✋"]} />
       <div className="description">
+        {/* width={200}
+          height={200 / (16 / 9)}
+          objectFit="cover" */}
         On this site you will find my grades from my time at Epitech Strasbourg,
         ordered by semester and by module. You also have access to some
         statistics about my grades. You can see my grades for each semester by

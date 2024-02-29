@@ -1,6 +1,6 @@
 import { Icon } from "@/components/icons";
 
-export function DownloadIcon({ size = 48 }: Icon): JSX.Element {
+export function Download({ size = 48 }: Icon): JSX.Element {
   return (
     <svg
       className="download-icon"

@@ -1,16 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-import { getSemester, getSemestersNames } from "@/services/semesters";
-
-import {
-  BarChartIcon,
-  HomeIcon,
-  MagicIcon,
-  MenuIcon,
-  SchoolIcon,
-} from "@/components/icons";
+import { Home, Magic, Menu } from "@/components/icons";
 
 interface DropdownItem {
   route: string;
@@ -26,52 +18,23 @@ interface Item {
   items?: DropdownItem[];
 }
 
+const items: Item[] = [
+  {
+    route: "/",
+    text: "Guide",
+    icon: <Home />,
+  },
+  {
+    route: "/online",
+    text: "Online",
+    icon: <Magic />,
+  },
+];
+
 export function Sidebar() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  const [items, setItems] = useState<Item[]>([]);
   const pathname = usePathname();
 
-  useEffect(() => {
-    const initialize = async () => {
-      const semestersNames = await getSemestersNames();
-      const semesters = semestersNames
-        .filter(async (semestersName) => {
-          let semester = await getSemester(semestersName);
-          return semester?.courses.length;
-        })
-        .map((semesterName) => ({
-          text: semesterName,
-          route: `/semesters/${semesterName}`,
-        }));
-
-      setItems([
-        {
-          route: "/",
-          text: "Home",
-          icon: <HomeIcon />,
-        },
-        {
-          route: "/semesters",
-          text: "Semesters",
-          icon: <SchoolIcon />,
-          items: semesters,
-          isDropdown: true
-        },
-        {
-          route: "/stats",
-          text: "Statistics",
-          icon: <BarChartIcon />,
-        },
-        {
-          route: "/online",
-          text: "Online",
-          icon: <MagicIcon />,
-        },
-      ]);
-    };
-
-    initialize();
-  }, []);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -201,7 +164,7 @@ function SidebarToggle({
   return (
     <div className="sidebar__toggle">
       <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-        <MenuIcon />
+        <Menu />
       </button>
     </div>
   );
