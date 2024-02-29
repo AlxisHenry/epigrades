@@ -51,7 +51,7 @@ export default function Home() {
   const [uuid, setUuid] = useState<string>("");
   const [credentials, setCredentials] = useState<Credentials>({
     email: params.get("email") ?? "",
-    password: "iu-YAR@<",
+    password: "",
   });
 
   const handleSubmit = async (fromModal: boolean = false) => {

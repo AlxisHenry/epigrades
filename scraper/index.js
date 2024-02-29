@@ -318,10 +318,14 @@ cleanFiles();
         "/html/body/div[5]/header/div[2]/div/div[1]/div/div[2]/h1"
       );
 
-      const title = await currentPage.evaluate(
-        (el) => el.textContent,
-        titleContainer[0]
-      );
+      let title = null;
+
+      try {
+        title = await currentPage.evaluate(
+          (el) => el.textContent,
+          titleContainer[0]
+        );
+      } catch (e) {}
 
       grades.semesters
         .find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -337,6 +341,8 @@ cleanFiles();
         "/html/body/div[5]/div[1]/div[2]/section/div/table"
       );
       const rows = await table[0]?.$$("tr");
+
+      if (!rows) continue;
 
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
@@ -454,7 +460,9 @@ cleanFiles();
 
         await currentPage.goto(urls.course.replace("[id]", id));
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await currentPage.waitForXPath(
+          "/html/body/div[5]/div[1]/div[2]/section/div/div/ul/li[3]/div[3]/div[1]/div/div/strong"
+        );
 
         const isRestricted = await currentPage.$x(
           "/html/body/div[5]/div[1]/div[2]/section/div/div/ul/li[3]/div[3]/div[1]/div/div/strong"
@@ -554,16 +562,16 @@ cleanFiles();
         const [_, date, time] = fullDate.replace("\n", "").trim().split(", ");
         const [d, M] = date.split(" ");
         const day = d.length === 1 ? `0${d}` : d;
-        let month = new Date(`${M} 1, 2021`).getMonth() + 1;
+        let month = `${new Date(`${M} 1, 2021`).getMonth() + 1}`;
         month = month.length === 1 ? `0${month}` : month;
 
         grades.upcoming_events.push({
-          title,
-          course_id: courseId,
           id,
-          component,
+          course_id: courseId,
+          title,
           date: `${new Date().getFullYear()}/${month}/${day}`,
           time,
+          component,
           is_review: time.includes("»"),
         });
       }
