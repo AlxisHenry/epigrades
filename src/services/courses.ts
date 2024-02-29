@@ -1,21 +1,8 @@
-import { type Day, isGradedDay } from "@/services/days";
-import { type Semester, getSemesters } from "@/services/semesters";
 import moment from "moment";
 
-export type Course = {
-  id: string;
-  name: string;
-  title: string;
-  days: Day[];
-  created_at: string;
-};
-
-export type FutureCourse = {
-  id: string;
-  name: string;
-  title: string;
-  start_date: string;
-};
+import { isGradedDay } from "@/services/days";
+import { getSemesters } from "@/services/semesters";
+import type { Semester, Course, FutureCourse } from "@/services/online";
 
 export function sortCourses(courses: undefined | null | Course[]): Course[] {
   if (!courses) return [];

@@ -1,10 +1,9 @@
 import NextLink from "next/link";
 import moment from "moment";
 
-import { type Semester } from "@/services/semesters";
-import { type Course } from "@/services/courses";
 import { getCourseGrade, isValidGrade } from "@/services/grades";
-import { Day as DayType, isValidDay } from "@/services/days";
+import { isValidDay } from "@/services/days";
+import type { Semester, Course, Day as DayType } from "@/services/online";
 
 import { ArrowIcon, LinkArrow } from "@/components/icons";
 

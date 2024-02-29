@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import { type FutureCourse as FutureCourseType } from "@/services/courses";
+import { type FutureCourse as FutureCourseType } from "@/services/online";
 
 interface Props {
   course: FutureCourseType;

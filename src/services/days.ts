@@ -1,13 +1,5 @@
-import { type Course, getCourses } from "@/services/courses";
-
-export type Day = {
-  name: string;
-  topic: string;
-  assignments: string;
-  due_date: string;
-  submission: string;
-  grade: string;
-};
+import { getCourses } from "@/services/courses";
+import type { Day, Course } from "@/services/online";
 
 export function isValidDay(day: Day): boolean {
   return (

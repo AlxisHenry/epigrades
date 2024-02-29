@@ -1,6 +1,7 @@
-import { NextResponse, NextRequest } from "next/server";
 import fs from "fs";
-import { type Report, paths, type uuidResponse } from "@/services/online";
+import { NextResponse, NextRequest } from "next/server";
+
+import { type Report, type uuidResponse, paths } from "@/services/online";
 
 export async function GET(
   request: NextRequest,

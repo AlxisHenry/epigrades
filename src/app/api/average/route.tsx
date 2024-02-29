@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Semester, calculateAverage } from "@/services/semesters";
-import { Report, files } from "@/services/online";
 import fs from "fs";
+import { NextRequest, NextResponse } from "next/server";
+
+import { calculateAverage } from "@/services/semesters";
+import { type Semester, type Report, files } from "@/services/online";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const uuid: string | null = request.nextUrl.searchParams.get("uuid") || "me";

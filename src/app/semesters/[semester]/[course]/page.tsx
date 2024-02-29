@@ -19,13 +19,10 @@ import {
 
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
-import { type Semester, getSemester } from "@/services/semesters";
-import {
-  type Course as CourseType,
-  getCourse,
-  calculateAverage,
-} from "@/services/courses";
+import { getSemester } from "@/services/semesters";
+import { getCourse, calculateAverage } from "@/services/courses";
 import { getCourseAssignementsCount } from "@/services/assignements";
+import type { Course as CourseType, Semester } from "@/services/online";
 
 import {
   NotFound,

@@ -1,13 +1,13 @@
 import {
   AUTH_API_ENDPOINT,
+  errors,
+  isEpitechEmail,
   type AuthenticateResponse,
   type CacheClearedResponse,
   type Credentials,
   type ScraperResponse,
   type uuidResponse,
   type Progress,
-  errors,
-  isEpitechEmail,
   type EncodedPDFResponse,
 } from "@/services/online";
 

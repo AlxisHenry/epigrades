@@ -1,3 +1,5 @@
+import { NextResponse, NextRequest } from "next/server";
+
 import { authenticateUsingEpitechAPI } from "@/services/api";
 import {
   type Credentials,
@@ -5,7 +7,6 @@ import {
   errors,
   isEpitechEmail,
 } from "@/services/online";
-import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(
   request: NextRequest

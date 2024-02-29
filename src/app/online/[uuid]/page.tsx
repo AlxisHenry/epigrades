@@ -6,18 +6,14 @@ import moment from "moment";
 import download from "downloadjs";
 
 import { base64ToBlob } from "@/services/online";
-import {
-  type Semester,
-  calculateAverage,
-  sortSemesters,
-} from "@/services/semesters";
+import { calculateAverage, sortSemesters } from "@/services/semesters";
 import { getGlobalAssignementsCount } from "@/services/assignements";
-import {
-  type FutureCourse as FutureCourseType,
-  sortCourses,
-  sortFutureCourses,
-} from "@/services/courses";
+import { sortCourses, sortFutureCourses } from "@/services/courses";
 import { getReport, getReportInBase64 } from "@/services/api";
+import type {
+  FutureCourse as FutureCourseType,
+  Semester,
+} from "@/services/online";
 
 import {
   Loading,
@@ -32,6 +28,7 @@ import {
 } from "@/components";
 import { SyncIcon, DownloadIcon } from "@/components/icons";
 import { FutureCourse } from "@/components/FutureCourse";
+import { from } from "puppeteer-core/lib/esm/third_party/rxjs/rxjs.js";
 
 type Params = {
   uuid: string;

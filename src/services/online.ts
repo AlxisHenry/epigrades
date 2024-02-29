@@ -1,6 +1,3 @@
-import { type FutureCourse } from "@/services/courses";
-import { type Semester } from "@/services/semesters";
-
 export const AUTH_API_ENDPOINT: string = "https://console.bocal.org/auth/login";
 export const EMAIL_EXTENSION: string = "@epitech.eu";
 
@@ -58,6 +55,36 @@ export const isStep = (currentStep: string, step: string): boolean =>
 export const isEpitechEmail = (email: string) =>
   new RegExp(`^[a-zA-Z0-9._-]+${EMAIL_EXTENSION}$`, "i").test(email);
 
+export type Semester = {
+  name: string;
+  courses: Course[];
+  created_at: string | null;
+};
+
+export type Course = {
+  id: string;
+  name: string;
+  title: string;
+  days: Day[];
+  created_at: string;
+};
+
+export type FutureCourse = {
+  id: string;
+  name: string;
+  title: string;
+  start_date: string;
+};
+
+export type Day = {
+  name: string;
+  topic: string;
+  assignments: string;
+  due_date: string;
+  submission: string;
+  grade: string;
+};
+
 export type Progress = {
   currentStep: string;
   progress: number;
@@ -107,7 +134,21 @@ export type Report = {
   student: Student;
   semesters: Semester[];
   future_courses: FutureCourse[];
+  upcoming_events: Event[];
   created_at: string;
+};
+
+export type Event = {
+  id: string;
+  course: {
+    id: string;
+    name: string;
+  };
+  title: string;
+  date: string;
+  time: string;
+  component: string;
+  is_review: false;
 };
 
 export type Student = {

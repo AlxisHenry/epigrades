@@ -1,12 +1,7 @@
-import { sortCourses, type Course } from "@/services/courses";
+import { sortCourses } from "@/services/courses";
 import { isGradedDay } from "@/services/days";
 import { getReport } from "@/services/api";
-
-export type Semester = {
-  name: string;
-  courses: Course[];
-  created_at: string | null;
-};
+import type { Course, Semester } from "@/services/online";
 
 export function getSemesters(): Promise<Semester[]> {
   return new Promise(async (resolve, reject) => {

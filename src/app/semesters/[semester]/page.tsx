@@ -5,13 +5,10 @@ import "@/styles/pages/semester.scss";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-import {
-  type Semester,
-  getSemester,
-  calculateAverage,
-} from "@/services/semesters";
-import { sortCourses, type Course as CourseType } from "@/services/courses";
+import { getSemester, calculateAverage } from "@/services/semesters";
+import { sortCourses } from "@/services/courses";
 import { getSemesterAssignementsCount } from "@/services/assignements";
+import type { Course as CourseType, Semester } from "@/services/online";
 
 import {
   Course,
