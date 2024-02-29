@@ -125,6 +125,8 @@ const exit = (browser) => {
   }, 2000);
 };
 
+const trim = (str) => str.replace("\n", "").trim();
+
 cleanFiles();
 
 (async () => {
@@ -449,7 +451,7 @@ cleanFiles();
         if (!futureCourses.find((c) => c.id === id))
           futureCourses.push({
             id,
-            name: name.replace("\n", "").trim(),
+            name: trim(name),
           });
       }
 
@@ -559,7 +561,16 @@ cleanFiles();
         )
           continue;
 
-        const [_, date, time] = fullDate.replace("\n", "").trim().split(", ");
+        const courseNameElement = await currentEvent.$(
+          "div:first-child .row:last-child div:last-child"
+        );
+
+        const courseName = await page.evaluate(
+          (el) => el.textContent,
+          courseNameElement
+        );
+
+        const [_, date, time] = trim(fullDate).split(", ");
         const [d, M] = date.split(" ");
         const day = d.length === 1 ? `0${d}` : d;
         let month = `${new Date(`${M} 1, 2021`).getMonth() + 1}`;
@@ -567,8 +578,14 @@ cleanFiles();
 
         grades.upcoming_events.push({
           id,
-          course_id: courseId,
-          title,
+          course: {
+            id: courseId,
+            name: trim(courseName),
+          },
+          title:
+            component === "mod_scheduler"
+              ? title.replace("your Teacher, ", "")
+              : title,
           date: `${new Date().getFullYear()}/${month}/${day}`,
           time,
           component,
