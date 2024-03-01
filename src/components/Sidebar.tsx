@@ -2,7 +2,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-import { Info, Magic, Menu } from "@/components/icons";
+import { Info, Magic, Menu, School } from "@/components/icons";
 
 interface DropdownItem {
   route: string;
@@ -23,6 +23,11 @@ const items: Item[] = [
     route: "/",
     text: "Guide",
     icon: <Info />,
+  },
+  {
+    route: "/online/me",
+    text: "Preview",
+    icon: <School />,
   },
   {
     route: "/online",
