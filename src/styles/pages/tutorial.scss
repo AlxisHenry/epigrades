@@ -1,0 +1,54 @@
+.tutorial {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  margin-bottom: 5rem;
+
+  a {
+    color: var(--contrast-primary);
+    font-size: 1.5rem;
+
+    &:hover {
+      color: var(--contrast-secondary);
+    }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-column-gap: 6px;
+    text-align: center;
+    grid-row-gap: 6px;
+    align-items: center;
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: 2.5rem;
+    color: var(--contrast-primary);
+  }
+
+  p {
+    font-size: 1.5rem;
+    color: var(--contrast-primary);
+  }
+
+  span {
+    font-size: 1.5rem;
+    color: var(--contrast-primary);
+
+    &.highlight {
+      color: var(--primary);
+    }
+  }
+}
