@@ -11,7 +11,7 @@
   background-color: var(--contrast-primary);
   width: fit-content;
   padding: 0.35rem 0.5rem;
-  border-radius: 12px;
+  border-radius: 8px;
   color: black;
   margin-bottom: 5rem;
 }
@@ -22,9 +22,12 @@
   gap: 5rem;
   margin-bottom: 5rem;
   text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  word-spacing: -0.05em;
 
   img {
-    border-radius: 12pxpx;
+    border-radius: 8px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
   }
 
@@ -58,7 +61,18 @@
     grid-column-gap: 6px;
     grid-row-gap: 6px;
     align-items: center;
-    margin-top: 2rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+
+    img {
+      transform: rotate(2deg);
+    }
+
+    &.reverse {
+      img {
+        transform: rotate(-2deg);
+      }
+    }
   }
 
   .text {
@@ -70,7 +84,6 @@
   p {
     margin: 0.5rem 0;
     line-height: 1.5;
-    word-break: break-word;
     font-size: 1.5rem;
     color: var(--contrast-primary);
   }
@@ -88,7 +101,7 @@
     content: " ";
     display: block;
     height: 90%;
-    width: 100%;
+    width: 95%;
     margin-left: -3px;
     margin-right: -3px;
     position: absolute;
@@ -98,5 +111,62 @@
     left: -1px;
     border-radius: 75% 75% 75% 75% / 25% 25% 25% 25%;
     padding: 10px 3px 3px 10px;
+  }
+
+  .alert {
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 16px 16px 8px;
+    line-height: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    gap: 1.2rem;
+
+    h3 {
+      text-transform: uppercase;
+      text-align: start;
+      font-size: 1.4rem;
+    }
+
+    p {
+      text-align: start;
+      font-size: 1.2rem;
+    }
+
+    &.info {
+      background-color: #8798f51d;
+    }
+
+    &.warning {
+      background-color: #ffc84855;
+    }
+
+    &.danger {
+      background-color: #ff5d5d49;
+    }
+
+    &.tips {
+      background-color: rgba(159, 230, 169, 0.278);
+    }
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .tutorial .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    img {
+      transform: rotate(0deg);
+    }
+
+    &.reverse {
+      flex-direction: column-reverse;
+      img {
+        transform: rotate(0deg);
+      }
+    }
   }
 }

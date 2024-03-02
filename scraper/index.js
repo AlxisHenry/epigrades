@@ -570,11 +570,27 @@ cleanFiles();
           courseNameElement
         );
 
-        const [_, date, time] = trim(fullDate).split(", ");
-        const [d, M] = date.split(" ");
-        const day = d.length === 1 ? `0${d}` : d;
-        let month = `${new Date(`${M} 1, 2021`).getMonth() + 1}`;
-        month = month.length === 1 ? `0${month}` : month;
+        let parts = trim(fullDate).split(", "),
+          date = null;
+
+        if (!parts || parts.length <= 0) continue;
+
+        let time = parts[parts.length - 1];
+
+        if (parts.length === 3) {
+          date = parts[1];
+          const [d, M] = date.split(" ");
+          const day = d.length === 1 ? `0${d}` : d;
+          let month = `${new Date(`${M} 1, 2021`).getMonth() + 1}`;
+          month = month.length === 1 ? `0${month}` : month;
+          date = `${new Date().getFullYear()}/${month}/${day}`;
+        } else {
+          let _ =
+            parts[0] === "Tomorrow"
+              ? new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+              : new Date();
+          date = _.toISOString().split("T")[0].replaceAll("-", "/");
+        }
 
         grades.upcoming_events.push({
           id,
@@ -586,7 +602,7 @@ cleanFiles();
             component === "mod_scheduler"
               ? title.replace("your Teacher, ", "")
               : title,
-          date: `${new Date().getFullYear()}/${month}/${day}`,
+          date,
           time,
           component,
           is_review: time.includes("»"),

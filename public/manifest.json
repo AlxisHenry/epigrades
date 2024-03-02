@@ -1,33 +1,33 @@
 {
-	"name": "Epigrades",
-	"short_name": "Faster than Gandalf 🤭",
-	"id": "com.epigrades",
-	"icons": [
-		{
-			"src": "/icons/192x192.png",
-			"sizes": "192x192",
-			"type": "image/png",
-			"purpose": "any"
-		},
-		{
-			"src": "/icons/384x384.png",
-			"sizes": "384x384",
-			"type": "image/png"
-		}
-	],
-	"start_url": "/",
-	"screenshots": [
-		{
-			"src": "/screenshots/online.png",
-			"sizes": "1280x720",
-			"type": "image/png",
-			"form_factor": "wide"
-		},
-		{
-			"src": "/screenshots/report.png",
-			"sizes": "1280x720",
-			"type": "image/png"
-		}
-	],
-	"display": "standalone"
+  "name": "Epigrades",
+  "short_name": "Faster than Gandalf 🤭",
+  "id": "com.epigrades",
+  "icons": [
+    {
+      "src": "/icons/192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "screenshots": [
+    {
+      "src": "/screenshots/online.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/report.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "display": "standalone"
 }
