@@ -30,8 +30,9 @@ export function HasReport({ uuid, generateNewReport }: Props) {
         <div
           style={{
             display: "flex",
+            flexDirection: "column",
             width: "100%",
-            gap: "1rem",
+            gap: "1.5rem",
             marginTop: "20px",
           }}
         >
@@ -45,21 +46,6 @@ export function HasReport({ uuid, generateNewReport }: Props) {
                 style={{
                   flex: 1,
                 }}
-                onClick={() => {
-                  if (!disabled) {
-                    setIsLoading(true);
-                    setDisabled(true);
-                    location.href = `/online/${uuid}`;
-                  }
-                }}
-                type="submit"
-              >
-                Continue
-              </button>
-              <button
-                style={{
-                  flex: 1,
-                }}
                 type="submit"
                 onClick={() => {
                   if (!disabled) {
@@ -69,8 +55,20 @@ export function HasReport({ uuid, generateNewReport }: Props) {
                   }
                 }}
               >
-                Make a new one
+                Create a new report
               </button>
+              <a
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "0.85rem",
+                }}
+                href={`/online/${uuid}`}
+              >
+                Continue with the previous report
+              </a>
             </>
           )}
         </div>

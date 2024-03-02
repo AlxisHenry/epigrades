@@ -28,10 +28,7 @@ export function Event({ event }: Props): JSX.Element {
       title = `${event.course.name} ${event.title.replace("Project", "")}`;
     }
 
-    let _ = moment(
-      date().split("»")[0].trim().split(" ").slice(0, 2).join(" "),
-      "DD/MM/YYYY hh:mm"
-    );
+    let _ = moment(date().split("»")[0].trim(), "DD/MM/YYYY hh:mm A");
 
     let isPast = _.isBefore(moment());
 

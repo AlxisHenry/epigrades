@@ -2,7 +2,7 @@ import React from "react";
 
 import { Icon } from "@/components/icons";
 
-export function LinkArrow({ size = 20 }: Icon): JSX.Element {
+export function Link({ size = 20 }: Icon): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -183,6 +183,10 @@ button:disabled:focus {
     max-width: 100% !important;
     width: 100% !important;
   }
+  .sidebar__toggle button {
+    max-width: auto !important;
+    width: auto !important;
+  }
 }
 
 .sync {
