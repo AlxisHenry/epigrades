@@ -2,15 +2,9 @@
 
 import "@/styles/pages/tutorial.scss";
 
-import { Layout } from "@/components";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
-const props = {
-  width: 200,
-  height: 200 / (16 / 9),
-  layout: "responsive",
-  alt: "Profile Picture",
-};
+import { Layout } from "@/components";
 
 export default function Home() {
   return (
@@ -221,5 +215,13 @@ interface ScreenProps {
 }
 
 function Screen({ src, alt }: ScreenProps) {
-  return <Image {...props} src={src} alt={alt ?? "Screen"} />;
+  return (
+    <Image
+      width={200}
+      height={200 / (16 / 9)}
+      layout="responsive"
+      src={src}
+      alt={alt ?? "Screen"}
+    />
+  );
 }

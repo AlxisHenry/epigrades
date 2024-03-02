@@ -64,6 +64,10 @@
     margin-top: 3rem;
     margin-bottom: 3rem;
 
+    span {
+      overflow: visible!important;
+    }
+
     img {
       transform: rotate(2deg);
     }
