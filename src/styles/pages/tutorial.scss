@@ -26,6 +26,12 @@
   -webkit-hyphens: auto;
   word-spacing: -0.05em;
 
+  .screen span {
+    overflow: visible !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
   img {
     border-radius: 8px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
@@ -63,10 +69,6 @@
     align-items: center;
     margin-top: 3rem;
     margin-bottom: 3rem;
-
-    span {
-      overflow: visible!important;
-    }
 
     img {
       transform: rotate(2deg);

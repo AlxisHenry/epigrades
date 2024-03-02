@@ -216,12 +216,14 @@ interface ScreenProps {
 
 function Screen({ src, alt }: ScreenProps) {
   return (
-    <Image
-      width={200}
-      height={200 / (16 / 9)}
-      layout="responsive"
-      src={src}
-      alt={alt ?? "Screen"}
-    />
+    <div className="screen">
+      <Image
+        width={200}
+        height={200 / (16 / 9)}
+        layout="responsive"
+        src={src}
+        alt={alt ?? "Screen"}
+      />
+    </div>
   );
 }
