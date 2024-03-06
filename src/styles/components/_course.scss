@@ -53,9 +53,12 @@
         background-color: var(--contrast-primary);
         align-self: center;
 
-        &.grade-badge--A,
-        &.grade-badge--B {
+        &.grade-badge--A {
           color: var(--grade-success);
+        }
+
+        &.grade-badge--B {
+          color: var(--grade-ok);
         }
 
         &.grade-badge--C,

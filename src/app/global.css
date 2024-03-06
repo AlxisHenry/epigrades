@@ -9,9 +9,12 @@
   --color-primary-dark: #0e0e0e;
   --color-error: #ff837a;
   --progress-bar: #474ca4;
+
   --grade-success: #4caf50;
+  --grade-ok: rgba(115, 156, 19, 0.654);
   --grade-warning: #ff9800;
   --grade-danger: #f44336;
+  
   --grey: #888;
 }
 
