@@ -45,6 +45,7 @@ export const steps = {
   waitingForMicrosoftAuthenticatorValidation:
     "Waiting for Microsoft Authenticator validation",
   logged: "Logged successfully to the intranet",
+  starting: "Starting to retrieve your graded courses",
   authenticationFailed: "Authentication failed",
   reportGenerated: "All tasks done",
 };

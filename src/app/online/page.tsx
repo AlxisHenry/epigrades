@@ -54,6 +54,12 @@ export default function Home() {
     password: "",
   });
 
+  const hideModals = () => {
+    setIsAskingForOTPCode(false);
+    setIsAskingForAuthenticatorValidation(false);
+    setIsSavingOTPCode(false);
+  };
+
   const handleSubmit = async (fromModal: boolean = false) => {
     if (!fromModal) {
       setAlert(null);
@@ -101,17 +107,27 @@ export default function Home() {
         if (!stepsDone.includes(state.currentStep)) {
           setProgress(state.progress);
           setCurrentStep(state.currentStep);
+
+          if (
+            !isStep(
+              state.currentStep,
+              steps.waitingForTwoFactorAuthentication
+            ) &&
+            !isStep(
+              state.currentStep,
+              steps.waitingForMicrosoftAuthenticatorValidation
+            )
+          ) {
+            hideModals();
+          }
+
           if (
             isStep(state.currentStep, steps.waitingForTwoFactorAuthentication)
           ) {
             setIsAskingForOTPCode(true);
             let parts = state.currentStep.split(" ");
             setPhone(`+${parts[parts.length - 1]}`);
-          } else if (isStep(state.currentStep, steps.logged)) {
-            setIsAskingForOTPCode(false);
-            setIsAskingForAuthenticatorValidation(false);
-            setIsSavingOTPCode(false);
-          } else if (isStep(state.currentStep, steps.reportGenerated)) {
+          }  else if (isStep(state.currentStep, steps.reportGenerated)) {
             clearInterval(checkExecutionProgress);
             setTimeout(() => {
               setIsFinished(true);
