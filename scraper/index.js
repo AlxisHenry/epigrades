@@ -136,29 +136,39 @@ cleanFiles();
     defaultViewport: null,
     args: ["--disable-features=site-per-process", "--window-size=1280,1080"],
   });
-  const page = await browser.newPage();
-  await page.goto("https://gandalf.epitech.eu/login/index.php");
   write("Opening the intranet login page", 2);
 
-  await page.waitForXPath(
-    "/html/body/div[4]/div[1]/div[2]/section/div/div[2]/div/div/div/div/div/div[2]/div[3]/div/a"
-  );
-  const microsoftLoginButton = await page.$x(
-    "/html/body/div[4]/div[1]/div[2]/section/div/div[2]/div/div/div/div/div/div[2]/div[3]/div/a"
-  );
-  await microsoftLoginButton[0].click();
+  try {
+    const page = await browser.newPage();
+    await page.goto("https://gandalf.epitech.eu/login/index.php");
 
-  write("Identifying the authentication method used", 5);
+    await page.waitForXPath(
+      "/html/body/div[4]/div[1]/div[2]/section/div/div[2]/div/div/div/div/div/div[2]/div[3]/div/a",
+      {
+        timeout: 5000,
+      }
+    );
 
-  await page.waitForNavigation();
+    const microsoftLoginButton = await page.$x(
+      "/html/body/div[4]/div[1]/div[2]/section/div/div[2]/div/div/div/div/div/div[2]/div[3]/div/a"
+    );
+    await microsoftLoginButton[0].click();
 
-  await page.waitForXPath('//*[@id="i0116"]');
-  const emailInput = await page.$x('//*[@id="i0116"]');
-  await emailInput[0].type(email);
+    write("Identifying the authentication method used", 5);
 
-  await page.waitForXPath('//*[@id="idSIButton9"]');
-  const nextButton = await page.$x('//*[@id="idSIButton9"]');
-  await nextButton[0].click();
+    await page.waitForNavigation();
+
+    await page.waitForXPath('//*[@id="i0116"]');
+    const emailInput = await page.$x('//*[@id="i0116"]');
+    await emailInput[0].type(email);
+
+    await page.waitForXPath('//*[@id="idSIButton9"]');
+    const nextButton = await page.$x('//*[@id="idSIButton9"]');
+    await nextButton[0].click();
+  } catch (e) {
+    write("Authentication failed", 5, 1);
+    exit(browser);
+  }
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
