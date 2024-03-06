@@ -9,8 +9,6 @@ interface Props {
 }
 
 export function Event({ event }: Props): JSX.Element {
-  let inSevenDays = moment(event.date).diff(moment(), "days") <= 7;
-
   const date = (): string => {
     if (event.is_review)
       return `${moment(event.date).format("DD/MM/YYYY")} ${event.time}`;
@@ -40,6 +38,10 @@ export function Event({ event }: Props): JSX.Element {
   };
 
   return (
-    <Notification title={title()} date={date()} inSevenDays={inSevenDays} />
+    <Notification
+      title={title()}
+      date={date()}
+      inSevenDaysOrLess={moment(event.date).diff(moment(), "days") <= 7}
+    />
   );
 }

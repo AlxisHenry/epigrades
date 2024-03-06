@@ -10,7 +10,6 @@ interface Props {
 
 export function FutureCourse({ course }: Props): JSX.Element {
   const _ = moment(course.start_date);
-  const inSevenDays = _.diff(moment(), "days") <= 7;
 
   const title = (): string => {
     let isPast = _.isBefore(moment());
@@ -24,5 +23,11 @@ export function FutureCourse({ course }: Props): JSX.Element {
 
   const date = _.format("DD/MM/YYYY hh:mm A");
 
-  return <Notification title={title()} date={date} inSevenDays={inSevenDays} />;
+  return (
+    <Notification
+      title={title()}
+      date={date}
+      inSevenDaysOrLess={_.isBefore(moment().add(7, "days"))}
+    />
+  );
 }

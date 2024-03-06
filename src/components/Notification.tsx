@@ -1,20 +1,26 @@
 interface Props {
   title: string;
   date: string;
-  inSevenDays: boolean;
+  inSevenDaysOrLess: boolean;
 }
 
-export function Notification({ title, date, inSevenDays }: Props): JSX.Element {
+export function Notification({
+  title,
+  date,
+  inSevenDaysOrLess,
+}: Props): JSX.Element {
   return (
     <div className={`course notification`}>
       <div className="course__header">
         <p>
           {title}
-          <span className={`notification-date ${!inSevenDays && "orange"}`}>
+          <span
+            className={`notification-date ${!inSevenDaysOrLess && "orange"}`}
+          >
             {date}
           </span>
         </p>
-        <span className={`soon ${!inSevenDays && "orange"}`}></span>
+        <span className={`soon ${!inSevenDaysOrLess && "orange"}`}></span>
       </div>
     </div>
   );
