@@ -115,6 +115,13 @@ function Link({
 }
 
 export function Table({ days }: { days: DayType[] }) {
+  if (days.length === 0)
+    return (
+      <tr>
+        <td colSpan={6}>This course has no days.</td>
+      </tr>
+    );
+
   return (
     <table>
       <thead>
