@@ -175,3 +175,9 @@ export const getReportInBase64 = async (
   });
   return await response.json();
 };
+
+export const getIntranetStatus = async (): Promise<boolean> => {
+  const response = await fetch(`/api/intranet`);
+  const { status } = await response.json();
+  return status;
+};

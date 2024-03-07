@@ -136,7 +136,7 @@ interface AlertProps {
   type?: "tips" | "warning" | "danger" | "info";
 }
 
-function Alert({ children, title = null, type = "info" }: AlertProps) {
+export function Alert({ children, title = null, type = "info" }: AlertProps) {
   return (
     <div className={`alert ${type}`}>
       <h3>{title ?? type}</h3>
@@ -153,7 +153,7 @@ interface LinkProps {
 
 function Link({ href, title, blank = false }: LinkProps) {
   return (
-    <a href={href} target={blank ? "_blank" : "_self"}>
+    <a href={href} className="link" target={blank ? "_blank" : "_self"}>
       {title}
     </a>
   );
@@ -166,7 +166,7 @@ interface SectionProps {
 
 function Section({ children, title = null }: SectionProps) {
   return (
-    <div className="text">
+    <div className="section">
       {title && <h2>{title}</h2>}
       {children}
     </div>
@@ -178,7 +178,7 @@ interface ParagraphProps {
 }
 
 function Paragraph({ children }: ParagraphProps) {
-  return <p>{children}</p>;
+  return <p className="paragraph">{children}</p>;
 }
 
 interface HighlightProps {

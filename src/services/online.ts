@@ -1,4 +1,5 @@
 export const AUTH_API_ENDPOINT: string = "https://console.bocal.org/auth/login";
+export const INTRANET_HOSTNAME: string = "gandalf.epitech.eu";
 export const EMAIL_EXTENSION: string = "@epitech.eu";
 
 export const errors: {
@@ -56,6 +57,66 @@ export const isStep = (currentStep: string, step: string): boolean =>
 export const isEpitechEmail = (email: string) =>
   new RegExp(`^[a-zA-Z0-9._-]+${EMAIL_EXTENSION}$`, "i").test(email);
 
+export interface ScraperResponse {
+  state: boolean;
+  uuid: string | null;
+}
+
+export interface AuthenticateResponse {
+  success: boolean;
+  error?: string;
+}
+
+export interface CacheClearedResponse {
+  success: boolean;
+}
+
+export interface uuidResponse {
+  success: boolean;
+  report?: Report;
+}
+
+export interface EncodedPDFResponse {
+  filename: string | null;
+  base64: string | null;
+}
+
+export interface IntranetStatusResponse {
+  status: boolean;
+}
+
+export type Report = {
+  student: Student;
+  semesters: Semester[];
+  future_courses: FutureCourse[];
+  upcoming_events: Event[];
+  created_at: string;
+};
+
+export type Event = {
+  id: string;
+  course: {
+    id: string;
+    name: string;
+  };
+  title: string;
+  date: string;
+  time: string;
+  component: string;
+  is_review: false;
+};
+
+export type Student = {
+  email: string;
+  name: string;
+};
+
+export type SemesterDate = {
+  name: string;
+  start: string;
+  end: string;
+};
+
 export type Semester = {
   name: string;
   courses: Course[];
@@ -105,62 +166,6 @@ export enum AlertType {
 export type Credentials = {
   email: string;
   password: string;
-};
-
-export type ScraperResponse = {
-  state: boolean;
-  uuid: string | null;
-};
-
-export type AuthenticateResponse = {
-  success: boolean;
-  error?: string;
-};
-
-export type CacheClearedResponse = {
-  success: boolean;
-};
-
-export type uuidResponse = {
-  success: boolean;
-  report?: Report;
-};
-
-export type EncodedPDFResponse = {
-  filename: string | null;
-  base64: string | null;
-};
-
-export type Report = {
-  student: Student;
-  semesters: Semester[];
-  future_courses: FutureCourse[];
-  upcoming_events: Event[];
-  created_at: string;
-};
-
-export type Event = {
-  id: string;
-  course: {
-    id: string;
-    name: string;
-  };
-  title: string;
-  date: string;
-  time: string;
-  component: string;
-  is_review: false;
-};
-
-export type Student = {
-  email: string;
-  name: string;
-};
-
-export type SemesterDate = {
-  name: string;
-  start: string;
-  end: string;
 };
 
 export const uuid = (): string => {

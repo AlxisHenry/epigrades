@@ -14,3 +14,4 @@ export { TroubleLink } from "./TroubleLink";
 export { FutureCourse } from "./FutureCourse";
 export { Event } from "./Event";
 export { Notification } from "./Notification";
+export { Alert } from "@/app/page";

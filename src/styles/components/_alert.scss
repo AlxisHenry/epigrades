@@ -1,0 +1,38 @@
+.alert {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 16px 16px 8px;
+  line-height: 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  gap: 1.2rem;
+
+  h3 {
+    text-transform: uppercase !important;
+    text-align: start !important;
+    font-size: 1.4rem !important;
+    color: var(--contrast-primary);
+  }
+
+  p {
+    text-align: start;
+    font-size: 1.2rem;
+  }
+
+  &.info {
+    background-color: #8798f51d;
+  }
+
+  &.warning {
+    background-color: #ffc84855;
+  }
+
+  &.danger {
+    background-color: #ff5d5d49;
+  }
+
+  &.tips {
+    background-color: rgba(159, 230, 169, 0.278);
+  }
+}

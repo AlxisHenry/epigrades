@@ -12,7 +12,7 @@ import {
   paths,
   uuid,
 } from "@/services/online";
-import { authenticateUsingEpitechAPI } from "@/services/api";
+import { authenticateUsingEpitechAPI, getIntranetStatus } from "@/services/api";
 
 export async function GET(
   request: NextRequest
@@ -70,6 +70,11 @@ export async function POST(
       uuid: currentUuid,
     });
   }
+
+  const intranetStatus = await getIntranetStatus();
+
+  if (!intranetStatus)
+    throw new Error("Intranet is down, please try again later.");
 
   if (currentUuid === null) {
     currentUuid = uuid();

@@ -10,16 +10,20 @@ interface Props {
   credentials: Credentials;
   setAlert: React.Dispatch<React.SetStateAction<Alert>>;
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
+  disabled?: boolean;
 }
 
 export function TroubleLink({
   credentials,
   setAlert,
   setIsSubmitting,
+  disabled = false,
 }: Props) {
   return (
     <span
       onClick={async () => {
+        if (disabled) return;
+
         setIsSubmitting(true);
 
         const { success, error } = await validateCredentials(credentials);
@@ -54,7 +58,7 @@ export function TroubleLink({
         });
         setIsSubmitting(false);
       }}
-      className="trouble"
+      className={`trouble ${disabled ? "disabled" : ""}`}
     >
       I&apos;m having trouble due to a cache issue...
     </span>
