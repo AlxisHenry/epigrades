@@ -1,7 +1,9 @@
-import { exec } from "child_process";
 import { NextRequest, NextResponse } from "next/server";
 
-import { INTRANET_HOSTNAME, IntranetStatusResponse } from "@/services/online";
+import {
+  INTRANET_HOSTNAME,
+  type IntranetStatusResponse,
+} from "@/services/online";
 
 export async function GET(
   request: NextRequest
@@ -9,7 +11,6 @@ export async function GET(
   return new Promise((resolve) => {
     fetch(INTRANET_HOSTNAME)
       .then((response) => {
-        console.log(response);
         if ((response.ok, response.status === 200)) {
           resolve(
             NextResponse.json({

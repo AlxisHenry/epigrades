@@ -1,5 +1,5 @@
 export const AUTH_API_ENDPOINT: string = "https://console.bocal.org/auth/login";
-export const INTRANET_HOSTNAME: string = "gandalf.epitech.eu";
+export const INTRANET_HOSTNAME: string = "https://gandalf.epitech.eu";
 export const EMAIL_EXTENSION: string = "@epitech.eu";
 
 export const errors: {

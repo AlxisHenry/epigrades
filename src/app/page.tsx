@@ -134,11 +134,17 @@ interface AlertProps {
   children: React.ReactNode;
   title?: string | null;
   type?: "tips" | "warning" | "danger" | "info";
+  customCss?: { [key: string]: string };
 }
 
-export function Alert({ children, title = null, type = "info" }: AlertProps) {
+export function Alert({
+  children,
+  title = null,
+  type = "info",
+  customCss = {},
+}: AlertProps) {
   return (
-    <div className={`alert ${type}`}>
+    <div className={`alert ${type}`} style={customCss}>
       <h3>{title ?? type}</h3>
       <Paragraph>{children}</Paragraph>
     </div>
