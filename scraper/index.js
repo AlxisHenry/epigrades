@@ -138,8 +138,9 @@ cleanFiles();
   });
   write("Opening the intranet login page", 2);
 
+  const page = await browser.newPage();
+
   try {
-    const page = await browser.newPage();
     await page.goto("https://gandalf.epitech.eu/login/index.php");
 
     await page.waitForXPath(

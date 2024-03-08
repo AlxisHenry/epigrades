@@ -1,0 +1,38 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-column-gap: 6px;
+  grid-row-gap: 6px;
+  align-items: center;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+
+  img {
+    will-change: transform;
+    transform: rotate(2deg);
+  }
+
+  &.reverse {
+    img {
+      transform: rotate(-2deg);
+    }
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .grid {
+    gap: 3rem;
+
+    img {
+      transform: rotate(0deg);
+    }
+
+    &.reverse {
+      flex-direction: column-reverse;
+
+      img {
+        transform: rotate(0deg);
+      }
+    }
+  }
+}

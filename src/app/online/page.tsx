@@ -2,7 +2,7 @@
 
 import "@/styles/pages/online.scss";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import {
@@ -15,6 +15,7 @@ import {
 } from "@/services/online";
 import {
   getExecutionProgress,
+  getIntranetStatus,
   hasReport,
   runScraper,
   saveOTPCode,
@@ -28,10 +29,19 @@ import {
   ScraperFinished,
 } from "@/components/modal";
 import { OnlineForm, OtpForm } from "@/components/form";
-import { Layout, PageTitle, Spinner, Progress } from "@/components";
+import {
+  Layout,
+  PageTitle,
+  Spinner,
+  Progress,
+  Alert as Warn,
+  Loading,
+} from "@/components";
 
 export default function Home() {
   const params = useSearchParams();
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [intranetIsUp, setIntranetIsUp] = useState<boolean>(false);
   const [alreadyHasReport, setAlreadyHasReport] = useState<boolean>(false);
   const [alert, setAlert] = useState<Alert>(null);
   const [phone, setPhone] = useState<string>("");
@@ -53,6 +63,12 @@ export default function Home() {
     email: params.get("email") ?? "",
     password: "",
   });
+
+  const hideModals = () => {
+    setIsAskingForOTPCode(false);
+    setIsAskingForAuthenticatorValidation(false);
+    setIsSavingOTPCode(false);
+  };
 
   const handleSubmit = async (fromModal: boolean = false) => {
     if (!fromModal) {
@@ -101,16 +117,26 @@ export default function Home() {
         if (!stepsDone.includes(state.currentStep)) {
           setProgress(state.progress);
           setCurrentStep(state.currentStep);
+
+          if (
+            !isStep(
+              state.currentStep,
+              steps.waitingForTwoFactorAuthentication
+            ) &&
+            !isStep(
+              state.currentStep,
+              steps.waitingForMicrosoftAuthenticatorValidation
+            )
+          ) {
+            hideModals();
+          }
+
           if (
             isStep(state.currentStep, steps.waitingForTwoFactorAuthentication)
           ) {
             setIsAskingForOTPCode(true);
             let parts = state.currentStep.split(" ");
             setPhone(`+${parts[parts.length - 1]}`);
-          } else if (isStep(state.currentStep, steps.logged)) {
-            setIsAskingForOTPCode(false);
-            setIsAskingForAuthenticatorValidation(false);
-            setIsSavingOTPCode(false);
           } else if (isStep(state.currentStep, steps.reportGenerated)) {
             clearInterval(checkExecutionProgress);
             setTimeout(() => {
@@ -137,64 +163,90 @@ export default function Home() {
     }, 100);
   };
 
+  useEffect(() => {
+    getIntranetStatus().then((status) => {
+      setIntranetIsUp(status);
+      setIsLoaded(true);
+    });
+  }, []);
+
   return (
     <Layout>
-      <PageTitle parts={["Epigrades 🎓"]} />
-      {isRunning ? (
+      {isLoaded ? (
         <>
-          {currentStep && progress ? (
+          <PageTitle parts={["Epigrades 🎓"]} />
+          {!intranetIsUp && (
+            <Warn
+              type="danger"
+              title={"Intranet unreachable"}
+              customCss={{
+                marginBottom: "2rem",
+              }}
+            >
+              The intranet is currently down, Epitech is probably doing some
+              shits 👍
+            </Warn>
+          )}
+          {isRunning ? (
             <>
-              <Progress currentStep={currentStep} progress={progress} />
+              {currentStep && progress ? (
+                <>
+                  <Progress currentStep={currentStep} progress={progress} />
+                </>
+              ) : (
+                <>
+                  <span
+                    style={{
+                      textAlign: "center",
+                      display: "block",
+                      marginTop: "20px",
+                      marginBottom: "20px",
+                      color: "#d9d9d9",
+                    }}
+                  >
+                    Please wait...
+                  </span>
+                  <Spinner />
+                </>
+              )}
+              {isAskingForOTPCode && (
+                <OtpForm
+                  isSavingCode={isSavingOTPCode}
+                  phone={phone}
+                  setCode={setCode}
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    setIsSavingOTPCode(true);
+                    await saveOTPCode(uuid, code);
+                  }}
+                />
+              )}
+              {isAskingForAuthenticatorValidation && (
+                <AuthenticatorCode uuid={uuid} />
+              )}
+              {isFinished && <ScraperFinished uuid={uuid} />}
+              {hasFailed && <ScraperFailed email={credentials.email} />}
             </>
           ) : (
-            <>
-              <span
-                style={{
-                  textAlign: "center",
-                  display: "block",
-                  marginTop: "20px",
-                  marginBottom: "20px",
-                  color: "#d9d9d9",
-                }}
-              >
-                Please wait...
-              </span>
-              <Spinner />
-            </>
+            <Suspense fallback={<Spinner />}>
+              <OnlineForm
+                credentials={credentials}
+                alert={alert}
+                isSubmitting={isSubmitting}
+                intranetIsUp={intranetIsUp}
+                handleSubmit={handleSubmit}
+                setIsSubmitting={setIsSubmitting}
+                setAlert={setAlert}
+                setCredentials={setCredentials}
+              />
+              {alreadyHasReport && (
+                <HasReport uuid={uuid} generateNewReport={handleSubmit} />
+              )}
+            </Suspense>
           )}
-          {isAskingForOTPCode && (
-            <OtpForm
-              isSavingCode={isSavingOTPCode}
-              phone={phone}
-              setCode={setCode}
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setIsSavingOTPCode(true);
-                await saveOTPCode(uuid, code);
-              }}
-            />
-          )}
-          {isAskingForAuthenticatorValidation && (
-            <AuthenticatorCode uuid={uuid} />
-          )}
-          {isFinished && <ScraperFinished uuid={uuid} />}
-          {hasFailed && <ScraperFailed email={credentials.email} />}
         </>
       ) : (
-        <Suspense fallback={<Spinner />}>
-          <OnlineForm
-            credentials={credentials}
-            alert={alert}
-            isSubmitting={isSubmitting}
-            handleSubmit={handleSubmit}
-            setIsSubmitting={setIsSubmitting}
-            setAlert={setAlert}
-            setCredentials={setCredentials}
-          />
-          {alreadyHasReport && (
-            <HasReport uuid={uuid} generateNewReport={handleSubmit} />
-          )}
-        </Suspense>
+        <Loading />
       )}
     </Layout>
   );

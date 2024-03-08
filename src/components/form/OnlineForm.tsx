@@ -1,14 +1,15 @@
-import { type Alert, type Credentials } from "@/services/online";
+import type { Alert as AlertType, Credentials } from "@/services/online";
 
-import { Spinner, TroubleLink } from "@/components";
+import { Spinner, TroubleLink, Alert as Warn } from "@/components";
 
 interface Props {
   credentials: Credentials;
-  alert: Alert;
+  alert: AlertType;
   isSubmitting: boolean;
+  intranetIsUp: boolean;
   handleSubmit: () => void;
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
-  setAlert: React.Dispatch<React.SetStateAction<Alert>>;
+  setAlert: React.Dispatch<React.SetStateAction<AlertType>>;
   setCredentials: React.Dispatch<React.SetStateAction<Credentials>>;
 }
 
@@ -16,6 +17,7 @@ export function OnlineForm({
   credentials,
   alert,
   isSubmitting,
+  intranetIsUp,
   handleSubmit,
   setIsSubmitting,
   setAlert,
@@ -25,12 +27,14 @@ export function OnlineForm({
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
+  let disabled = isSubmitting || !intranetIsUp;
+
   return (
     <form
       className="container"
       onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        handleSubmit();
+        if (intranetIsUp) handleSubmit();
       }}
     >
       {alert && <Alert type={alert.type} message={alert.message} />}
@@ -39,6 +43,8 @@ export function OnlineForm({
         type="text"
         name="email"
         defaultValue={credentials.email}
+        disabled={disabled}
+        readOnly={disabled}
         placeholder="test@epitech.eu"
         onChange={(e) => handleChanges(e)}
       />
@@ -46,7 +52,9 @@ export function OnlineForm({
       <input
         type="password"
         name="password"
-        placeholder="Your password"
+        disabled={disabled}
+        readOnly={disabled}
+        placeholder="********"
         onChange={(e) => handleChanges(e)}
       />
       {isSubmitting ? (
@@ -62,6 +70,7 @@ export function OnlineForm({
             credentials={credentials}
             setAlert={setAlert}
             setIsSubmitting={setIsSubmitting}
+            disabled={disabled}
           />
           <button
             style={{
@@ -69,6 +78,7 @@ export function OnlineForm({
               marginTop: "10px",
             }}
             type="submit"
+            disabled={disabled}
           >
             Let&apos;s go
           </button>

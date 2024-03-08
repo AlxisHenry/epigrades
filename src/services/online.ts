@@ -1,4 +1,5 @@
 export const AUTH_API_ENDPOINT: string = "https://console.bocal.org/auth/login";
+export const INTRANET_HOSTNAME: string = "https://gandalf.epitech.eu";
 export const EMAIL_EXTENSION: string = "@epitech.eu";
 
 export const errors: {
@@ -45,6 +46,7 @@ export const steps = {
   waitingForMicrosoftAuthenticatorValidation:
     "Waiting for Microsoft Authenticator validation",
   logged: "Logged successfully to the intranet",
+  starting: "Starting to retrieve your graded courses",
   authenticationFailed: "Authentication failed",
   reportGenerated: "All tasks done",
 };
@@ -54,6 +56,66 @@ export const isStep = (currentStep: string, step: string): boolean =>
 
 export const isEpitechEmail = (email: string) =>
   new RegExp(`^[a-zA-Z0-9._-]+${EMAIL_EXTENSION}$`, "i").test(email);
+
+export interface ScraperResponse {
+  state: boolean;
+  uuid: string | null;
+}
+
+export interface AuthenticateResponse {
+  success: boolean;
+  error?: string;
+}
+
+export interface CacheClearedResponse {
+  success: boolean;
+}
+
+export interface uuidResponse {
+  success: boolean;
+  report?: Report;
+}
+
+export interface EncodedPDFResponse {
+  filename: string | null;
+  base64: string | null;
+}
+
+export interface IntranetStatusResponse {
+  status: boolean;
+}
+
+export type Report = {
+  student: Student;
+  semesters: Semester[];
+  future_courses: FutureCourse[];
+  upcoming_events: Event[];
+  created_at: string;
+};
+
+export type Event = {
+  id: string;
+  course: {
+    id: string;
+    name: string;
+  };
+  title: string;
+  date: string;
+  time: string;
+  component: string;
+  is_review: false;
+};
+
+export type Student = {
+  email: string;
+  name: string;
+};
+
+export type SemesterDate = {
+  name: string;
+  start: string;
+  end: string;
+};
 
 export type Semester = {
   name: string;
@@ -106,62 +168,6 @@ export type Credentials = {
   password: string;
 };
 
-export type ScraperResponse = {
-  state: boolean;
-  uuid: string | null;
-};
-
-export type AuthenticateResponse = {
-  success: boolean;
-  error?: string;
-};
-
-export type CacheClearedResponse = {
-  success: boolean;
-};
-
-export type uuidResponse = {
-  success: boolean;
-  report?: Report;
-};
-
-export type EncodedPDFResponse = {
-  filename: string | null;
-  base64: string | null;
-};
-
-export type Report = {
-  student: Student;
-  semesters: Semester[];
-  future_courses: FutureCourse[];
-  upcoming_events: Event[];
-  created_at: string;
-};
-
-export type Event = {
-  id: string;
-  course: {
-    id: string;
-    name: string;
-  };
-  title: string;
-  date: string;
-  time: string;
-  component: string;
-  is_review: false;
-};
-
-export type Student = {
-  email: string;
-  name: string;
-};
-
-export type SemesterDate = {
-  name: string;
-  start: string;
-  end: string;
-};
-
 export const uuid = (): string => {
   return crypto.randomUUID() + "-" + Date.now();
 };
@@ -174,4 +180,20 @@ export function base64ToBlob(base64: string) {
     ia[i] = bytes.charCodeAt(i);
   }
   return new Blob([ab], { type: "application/pdf" });
+}
+
+export function intranetIsOnline(): Promise<boolean> {
+  return new Promise((resolve) => {
+    fetch(INTRANET_HOSTNAME)
+      .then((response) => {
+        if ((response.ok, response.status === 200)) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      })
+      .catch(() => {
+        resolve(false);
+      });
+  });
 }

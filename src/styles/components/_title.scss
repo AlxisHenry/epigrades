@@ -1,0 +1,17 @@
+.title {
+  margin-top: 6rem;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  flex-direction: column;
+  color: var(--contrast-primary);
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 0.1rem;
+  background-color: var(--contrast-primary);
+  width: fit-content;
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+  color: black;
+  margin-bottom: 5rem;
+}

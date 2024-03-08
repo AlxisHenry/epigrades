@@ -14,7 +14,11 @@
   margin-left: 2px;
   cursor: pointer;
 
-  &:hover {
+  &.disabled {
+    cursor: not-allowed;
+  }
+
+  &:not(.disabled):hover {
     color: rgb(83, 83, 83);
   }
 }

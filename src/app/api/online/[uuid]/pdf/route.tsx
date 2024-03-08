@@ -31,6 +31,8 @@ const fonts = {
   },
 };
 
+const UNKNOW_GRADE = "N/A";
+
 const semestersDates: SemesterDate[] = JSON.parse(
   fs.readFileSync(files.semesters, "utf8")
 );
@@ -131,7 +133,7 @@ const extract = async (
           })
           .pipe(fs.createWriteStream(zip))
           .on("finish", () => {
-            let encoded = fs.readFileSync(zip, "base64");
+            let base64 = fs.readFileSync(zip, "base64");
 
             [...reports, files.temp.zip(uuid)].forEach(
               (report) => fs.existsSync(report) && fs.unlinkSync(report)
@@ -139,7 +141,7 @@ const extract = async (
 
             resolve({
               filename: getFilename(grades.student, true),
-              base64: encoded,
+              base64
             });
           });
       } else {
@@ -213,8 +215,10 @@ const extract = async (
         let courseAverage = calculateAverage(course),
           grade = getCourseGrade(course);
 
-        if (courseAverage === "-") courseAverage = "N/A";
-        if (grade === "-") grade = "N/A";
+        if (courseAverage === "-") courseAverage = UNKNOW_GRADE;
+        if (grade === "-") grade = UNKNOW_GRADE;
+
+        if (courseAverage === UNKNOW_GRADE && grade === UNKNOW_GRADE) continue;
 
         let y = report.y;
 
@@ -228,7 +232,7 @@ const extract = async (
           .fontSize(14)
           .text(
             `${courseAverage}`,
-            courseAverage === "N/A" ? x + 226 : x + 225,
+            courseAverage === UNKNOW_GRADE ? x + 226 : x + 225,
             y
           );
 
@@ -240,7 +244,7 @@ const extract = async (
         report
           .font(fonts.daytona.light)
           .fontSize(14)
-          .text(`N/A`, x + 451, y);
+          .text(UNKNOW_GRADE, x + 451, y);
 
         report.moveDown();
       }
@@ -270,7 +274,11 @@ const extract = async (
       report
         .font(fonts.daytona.sm)
         .fontSize(14)
-        .text(getGradeAverage(semester) || "N/A", x + 351, currentY + 10);
+        .text(
+          getGradeAverage(semester) || UNKNOW_GRADE,
+          x + 351,
+          currentY + 10
+        );
 
       currentY = report.y;
 
@@ -282,7 +290,7 @@ const extract = async (
       report
         .font(fonts.daytona.sm)
         .fontSize(14)
-        .text(`N/A`, x + 451, currentY + 10);
+        .text(UNKNOW_GRADE, x + 451, currentY + 10);
 
       report.end();
 
@@ -301,7 +309,7 @@ export async function GET(
     };
   }
 ): Promise<NextResponse<EncodedPDFResponse>> {
-  const failed = {
+  const empty = {
     filename: null,
     base64: null,
   };
@@ -311,13 +319,13 @@ export async function GET(
     let file = files.reports(uuid);
 
     if (!fs.existsSync(file)) {
-      return NextResponse.json(failed);
+      return NextResponse.json(empty);
     }
 
     return NextResponse.json(
       await extract(uuid, JSON.parse(fs.readFileSync(file, "utf8")))
     );
   } catch (e) {
-    return NextResponse.json(failed);
+    return NextResponse.json(empty);
   }
 }
