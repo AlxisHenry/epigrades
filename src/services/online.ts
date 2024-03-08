@@ -181,3 +181,19 @@ export function base64ToBlob(base64: string) {
   }
   return new Blob([ab], { type: "application/pdf" });
 }
+
+export function intranetIsOnline(): Promise<boolean> {
+  return new Promise((resolve) => {
+    fetch(INTRANET_HOSTNAME)
+      .then((response) => {
+        if ((response.ok, response.status === 200)) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      })
+      .catch(() => {
+        resolve(false);
+      });
+  });
+}

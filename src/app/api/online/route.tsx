@@ -11,8 +11,9 @@ import {
   isEpitechEmail,
   paths,
   uuid,
+  intranetIsOnline,
 } from "@/services/online";
-import { authenticateUsingEpitechAPI, getIntranetStatus } from "@/services/api";
+import { authenticateUsingEpitechAPI } from "@/services/api";
 
 export async function GET(
   request: NextRequest
@@ -36,15 +37,11 @@ export async function POST(
 ): Promise<NextResponse<ScraperResponse>> {
   const { email, password }: Credentials = await request.json();
 
-  if (!isEpitechEmail(email)) {
-    throw new Error("You must use an Epitech email.");
-  }
+  if (!isEpitechEmail(email)) throw new Error("You must use an Epitech email.");
 
   const { error } = await authenticateUsingEpitechAPI({ email, password });
 
-  if (error) {
-    throw new Error("You provided invalid credentials.");
-  }
+  if (error) throw new Error("You provided invalid credentials.");
 
   let currentUuid = null,
     state = false;
@@ -71,10 +68,9 @@ export async function POST(
     });
   }
 
-  const intranetStatus = await getIntranetStatus();
+  let status = await intranetIsOnline();
 
-  if (!intranetStatus)
-    throw new Error("Intranet is down, please try again later.");
+  if (!status) throw new Error("The intranet is not reachable.");
 
   if (currentUuid === null) {
     currentUuid = uuid();
