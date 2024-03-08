@@ -2,7 +2,7 @@
 
 import "@/styles/pages/online.scss";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import {
@@ -163,10 +163,12 @@ export default function Home() {
     }, 100);
   };
 
-  getIntranetStatus().then((status) => {
-    setIntranetIsUp(status);
-    setIsLoaded(true);
-  });
+  useEffect(() => {
+    getIntranetStatus().then((status) => {
+      setIntranetIsUp(status);
+      setIsLoaded(true);
+    });
+  }, []);
 
   return (
     <Layout>
