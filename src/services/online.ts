@@ -31,7 +31,7 @@ export const files = {
     progress: (uuid: string) => `${paths.temp}/progress-${uuid}.json`,
     authenticator: (uuid: string) => `${paths.temp}/authenticator-${uuid}.png`,
     report: (uuid: string, semester: string) =>
-      `${paths.temp}/report-${uuid}-${semester}.pdf`,
+      `${paths.temp}/report-${uuid}_${semester}.pdf`,
     zip: (uuid: string) => `${paths.temp}/report-${uuid}.zip`,
     all: (uuid: string) => [
       files.temp.otp(uuid),

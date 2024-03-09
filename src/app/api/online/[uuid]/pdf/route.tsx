@@ -119,7 +119,7 @@ const extract = async (
         const jszip = new JSZip();
 
         reports.forEach((report) => {
-          let semester = report.split("-")[2].split(".")[0];
+          let semester = report.split("_")[1].split(".")[0];
           jszip.file(
             getFilename(grades.student, false, semester),
             fs.readFileSync(report)
@@ -141,7 +141,7 @@ const extract = async (
 
             resolve({
               filename: getFilename(grades.student, true),
-              base64
+              base64,
             });
           });
       } else {
