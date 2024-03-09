@@ -147,7 +147,7 @@ const extract = async (
       } else {
         let report = reports[0];
 
-        let semester = report.split("-")[2].split(".")[0],
+        let semester = report.split("_")[1].split(".")[0],
           base64 = fs.readFileSync(report, "base64");
 
         fs.existsSync(report) && fs.unlinkSync(report);
