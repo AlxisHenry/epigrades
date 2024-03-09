@@ -113,18 +113,24 @@ const extract = async (
 
     let semestersCount = grades.semesters.length;
 
-    const finished = (): void => {
+    const finished = async (): Promise<void> => {
       if (reports.length > 1) {
         const zip = files.temp.zip(uuid);
         const jszip = new JSZip();
 
-        reports.forEach((report) => {
+        await Promise.all(reports.map(async (report) => {
           let semester = report.split("_")[1].split(".")[0];
-          jszip.file(
-            getFilename(grades.student, false, semester),
-            fs.readFileSync(report)
-          );
-        });
+          await new Promise<void>((resolve, reject) => {
+            fs.readFile(report, (err, data) => {
+              if (err) {
+                reject(err);
+              } else {
+                jszip.file(getFilename(grades.student, false, semester), data);
+                resolve();
+              }
+            });
+          });
+        }));
 
         jszip
           .generateNodeStream({
