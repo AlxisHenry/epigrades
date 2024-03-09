@@ -30,9 +30,7 @@ export function Event({ event }: Props): JSX.Element {
 
     let isPast = _.isBefore(moment());
 
-    if (isPast) {
-      return `${title} was ${_.fromNow()}`;
-    }
+    if (isPast) return `${title.replace("is due", "")} was ${_.fromNow()}`;
 
     return `${title} ${_.fromNow()}`;
   };
