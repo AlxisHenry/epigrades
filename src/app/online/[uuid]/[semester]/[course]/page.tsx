@@ -22,7 +22,7 @@ import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
 import { getReport } from "@/services/api";
 import { calculateAverage } from "@/services/courses";
-import type { Course as CourseType, Semester } from "@/services/online";
+import type { Course as CourseType, Report, Semester } from "@/services/online";
 
 import {
   PageTitle,
@@ -55,39 +55,59 @@ export default function Home() {
   );
 
   const uuid = params.uuid;
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentReport, setCurrentReport] = useState<Report | null>(null);
+
   const [semester, setSemester] = useState<Semester | null>(null);
   const [course, setCourse] = useState<CourseType | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [student, setStudent] = useState<string>("");
-  const [courseGrade, setCourseGrade] = useState<string>("");
-  const [courseGradeAverage, setCourseGradeAverage] = useState<string>("");
-  const [courseAssignementsCount, setCourseAssignementsCount] =
-    useState<number>(0);
+
+  const [stats, setStats] = useState<{
+    average: string;
+    grade: string;
+    assignements: string;
+  }>({
+    average: "",
+    grade: "",
+    assignements: "",
+  });
 
   useEffect(() => {
-    (async () => {
+    const initialize = async () => {
+      setIsLoading(true);
+
       const { success, report } = await getReport(uuid);
+
       if (!success || !report) {
         return;
       }
 
-      setSemester(
+      setCurrentReport(report);
+
+      const currentSemester =
         report.semesters.find(
           (s) => s.name.toLowerCase() === params.semester
-        ) ?? null
-      );
-      setCourse(
+        ) ?? null;
+
+      setSemester(currentSemester);
+
+      const currentCourse =
         report.semesters
           .find((s) => s.name.toLowerCase() === params.semester)
-          ?.courses.find((c) => c.id === params.course) ?? null
-      );
-      setStudent(report?.student?.name || "");
-      setCourseGrade(getCourseGrade(course));
-      setCourseGradeAverage(calculateAverage(course));
-      setCourseAssignementsCount(getCourseAssignementsCount(course));
-      setLoading(false);
-    })();
-  }, [params.semester, params.course, course, uuid]);
+          ?.courses.find((c) => c.id === params.course) ?? null;
+
+      setCourse(currentCourse);
+
+      setStats({
+        average: calculateAverage(currentCourse),
+        grade: getCourseGrade(currentCourse),
+        assignements: getCourseAssignementsCount(currentCourse).toString(),
+      });
+      setIsLoading(false);
+    };
+
+    initialize();
+  }, [uuid]);
 
   const options = {
     responsive: true,
@@ -145,7 +165,7 @@ export default function Home() {
     ],
   };
 
-  if (!loading && course) {
+  if (!isLoading && course) {
     for (const day of course!.days) {
       if (!isGradedDay(day)) continue;
       data.labels.push(day.name);
@@ -155,33 +175,34 @@ export default function Home() {
 
   return (
     <Layout>
-      {loading ? (
+      {isLoading ? (
         <Loading />
       ) : !semester || !course ? (
         <NotFound />
       ) : (
         <>
           <PageTitle
-            parts={[student, semester!.name, course!.name]}
+            parts={[
+              currentReport?.student.name ?? "",
+              semester!.name,
+              course!.name,
+            ]}
             clickable={[0]}
             customLink={`online/${uuid}`}
           />
           <Cards>
-            <Card title="Grade" subtitle={courseGrade} />
-            <Card title="Average" subtitle={courseGradeAverage} />
-            <Card
-              title="Assignments"
-              subtitle={courseAssignementsCount.toString()}
-            />
+            <Card title="Grade" subtitle={stats.grade} />
+            <Card title="Average" subtitle={stats.average} />
+            <Card title="Assignments" subtitle={stats.assignements} />
           </Cards>
           <div className="table__container">
             <Table days={course!.days} />
           </div>
-          {data.labels.length > 0 ? (
+          {data.labels.length > 0 && (
             <div className="charts">
               <Bar data={data} options={options} />
             </div>
-          ) : null}
+          )}
         </>
       )}
     </Layout>
