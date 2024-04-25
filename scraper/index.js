@@ -30,6 +30,7 @@ if (fs.existsSync(files.progress)) {
 
 const DEFAULT_SEMESTER_NAME = "-";
 const urls = {
+  home: "https://gandalf.epitech.eu/",
   assignments: "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]",
   course: "https://gandalf.epitech.eu/course/view.php?id=[id]",
 };
@@ -350,12 +351,13 @@ cleanFiles();
           created_at: null,
         });
 
-      const table = await currentPage.$x(
-        "/html/body/div[5]/div[1]/div[2]/section/div/table"
-      );
+      const table = await currentPage.$$(".generaltable");
       const rows = await table[0]?.$$("tr");
 
-      if (!rows) continue;
+      if (!rows) {
+        await currentPage.close();
+        continue;
+      }
 
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
@@ -473,13 +475,9 @@ cleanFiles();
 
         await currentPage.goto(urls.course.replace("[id]", id));
 
-        await currentPage.waitForXPath(
-          "/html/body/div[5]/div[1]/div[2]/section/div/div/ul/li[3]/div[3]/div[1]/div/div/strong"
-        );
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        const isRestricted = await currentPage.$x(
-          "/html/body/div[5]/div[1]/div[2]/section/div/div/ul/li[3]/div[3]/div[1]/div/div/strong"
-        );
+        const isRestricted = await currentPage.$$(".isrestricted");
 
         if (isRestricted.length > 0) {
           const startDate = await currentPage.evaluate(
@@ -488,7 +486,7 @@ cleanFiles();
           );
 
           const courseTitleContainer = await currentPage.$x(
-            "/html/body/div[5]/header/div[2]/div/div[1]/div/div[2]/h1"
+            "/html/body/div[4]/header/div[2]/div/div[1]/div/div[2]/h1"
           );
 
           const courseTitle = await currentPage.evaluate(
@@ -500,7 +498,7 @@ cleanFiles();
             id: id,
             name: name,
             title: formatCourseTitle(courseTitle) ?? null,
-            start_date: startDate,
+            start_date: startDate.split("from")[1].trim(),
           });
         }
 
