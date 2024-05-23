@@ -60,7 +60,7 @@ export function GET(request: NextRequest): ImageResponse {
             }}
           >
             {teams.map((team) => (
-              <Team team={team} />
+              <Team team={team} key={team.name} />
             ))}
           </ul>
           <Legend teams={teams} />
@@ -120,6 +120,7 @@ const Legend = ({ teams }: LegendProps) => {
     >
       {teams.map((team) => (
         <li
+          key={`legend-${team.name}`}
           style={{
             height: "100%",
             color: "white",
