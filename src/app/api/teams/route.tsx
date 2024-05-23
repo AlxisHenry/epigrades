@@ -12,7 +12,7 @@ export function GET(request: NextRequest): ImageResponse {
   const p = request.nextUrl.searchParams.get("teams") || "";
 
   const teams: Team[] = p.split(",").map((team) => {
-    const [name, occurrences] = team.split("-");
+    const [name, occurrences] = team.split("@");
 
     return {
       name,
