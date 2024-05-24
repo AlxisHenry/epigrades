@@ -70,6 +70,10 @@ export function GET(request: NextRequest): ImageResponse {
     {
       width: 1280,
       height: 300,
+      headers: {
+        "Cache-Control": "no-store",
+        Age: "0",
+      },
     }
   );
 }
