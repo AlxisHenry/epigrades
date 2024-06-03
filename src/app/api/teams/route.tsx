@@ -20,7 +20,7 @@ export function GET(request: NextRequest): ImageResponse {
       color: `hsla(${~~(360 * Math.random())}, 70%,  72%, 0.8)`,
       percentage: 0,
     };
-  });
+  }).filter((team) => team.occurrences > 0);
 
   const nbOfOccurrences = teams.reduce(
     (acc, team) => acc + team.occurrences,
@@ -145,7 +145,7 @@ const Legend = ({ teams }: LegendProps) => {
               borderRadius: "50%",
             }}
           ></span>
-          {team.name}
+          {team.name} ({team.occurrences})
         </li>
       ))}
     </ul>
