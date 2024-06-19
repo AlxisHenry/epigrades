@@ -8,8 +8,25 @@ export enum Grade {
   E = "Echec",
 }
 
+export const UNKNOW_GRADE = "N/A";
+
 export function isValidGrade(grade: string): boolean {
   return Object.values(Grade).includes(grade as Grade);
+}
+
+export function getCreditsFromGrade(grade: string): string {
+  if (!isValidGrade(grade)) return UNKNOW_GRADE;
+  return grade === Grade.E ? "0" : "5";
+}
+
+export function getTotalCredits(semester: Semester): string {
+  let credits: string[] = semester.courses
+    .map((course) => getCreditsFromGrade(getCourseGrade(course)))
+    .filter((credit) => credit !== UNKNOW_GRADE);
+
+  return credits
+    .reduce((acc, credit) => (acc += parseInt(credit)), 0)
+    .toString();
 }
 
 export function getCourseGrade(course: Course | null): string {

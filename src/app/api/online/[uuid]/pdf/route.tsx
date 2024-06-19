@@ -17,7 +17,12 @@ import {
   calculateAverage as calculateSemesterAverage,
   sortSemesters,
 } from "@/services/semesters";
-import { getCourseGrade, getGradeAverage } from "@/services/grades";
+import {
+  getCourseGrade,
+  getCreditsFromGrade,
+  getGradeAverage,
+  UNKNOW_GRADE,
+} from "@/services/grades";
 
 const FONTS_DIR = "public/fonts";
 
@@ -30,8 +35,6 @@ const fonts = {
     thin: `${FONTS_DIR}/DaytonaPro-Thin.ttf`,
   },
 };
-
-const UNKNOW_GRADE = "N/A";
 
 const semestersDates: SemesterDate[] = JSON.parse(
   fs.readFileSync(files.semesters, "utf8")
@@ -93,6 +96,18 @@ const header = (
 const footer = (doc: PDFKit.PDFDocument) => {
   doc
     .font(fonts.daytona.thin)
+    .fontSize(10)
+    .text(
+      "* Les crédits affichés sont calculés sur la base de 5 crédits par matière à partir du grade D.\n À l'exception des matières où la note est Echec (0 crédit). Ces crédits ne sont pas officiels.",
+      0,
+      doc.page.height - 100,
+      {
+        align: "center",
+      }
+    );
+
+  doc
+    .font(fonts.daytona.thin)
     .fontSize(12)
     .text(
       `Généré par @AlxisHenry - Epigrades - ${moment().format("DD/MM/YYYY")}`,
@@ -118,19 +133,24 @@ const extract = async (
         const zip = files.temp.zip(uuid);
         const jszip = new JSZip();
 
-        await Promise.all(reports.map(async (report) => {
-          let semester = report.split("_")[1].split(".")[0];
-          await new Promise<void>((resolve, reject) => {
-            fs.readFile(report, (err, data) => {
-              if (err) {
-                reject(err);
-              } else {
-                jszip.file(getFilename(grades.student, false, semester), data);
-                resolve();
-              }
+        await Promise.all(
+          reports.map(async (report) => {
+            let semester = report.split("_")[1].split(".")[0];
+            await new Promise<void>((resolve, reject) => {
+              fs.readFile(report, (err, data) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  jszip.file(
+                    getFilename(grades.student, false, semester),
+                    data
+                  );
+                  resolve();
+                }
+              });
             });
-          });
-        }));
+          })
+        );
 
         jszip
           .generateNodeStream({
@@ -213,13 +233,20 @@ const extract = async (
       report
         .font(fonts.daytona.bold)
         .fontSize(16)
-        .text("Crédits", x + 450, currentY);
+        .text("Crédits*", x + 450, currentY);
 
       report.moveDown();
 
+      let totalCredits = 0;
+
       for (let course of sortCourses(semester.courses)) {
         let courseAverage = calculateAverage(course),
-          grade = getCourseGrade(course);
+          grade = getCourseGrade(course),
+          credits = getCreditsFromGrade(grade);
+
+        if (credits !== UNKNOW_GRADE) {
+          totalCredits += parseInt(credits);
+        }
 
         if (courseAverage === "-") courseAverage = UNKNOW_GRADE;
         if (grade === "-") grade = UNKNOW_GRADE;
@@ -250,7 +277,7 @@ const extract = async (
         report
           .font(fonts.daytona.light)
           .fontSize(14)
-          .text(UNKNOW_GRADE, x + 451, y);
+          .text(getCreditsFromGrade(grade), x + 451, y);
 
         report.moveDown();
       }
@@ -291,12 +318,12 @@ const extract = async (
       report
         .font(fonts.daytona.bold)
         .fontSize(16)
-        .text(`Crédits accumulés`, x, currentY + 10);
+        .text(`Crédits accumulés*`, x, currentY + 10);
 
       report
         .font(fonts.daytona.sm)
         .fontSize(14)
-        .text(UNKNOW_GRADE, x + 451, currentY + 10);
+        .text(`${totalCredits}`, x + 451, currentY + 10);
 
       report.end();
 
