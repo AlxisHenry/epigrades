@@ -180,7 +180,7 @@ cleanFiles();
       write("Authentication failed", 5, 1);
       exit(browser);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   try {
     await page.waitForXPath('//*[@id="passwordInput"]', {
@@ -191,7 +191,7 @@ cleanFiles();
     await page.waitForXPath('//*[@id="submitButton"]');
     const submitButton = await page.$x('//*[@id="submitButton"]');
     await submitButton[0].click();
-  } catch (e) {}
+  } catch (e) { }
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -329,7 +329,7 @@ cleanFiles();
 
     if (!(courseNotAvailable.length > 0)) {
       const titleContainer = await currentPage.$x(
-        "/html/body/div[5]/header/div[2]/div/div[1]/div/div[2]/h1"
+        "/html/body/div[4]/header/div[2]/div/div[1]/div/div[2]/h1"
       );
 
       let title = null;
@@ -339,7 +339,7 @@ cleanFiles();
           (el) => el.textContent,
           titleContainer[0]
         );
-      } catch (e) {}
+      } catch (e) { }
 
       grades.semesters
         .find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -627,9 +627,9 @@ cleanFiles();
 
   for (const course of grades.semesters[0].courses) {
     let lastDueDate = course?.days
-        ?.slice()
-        ?.reverse()
-        ?.find((d) => d.due_date !== "-")?.due_date,
+      ?.slice()
+      ?.reverse()
+      ?.find((d) => d.due_date !== "-")?.due_date,
       firstDueDate = course?.days?.find((d) => d.due_date !== "-")?.due_date;
 
     if (!firstDueDate || !lastDueDate || new Date(lastDueDate) > new Date()) {
