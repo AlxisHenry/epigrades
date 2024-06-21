@@ -279,11 +279,11 @@ cleanFiles();
   write("Logged successfully to the intranet", 15);
 
   await page.waitForXPath(
-    "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[4]/ul"
+    "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[2]/ul"
   );
 
   const list = await page.$x(
-    "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[4]/ul"
+    "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[2]/ul"
   );
 
   const courses = await list[0]?.$$("li");
@@ -507,116 +507,113 @@ cleanFiles();
     }
   }
 
-  const eventsLink = await page.$x(
-    "/html/body/div[5]/header/div[4]/div/div/div/nav/ul/li[3]/a"
+
+  write("Retrieving upcoming events", 95);
+
+  let events_url = "https://gandalf.epitech.eu/calendar/view.php?view=upcoming"
+
+  await page.goto(events_url);
+
+  await page.waitForXPath(
+    "/html/body/div[5]/div[1]/div[2]/section/div/div/div[1]/div/div[2]/div"
   );
 
-  if (eventsLink.length > 0) {
-    write("Retrieving upcoming events", 95);
+  const eventList = await page.$x(
+    "/html/body/div[5]/div[1]/div[2]/section/div/div/div[1]/div/div[2]/div"
+  );
 
-    await eventsLink[0].click();
+  if (eventList.length > 0) {
+    const events = await eventList[0]?.$$("div.event");
 
-    await page.waitForXPath(
-      "/html/body/div[5]/div[1]/div[2]/section/div/div/div[1]/div/div[2]/div"
-    );
+    for (let i = 0; i < events.length; i++) {
+      const currentEvent = events[i];
 
-    const eventList = await page.$x(
-      "/html/body/div[5]/div[1]/div[2]/section/div/div/div[1]/div/div[2]/div"
-    );
+      if (!currentEvent) continue;
 
-    if (eventList.length > 0) {
-      const events = await eventList[0]?.$$("div.event");
+      const title = await page.evaluate(
+        (el) => el.getAttribute("data-event-title"),
+        currentEvent
+      );
 
-      for (let i = 0; i < events.length; i++) {
-        const currentEvent = events[i];
+      const courseId = await page.evaluate(
+        (el) => el.getAttribute("data-course-id"),
+        currentEvent
+      );
 
-        if (!currentEvent) continue;
+      const id = await page.evaluate(
+        (el) => el.getAttribute("data-event-id"),
+        currentEvent
+      );
 
-        const title = await page.evaluate(
-          (el) => el.getAttribute("data-event-title"),
-          currentEvent
-        );
+      const component = await page.evaluate(
+        (el) => el.getAttribute("data-event-component"),
+        currentEvent
+      );
 
-        const courseId = await page.evaluate(
-          (el) => el.getAttribute("data-course-id"),
-          currentEvent
-        );
+      const dateElement = await currentEvent.$(
+        "div:first-child .row:first-child"
+      );
 
-        const id = await page.evaluate(
-          (el) => el.getAttribute("data-event-id"),
-          currentEvent
-        );
+      const fullDate = await page.evaluate(
+        (el) => el.textContent,
+        dateElement
+      );
 
-        const component = await page.evaluate(
-          (el) => el.getAttribute("data-event-component"),
-          currentEvent
-        );
+      if (!title || !courseId || !id || !component || !fullDate) continue;
 
-        const dateElement = await currentEvent.$(
-          "div:first-child .row:first-child"
-        );
-
-        const fullDate = await page.evaluate(
-          (el) => el.textContent,
-          dateElement
-        );
-
-        if (!title || !courseId || !id || !component || !fullDate) continue;
-
-        if (
-          ["review", "feedback", "bootstrap"].some((word) =>
-            title.toLowerCase().includes(word)
-          )
+      if (
+        ["review", "feedback", "bootstrap"].some((word) =>
+          title.toLowerCase().includes(word)
         )
-          continue;
+      )
+        continue;
 
-        const courseNameElement = await currentEvent.$(
-          "div:first-child .row:last-child div:last-child"
-        );
+      const courseNameElement = await currentEvent.$(
+        "div:first-child .row:last-child div:last-child"
+      );
 
-        const courseName = await page.evaluate(
-          (el) => el.textContent,
-          courseNameElement
-        );
+      const courseName = await page.evaluate(
+        (el) => el.textContent,
+        courseNameElement
+      );
 
-        let parts = trim(fullDate).split(", "),
-          date = null;
+      let parts = trim(fullDate).split(", "),
+        date = null;
 
-        if (!parts || parts.length <= 0) continue;
+      if (!parts || parts.length <= 0) continue;
 
-        let time = parts[parts.length - 1];
+      let time = parts[parts.length - 1];
 
-        if (parts.length === 3) {
-          date = parts[1];
-          const [d, M] = date.split(" ");
-          const day = d.length === 1 ? `0${d}` : d;
-          let month = `${new Date(`${M} 1, 2021`).getMonth() + 1}`;
-          month = month.length === 1 ? `0${month}` : month;
-          date = `${new Date().getFullYear()}/${month}/${day}`;
-        } else {
-          let _ =
-            parts[0] === "Tomorrow"
-              ? new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-              : new Date();
-          date = _.toISOString().split("T")[0].replaceAll("-", "/");
-        }
-
-        grades.upcoming_events.push({
-          id,
-          course: {
-            id: courseId,
-            name: trim(courseName),
-          },
-          title:
-            component === "mod_scheduler"
-              ? title.replace("your Teacher, ", "")
-              : title,
-          date,
-          time,
-          component,
-          is_review: time.includes("»"),
-        });
+      if (parts.length === 3) {
+        date = parts[1];
+        const [d, M] = date.split(" ");
+        const day = d.length === 1 ? `0${d}` : d;
+        let month = `${new Date(`${M} 1, 2021`).getMonth() + 1}`;
+        month = month.length === 1 ? `0${month}` : month;
+        date = `${new Date().getFullYear()}/${month}/${day}`;
+      } else {
+        let _ =
+          parts[0] === "Tomorrow"
+            ? new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+            : new Date();
+        date = _.toISOString().split("T")[0].replaceAll("-", "/");
       }
+
+      grades.upcoming_events.push({
+        id,
+        course: {
+          id: courseId,
+          name: trim(courseName),
+        },
+        title:
+          component === "mod_scheduler"
+            ? title.replace("your Teacher, ", "")
+            : title,
+        date,
+        time,
+        component,
+        is_review: time.includes("»"),
+      });
     }
   }
 
