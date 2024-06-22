@@ -1,6 +1,6 @@
 .course__link {
   width: fit-content;
-  color: var(--color-primary-dark);
+  color: rgba(255, 255, 255, 0.796);
   text-decoration: none;
 
   &:not(.course__link--title) {
@@ -25,34 +25,5 @@
     height: 0.05rem;
     transition: all 0.4s ease-in-out;
     background-color: var(--color-primary-light);
-  }
-
-  &:hover {
-    transition: all 0.5s ease-in-out;
-    color: var(--color-primary-light);
-
-    .underline {
-      width: 100%;
-    }
-
-    svg {
-      fill: var(--color-primary-light);
-    }
-  }
-}
-
-@media screen and (max-width: 560px) {
-  .course__link {
-    &.course__link--title {
-      // font-size: 1.1rem;
-    }
-  }
-}
-
-@media screen and (max-width: 380px) {
-  .course__link {
-    &.course__link--title {
-      font-size: 1rem;
-    }
   }
 }

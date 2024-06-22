@@ -22,12 +22,38 @@
 @import "components/paragraph";
 @import "components/link";
 
-.cards {
+.icon-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.25s ease-in;
+  background-color: #88888830;
+  min-width: 3.2rem;
+  min-height: 3.2rem;
+}
+
+.icon-container:hover {
+  cursor: pointer;
+  opacity: 0.8;
+  background-color: #8888888f;
+}
+
+.icon-container:hover svg {
+  color: var(--contrast-primary);
+}
+
+svg {
+  color: #888;
+}
+
+.cards {
+  display: flex;
+  align-items: center;
   width: 100%;
-  gap: 2.5rem;
+  gap: 1rem;
   flex-wrap: wrap;
 
   &.is-semester-cards {
@@ -35,14 +61,9 @@
   }
 }
 
-@media screen and (max-width: 820px) {
-  .cards {
-    gap: 1.5rem;
-  }
-}
-
 @media screen and (max-width: 640px) {
   .cards {
-    gap: 1rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
   }
 }

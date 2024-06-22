@@ -5,15 +5,14 @@ import { getCourseGrade, isValidGrade } from "@/services/grades";
 import { isValidDay } from "@/services/days";
 import type { Semester, Course, Day as DayType } from "@/services/online";
 
-import { Arrow, Link as LinkIcon } from "@/components/icons";
+import { Link as LinkIcon } from "@/components/icons";
+import { calculateAverage } from "@/services/courses";
 
 interface Props {
   isOnline?: boolean;
   uuid?: string;
   course: Course;
   semester: Semester | null;
-  isOpen: boolean;
-  toggleDropdown: () => void;
 }
 
 export function Course({
@@ -21,44 +20,19 @@ export function Course({
   uuid,
   course,
   semester,
-  isOpen,
-  toggleDropdown,
 }: Props): JSX.Element {
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    if (e.target instanceof HTMLAnchorElement) return;
-    toggleDropdown();
-  };
-
   return (
-    <div className={`course ${isOpen ? "course--open" : ""}`}>
-      <div className="course__header" onClick={handleClick}>
-        <Link
-          isOnline={isOnline}
-          uuid={uuid}
-          semester={semester?.name}
-          id={course.id}
-          content={course.title || course.name}
-          title={true}
-        />
-        <div className="course__header-right">
-          <Badge grade={getCourseGrade(course)} />
-          <div className="course__arrow">
-            <Arrow />
-          </div>
-        </div>
-      </div>
-      <div className="course__days">
-        <Table days={course.days} />
-        <Link
-          isOnline={isOnline}
-          uuid={uuid}
-          semester={semester?.name}
-          id={course.id}
-          content="View Course"
-          title={false}
-        />
-      </div>
+    <div className={`course`}>
+      <Link
+        isOnline={isOnline}
+        uuid={uuid}
+        semester={semester?.name}
+        id={course.id}
+        content={course.title || course.name}
+        title={true}
+      />
+      <div className="average">{calculateAverage(course)}</div>
+      <Badge grade={getCourseGrade(course)} />
     </div>
   );
 }

@@ -2,15 +2,31 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import moment from "moment";
 import download from "downloadjs";
 
 import { calculateAverage, sortSemesters } from "@/services/semesters";
 import { getGlobalAssignementsCount } from "@/services/assignements";
-import { sortCourses, sortFutureCourses } from "@/services/courses";
+import { getCourses, sortCourses, sortFutureCourses } from "@/services/courses";
 import { getReport, getReportInBase64 } from "@/services/api";
-import { base64ToBlob, type Report } from "@/services/online";
+import {
+  base64ToBlob,
+  type Course as CourseType,
+  type Report,
+} from "@/services/online";
 import { sortEvents } from "@/services/events";
+import {
+  DownloadCloud,
+  Layout as LayoutIcon,
+  Grid,
+  RefreshCcw,
+  Calendar,
+  BarChart2,
+  BarChart,
+  Clipboard,
+  Award,
+  Activity,
+  Zap,
+} from "react-feather";
 
 import {
   Loading,
@@ -24,8 +40,8 @@ import {
   Event,
   Spinner,
   FutureCourse,
+  Icon,
 } from "@/components";
-import { Sync, Download } from "@/components/icons";
 
 type Params = {
   uuid: string;
@@ -37,9 +53,8 @@ export default function Home() {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
-  const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [currentReport, setCurrentReport] = useState<Report | null>(null);
-  const [openDropdownIndex, setOpenDropdownIndex] = useState<number>(-1);
+  const [courses, setCourses] = useState<CourseType[]>([]);
 
   useEffect(() => {
     const initialize = async () => {
@@ -59,9 +74,13 @@ export default function Home() {
     initialize();
   }, [uuid]);
 
-  const toggleDropdown = (i: number) => {
-    setOpenDropdownIndex(i === openDropdownIndex ? -1 : i);
-  };
+  useEffect(() => {
+    if (!currentReport) return;
+    currentReport.semesters.map((semester) => {
+      console.log(semester.courses);
+      setCourses((courses) => [...courses, ...semester.courses]);
+    });
+  }, [currentReport]);
 
   const isValid = (array: any[]) => array && array.length > 0;
 
@@ -73,7 +92,7 @@ export default function Home() {
         <NotFound />
       ) : (
         <>
-          <PageTitle parts={[currentReport?.student.name, "Semesters"]} />
+          <PageTitle parts={[currentReport?.student?.name]} />
           <div
             style={{
               display: "flex",
@@ -81,35 +100,18 @@ export default function Home() {
               gap: "1rem",
             }}
           >
-            {currentReport?.created_at && (
-              <p
-                style={{
-                  fontSize: "1rem",
-                  color: "#888",
-                  marginBottom: "1rem",
-                }}
-              >
-                Generated&nbsp;
-                {moment(
-                  currentReport?.created_at,
-                  "DD-MM-YYYY hh:mm:ss"
-                ).fromNow()}
-              </p>
-            )}
-            <div
+            <Icon
+              icon={RefreshCcw}
+              size={28}
               onClick={() => {
-                setIsSyncing(true);
-                setTimeout(() => {
-                  setIsSyncing(false);
-                  location.href = encodeURI(
-                    `/online?email=${currentReport?.student.email}`
-                  );
-                }, 1000);
+                location.href = encodeURI(
+                  `/online?email=${currentReport?.student.email}`
+                );
               }}
-            >
-              <Sync size={24} isSyncing={isSyncing} />
-            </div>
-            <div
+            />
+            <Icon
+              icon={DownloadCloud}
+              size={28}
               onClick={async () => {
                 setIsDownloading(true);
 
@@ -123,18 +125,8 @@ export default function Home() {
                 download(base64ToBlob(base64), filename, "application/pdf");
                 setIsDownloading(false);
               }}
-            >
-              {isDownloading ? (
-                <Spinner
-                  customCss={{
-                    width: "24px",
-                    height: "24px",
-                  }}
-                />
-              ) : (
-                <Download size={24} />
-              )}
-            </div>
+              loading={isDownloading}
+            />
           </div>
           <div
             style={{
@@ -142,33 +134,45 @@ export default function Home() {
               marginBottom: "2rem",
             }}
           >
-            <Cards className="is-semester-cards">
+            <Cards>
               <Card
-                title="Global Average"
+                title="Average"
                 subtitle={calculateAverage(currentReport?.semesters)}
+                icon={Activity}
               />
               <Card
                 title="Assignments"
                 subtitle={`${getGlobalAssignementsCount(
                   currentReport?.semesters
                 )}`}
+                icon={Zap}
+              />
+              <Card
+                title="Credits*"
+                subtitle={`${getGlobalAssignementsCount(
+                  currentReport?.semesters
+                )}`}
+                icon={Award}
+                iconSize={36}
               />
             </Cards>
-          </div>{" "}
+          </div>
           <div>
             {isValid(currentReport?.upcoming_events) ? (
               <div
                 style={{
                   marginBottom: "2rem",
+                  display: "flex",
+                  overflowX: "auto",
+                  gap: "1rem",
                 }}
               >
-                <SemesterTitle title="Upcoming events" />
                 {sortEvents(currentReport?.upcoming_events).map((event) => {
                   return <Event event={event} key={event.id} />;
                 })}
               </div>
             ) : null}
-          </div>{" "}
+          </div>
           <div>
             {isValid(currentReport?.future_courses) ? (
               <div
@@ -185,31 +189,37 @@ export default function Home() {
               </div>
             ) : null}
           </div>
-          {sortSemesters(currentReport?.semesters).map((semester) => {
-            return semester.courses.length > 0 ? (
-              <div
-                key={semester.name}
-                style={{
-                  marginBottom: "2rem",
-                }}
-              >
-                <SemesterTitle title={semester.name} />
-                {sortCourses(semester.courses).map((course, index) => {
-                  return (
-                    <Course
-                      isOnline={true}
-                      uuid={uuid}
-                      course={course}
-                      semester={semester}
-                      key={course.id}
-                      isOpen={+course.id === openDropdownIndex}
-                      toggleDropdown={() => toggleDropdown(+course.id)}
-                    />
-                  );
-                })}
-              </div>
-            ) : null;
-          })}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "1rem",
+            }}
+          >
+            <Icon icon={Grid} size={28} />
+            <Icon icon={LayoutIcon} size={28} />
+          </div>
+          <div
+            style={{
+              marginTop: "2rem",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              gridAutoRows: "minmax(100px, auto)",
+              gap: "1rem",
+            }}
+          >
+            {sortCourses(courses).map((course) => {
+              return (
+                <Course
+                  isOnline={true}
+                  uuid={uuid}
+                  course={course}
+                  semester={currentReport.semesters[0]}
+                  key={course.id}
+                />
+              );
+            })}
+          </div>
         </>
       )}
     </Layout>
