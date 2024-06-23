@@ -33,6 +33,12 @@
   background-color: #88888830;
   min-width: 3.2rem;
   min-height: 3.2rem;
+
+  &.icon-container__active {
+    svg {
+      color: var(--contrast-primary);
+    }
+  }
 }
 
 .icon-container:hover {

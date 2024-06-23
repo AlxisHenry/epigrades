@@ -16,7 +16,11 @@ import moment from "moment";
 
 import { calculateAverage } from "@/services/semesters";
 import { getGlobalAssignementsCount } from "@/services/assignements";
-import { getCoursesByModules, sortCourses, sortFutureCourses } from "@/services/courses";
+import {
+  getCoursesByModules,
+  sortCourses,
+  sortFutureCourses,
+} from "@/services/courses";
 import { getReport, getReportInBase64 } from "@/services/api";
 import {
   base64ToBlob,
@@ -81,7 +85,6 @@ export default function Home() {
         )
       );
       setIsLoading(false);
-
     };
 
     initialize();
@@ -124,8 +127,8 @@ export default function Home() {
             creationDate.isValid() &&
             !creationDate.isSame(moment(), "day") && (
               <Alert type="danger" title={"Outdated"}>
-                The report can be outdated and may not reflect the current state of
-                your courses. Please run a new report to be sure to have the
+                The report can be outdated and may not reflect the current state
+                of your courses. Please run a new report to be sure to have the
                 up-to-date information. Your report was generated{" "}
                 {creationDate.fromNow()}.
               </Alert>
@@ -213,11 +216,17 @@ export default function Home() {
                 gap: "1rem",
               }}
             >
-              <Icon icon={Grid} size={28} onClick={() => setView("flat")} />
+              <Icon
+                icon={Grid}
+                size={28}
+                onClick={() => setView("flat")}
+                className={view === "flat" ? "active" : ""}
+              />
               <Icon
                 icon={LayoutIcon}
                 size={28}
                 onClick={() => setView("modules")}
+                className={view === "modules" ? "active" : ""}
               />
               <Icon
                 icon={RefreshCcw}
@@ -270,7 +279,10 @@ export default function Home() {
               })}
             </div>
           ) : (
-            <CoursesByModuleView uuid={uuid} courses={getCoursesByModules(courses)} />
+            <CoursesByModuleView
+              uuid={uuid}
+              courses={getCoursesByModules(courses)}
+            />
           )}
         </>
       )}
@@ -287,15 +299,18 @@ function CoursesByModuleView(props: CoursesByModuleViewProps) {
   const { uuid, courses } = props;
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      marginTop: "2rem",
-      gap: "3rem",
-    }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        marginTop: "2rem",
+        gap: "3rem",
+      }}
+    >
       {Object.entries(courses).map(([module, courses]) => {
         return (
-          <div key={module}
+          <div
+            key={module}
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
@@ -303,18 +318,25 @@ function CoursesByModuleView(props: CoursesByModuleViewProps) {
               gap: "1rem",
               borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
               paddingBottom: "3rem",
-            }}>
-            <div style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "rgba(255, 255, 255, 0.796)",
-              fontSize: "1.5rem",
-              fontWeight: "bold",
-            }}>
-              <h2 style={{
-                textAlign: "center",
-              }}>{module}</h2>
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "rgba(255, 255, 255, 0.796)",
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+              }}
+            >
+              <h2
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                {module}
+              </h2>
             </div>
             {courses.map((course) => {
               return (
