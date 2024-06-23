@@ -129,6 +129,7 @@ export type Course = {
   title: string;
   days: Day[];
   created_at: string;
+  semester?: string;
 };
 
 export type FutureCourse = {

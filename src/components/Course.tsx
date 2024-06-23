@@ -12,28 +12,28 @@ interface Props {
   isOnline?: boolean;
   uuid?: string;
   course: Course;
-  semester: Semester | null;
 }
 
 export function Course({
   isOnline = false,
   uuid,
   course,
-  semester,
 }: Props): JSX.Element {
   return (
     <div className={`course`} onClick={() => {
-      location.href = `/online/${uuid}/${semester?.name?.toLowerCase()}/${course.id}`;
+      location.href = `/online/${uuid}/${course.id}`;
     }}>
       <Link
         isOnline={isOnline}
         uuid={uuid}
-        semester={semester?.name}
         id={course.id}
         content={course.title || course.name}
         title={true}
       />
-      <div className="average">{calculateAverage(course)}</div>
+      <div className="average">{calculateAverage(course)}<span style={{
+        fontSize: "0.8rem",
+        marginLeft: "0.5rem",
+      }}>/&nbsp;20</span></div>
       <Badge grade={getCourseGrade(course)} />
       <div className="code">
         {course.name}
@@ -52,31 +52,27 @@ function Link({
   isOnline = false,
   uuid,
   id,
-  semester,
   content,
   title,
 }: {
   isOnline?: boolean;
   uuid?: string;
   id: string;
-  semester: string | undefined;
   content: string;
   title: boolean;
 }) {
-  if (!semester) return null;
-
   const t = (text: string): string => text.toLowerCase();
 
   const getAs = (): string => {
     return isOnline
-      ? `/online/${uuid}/${t(semester)}/${id}`
-      : `/semesters/${t(semester)}/${id}`;
+      ? `/online/${uuid}/${id}`
+      : `/semesters/${id}`;
   };
 
   const getLink = (): string => {
     return isOnline
-      ? "/online/[uuid]/[semester]/[course]"
-      : "/semesters/[semester]/[course]";
+      ? "/online/[uuid]/[course]"
+      : "/semesters/[course]";
   };
 
   return (
@@ -102,21 +98,25 @@ export function Table({ days }: { days: DayType[] }) {
     );
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Day</th>
-          <th>Topic</th>
-          <th>Assignments</th>
-          <th>Due Date</th>
-          <th>Submission</th>
-          <th>Grade</th>
-        </tr>
-      </thead>
-      <tbody>
-        {days.map((day) => isValidDay(day) && <Day day={day} key={day.name} />)}
-      </tbody>
-    </table>
+    <div style={{
+      overflowX: "auto",
+    }}>
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Topic</th>
+            <th>Assignments</th>
+            <th>Due Date</th>
+            <th>Submission</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          {days.map((day) => isValidDay(day) && <Day day={day} key={day.name} />)}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

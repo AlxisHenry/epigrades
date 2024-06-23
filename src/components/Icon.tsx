@@ -8,7 +8,7 @@ interface IconProps {
 }
 
 export function Icon(props: IconProps): JSX.Element {
-  const { size, icon: Icon, onClick = () => {}, loading = false } = props;
+  const { size, icon: Icon, onClick = () => { }, loading = false } = props;
 
   return (
     <div className="icon-container" onClick={onClick}>

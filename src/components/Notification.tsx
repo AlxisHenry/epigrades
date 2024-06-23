@@ -13,13 +13,13 @@ export function Notification({
   inSevenDaysOrLess,
 }: Props): JSX.Element {
   return (
-    <div className={`notification`}>
+    <div className={`notification ${inSevenDaysOrLess ? "red" : "green"}`}>
       <div className="notification-icon">
         <Icon icon={Clock} size={32} />
       </div>
       <div className="notification-title">{title}</div>
       <div
-        className={`notification-date ${inSevenDaysOrLess ? "red" : "green"}`}
+        className={`notification-date`}
       >
         {date}
       </div>

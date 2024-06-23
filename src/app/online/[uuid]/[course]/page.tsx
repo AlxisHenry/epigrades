@@ -21,7 +21,7 @@ import { getCourseAssignementsCount } from "@/services/assignements";
 import { getCourseGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
 import { getReport } from "@/services/api";
-import { calculateAverage } from "@/services/courses";
+import { calculateAverage, findSemesterByuCourseId } from "@/services/courses";
 import type { Course as CourseType, Report, Semester } from "@/services/online";
 
 import {
@@ -32,6 +32,8 @@ import {
   Cards,
   Card,
   NotFound,
+  Alert,
+  SemesterTitle,
 } from "@/components";
 import { Activity, Award, Flag } from "react-feather";
 
@@ -59,8 +61,6 @@ export default function Home() {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentReport, setCurrentReport] = useState<Report | null>(null);
-
-  const [semester, setSemester] = useState<Semester | null>(null);
   const [course, setCourse] = useState<CourseType | null>(null);
 
   const [stats, setStats] = useState<{
@@ -85,17 +85,13 @@ export default function Home() {
 
       setCurrentReport(report);
 
-      const currentSemester =
-        report.semesters.find(
-          (s) => s.name.toLowerCase() === params.semester
-        ) ?? null;
-
-      setSemester(currentSemester);
+      const currentSemester = findSemesterByuCourseId(
+        report.semesters,
+        params.course
+      );
 
       const currentCourse =
-        report.semesters
-          .find((s) => s.name.toLowerCase() === params.semester)
-          ?.courses.find((c) => c.id === params.course) ?? null;
+        currentSemester?.courses.find((c) => c.id === params.course) ?? null;
 
       setCourse(currentCourse);
 
@@ -178,25 +174,52 @@ export default function Home() {
     <Layout>
       {isLoading ? (
         <Loading />
-      ) : !semester || !course ? (
+      ) : !course ? (
         <NotFound />
       ) : (
         <>
           <PageTitle
             parts={[
               currentReport?.student?.name ?? "",
-              semester!.name,
-              course!.name,
+              course!.title,
             ]}
             clickable={[0]}
             customLink={`online/${uuid}`}
           />
+          {
+            stats.average === "-" && stats.grade === "-" && (
+              <Alert type="danger" title="Not graded" customCss={{
+                marginBottom: "2rem"
+              }}>
+                This course does not have any graded assignements for now. This is because Epitech has not already graded this course.
+              </Alert>
+            )
+          }
+          {
+            stats.average !== "-" && stats.grade === "-" && (
+              <Alert type="warning" title="Not graded" customCss={{
+                marginBottom: "2rem"
+              }}>
+                The grade for this course is not available yet. Wait for Epitech to calculate it.
+              </Alert>
+            )
+          }
+          {
+            stats.grade !== "-" && stats.average === "-" && (
+              <Alert type="warning" title="Not graded" customCss={{
+                marginBottom: "2rem"
+              }}>
+                Epitech sucks and calculated the grade but not the average. Wait for Epitech to calculate it...
+              </Alert>
+            )
+          }
           <Cards>
             <Card title="Grade" subtitle={stats.grade} icon={Flag} />
             <Card title="Average" subtitle={stats.average} icon={Activity} />
             <Card title="Credits*" subtitle={stats.assignements} icon={Award} />
           </Cards>
           <div className="table__container">
+            <SemesterTitle title="Course's days" />
             <Table days={course!.days} />
           </div>
           {data.labels.length > 0 && (

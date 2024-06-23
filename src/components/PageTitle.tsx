@@ -30,7 +30,7 @@ export function PageTitle({ parts, clickable, customLink }: Props) {
                 <span>{part}</span>
               )}
               {!isLast(part) && (
-                <span className="page__title__separator"> / </span>
+                <span className="page__title__separator"> \ </span>
               )}
             </span>
           );

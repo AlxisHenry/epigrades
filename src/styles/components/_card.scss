@@ -7,7 +7,7 @@
   flex: 1;
   min-width: 300px;
   transition: all 0.3s ease-in-out;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   border: 1px solid #88888830;
   background-color: #333;
   color: rgba(255, 255, 255, 0.796);
@@ -29,7 +29,7 @@
     }
 
     .icon-container svg {
-        color: var(--contrast-primary)
+      color: var(--contrast-primary);
     }
   }
 

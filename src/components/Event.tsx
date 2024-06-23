@@ -39,7 +39,11 @@ export function Event({ event }: Props): JSX.Element {
     <Notification
       title={title()}
       date={date()}
-      inSevenDaysOrLess={moment(event.date).diff(moment(), "days") <= 7}
+      inSevenDaysOrLess={
+        moment(event.date)
+          .startOf("day")
+          .diff(moment().startOf("day"), "days") <= 7
+      }
     />
   );
 }
