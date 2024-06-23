@@ -105,7 +105,7 @@ export default function Home() {
     };
 
     initialize();
-  }, [uuid]);
+  }, [uuid, params.course]);
 
   const options = {
     responsive: true,

@@ -90,11 +90,11 @@ export function getCoursesByModules(courses: Course[]): {
 } {
   let modules: { [key: string]: Course[] } = {};
   courses.map((course) => {
-    let module = course.name.split("-")[1];
-    if (!modules[module]) {
-      modules[module] = [];
+    let m = course.name.split("-")[1];
+    if (!modules[m]) {
+      modules[m] = [];
     }
-    modules[module].push(course);
+    modules[m].push(course);
   });
 
   return modules;

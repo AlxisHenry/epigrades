@@ -110,7 +110,7 @@ export default function Home() {
           ?.courses || []
       );
     }
-  }, [currentSemester]);
+  }, [currentSemester, report]);
 
   const isValid = (array: any[]) => array && array.length > 0;
 
