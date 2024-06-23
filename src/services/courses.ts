@@ -73,3 +73,29 @@ export function getCourseAssignementsNames(course: Course | null): string[] {
   });
   return assignements;
 }
+
+export function findSemesterByuCourseId(
+  semesters: Semester[],
+  courseId: string
+): Semester | null {
+  for (let semester of semesters) {
+    let course = semester.courses.find((c) => c.id === courseId);
+    if (course) return semester;
+  }
+  return null;
+}
+
+export function getCoursesByModules(courses: Course[]): {
+  [key: string]: Course[];
+} {
+  let modules: { [key: string]: Course[] } = {};
+  courses.map((course) => {
+    let module = course.name.split("-")[1];
+    if (!modules[module]) {
+      modules[module] = [];
+    }
+    modules[module].push(course);
+  });
+
+  return modules;
+}

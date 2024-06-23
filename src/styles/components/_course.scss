@@ -1,94 +1,61 @@
 .course {
-  max-height: 115px;
+  position: relative;
   overflow: hidden;
-  border-radius: 0.5rem;
-  background-color: var(--contrast-secondary);
+  border-radius: 0.25rem;
+  background-color: #88888830;
   transition: all 0.3s ease-in-out;
-  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
-  margin-bottom: 1.2rem;
+  flex: 1;
+  max-height: 225px;
+  min-height: 225px;
+  color: rgba(255, 255, 255, 0.796);
+  border-bottom: 0.5rem solid #888;
+  cursor: pointer;
+  width: 100%;
+  padding: 1.5rem;
+
+  .average {
+    margin-top: 1rem;
+    font-size: 2rem;
+    font-weight: 500;
+  }
 
   &:hover {
-    cursor: pointer;
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.4);
-    background-color: var(--contrast-primary);
+    background-color: #88888860;
   }
 
-  &.course--open {
-    max-height: 100vh;
-    background-color: rgba(255, 255, 255, 0.1);
-    .course__header .course__header-right .course__arrow {
-      transform: rotate(-90deg);
-    }
+  .code {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: .8rem;
+    font-weight: 500;
   }
 
-  .course__header {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    font-size: 0.85rem;
-    padding: 2rem;
-    background-color: #fff;
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
-    max-height: 115px;
-    overflow: hidden;
-
-    .course__header-right {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-
-      .course__arrow {
-        z-index: 0;
-        transform: rotate(90deg);
-        transition: all 0.3s ease-in-out;
-      }
-
-      .grade-badge {
-        font-size: 1.2rem;
-        font-weight: 600;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        background-color: var(--contrast-primary);
-        align-self: center;
-
-        &.grade-badge--A {
-          color: var(--grade-success);
-        }
-
-        &.grade-badge--B {
-          color: var(--grade-ok);
-        }
-
-        &.grade-badge--C,
-        &.grade-badge--D {
-          color: var(--grade-warning);
-        }
-
-        &.grade-badge--Echec {
-          color: var(--grade-danger);
-        }
-      }
-    }
-  }
-
-  .course__days {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 2rem;
-    background-color: #fff;
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
-
-    .course__asignment_link {
-      text-align: end;
-    }
-  }
-}
-
-@media screen and (max-width: 460px) {
   .grade-badge {
-    display: none;
+    bottom: 20px;
+    right: 20px;
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    background-color: #88888830;
+
+    &.grade-badge--A {
+      color: var(--grade-success);
+    }
+
+    &.grade-badge--B {
+      color: var(--grade-ok);
+    }
+
+    &.grade-badge--C,
+    &.grade-badge--D {
+      color: var(--grade-warning);
+    }
+
+    &.grade-badge--Echec {
+      color: var(--grade-danger);
+    }
   }
 }

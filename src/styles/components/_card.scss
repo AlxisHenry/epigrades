@@ -1,29 +1,43 @@
 .card {
   display: flex;
-  flex-direction: column;
   flex: 1;
   height: auto;
   min-height: 150px;
-  min-width: 125px;
-  padding: 1rem;
+  max-height: 150px;
+  flex: 1;
+  min-width: 300px;
   transition: all 0.3s ease-in-out;
-  border-radius: 0.5rem;
-  background-color: var(--contrast-secondary);
-  align-items: center;
-  justify-content: center;
+  border-radius: 0.25rem;
+  border: 1px solid #88888830;
+  background-color: #333;
+  color: rgba(255, 255, 255, 0.796);
   position: relative;
+  border-bottom: 0.5rem solid #888;
+  justify-content: center;
+  align-items: center;
+
+  .card__content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+
+    .icon-container {
+      background-color: transparent !important;
+      cursor: default;
+    }
+
+    .icon-container svg {
+      color: var(--contrast-primary);
+    }
+  }
 
   .card__title {
-    position: absolute;
-    top: 22px;
     font-size: 1.2rem;
-    font-weight: 600;
   }
 
   .card__subtitle {
-    margin-top: 0.5rem;
-    justify-self: center;
-    align-self: center;
     font-weight: 600;
     font-size: 2.4rem;
   }

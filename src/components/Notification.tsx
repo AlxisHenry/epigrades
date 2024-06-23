@@ -1,3 +1,6 @@
+import { Clock } from "react-feather";
+import { Icon } from "./Icon";
+
 interface Props {
   title: string;
   date: string;
@@ -10,17 +13,15 @@ export function Notification({
   inSevenDaysOrLess,
 }: Props): JSX.Element {
   return (
-    <div className={`course notification`}>
-      <div className="course__header">
-        <p>
-          {title}
-          <span
-            className={`notification-date ${!inSevenDaysOrLess && "orange"}`}
-          >
-            {date}
-          </span>
-        </p>
-        <span className={`soon ${!inSevenDaysOrLess && "orange"}`}></span>
+    <div className={`notification ${inSevenDaysOrLess ? "red" : "green"}`}>
+      <div className="notification-icon">
+        <Icon icon={Clock} size={32} />
+      </div>
+      <div className="notification-title">{title}</div>
+      <div
+        className={`notification-date`}
+      >
+        {date}
       </div>
     </div>
   );
