@@ -22,7 +22,9 @@ export function Course({
   semester,
 }: Props): JSX.Element {
   return (
-    <div className={`course`}>
+    <div className={`course`} onClick={() => {
+      location.href = `/online/${uuid}/${semester?.name?.toLowerCase()}/${course.id}`;
+    }}>
       <Link
         isOnline={isOnline}
         uuid={uuid}
@@ -33,6 +35,9 @@ export function Course({
       />
       <div className="average">{calculateAverage(course)}</div>
       <Badge grade={getCourseGrade(course)} />
+      <div className="code">
+        {course.name}
+      </div>
     </div>
   );
 }

@@ -33,6 +33,7 @@ import {
   Card,
   NotFound,
 } from "@/components";
+import { Activity, Award, Flag } from "react-feather";
 
 type Params = {
   semester: string;
@@ -183,7 +184,7 @@ export default function Home() {
         <>
           <PageTitle
             parts={[
-              currentReport?.student.name ?? "",
+              currentReport?.student?.name ?? "",
               semester!.name,
               course!.name,
             ]}
@@ -191,9 +192,9 @@ export default function Home() {
             customLink={`online/${uuid}`}
           />
           <Cards>
-            <Card title="Grade" subtitle={stats.grade} />
-            <Card title="Average" subtitle={stats.average} />
-            <Card title="Assignments" subtitle={stats.assignements} />
+            <Card title="Grade" subtitle={stats.grade} icon={Flag} />
+            <Card title="Average" subtitle={stats.average} icon={Activity} />
+            <Card title="Credits*" subtitle={stats.assignements} icon={Award} />
           </Cards>
           <div className="table__container">
             <Table days={course!.days} />

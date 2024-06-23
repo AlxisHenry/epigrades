@@ -7,7 +7,6 @@
   flex: 1;
   max-height: 225px;
   min-height: 225px;
-  margin-bottom: 1.2rem;
   color: rgba(255, 255, 255, 0.796);
   border-bottom: 0.5rem solid #888;
   cursor: pointer;
@@ -22,6 +21,14 @@
 
   &:hover {
     background-color: #88888860;
+  }
+
+  .code {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: .8rem;
+    font-weight: 500;
   }
 
   .grade-badge {

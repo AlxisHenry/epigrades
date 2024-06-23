@@ -67,3 +67,23 @@ svg {
     flex-wrap: nowrap;
   }
 }
+
+select {
+  padding: 0.8rem;
+  border-radius: 0.25rem;
+  border: 1px solid #88888830;
+  transition: background-color 0.25s ease-in;
+  background-color: #88888830;
+  color: var(--contrast-primary);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+select:hover {
+  background-color: #8888888f;
+}
+
+select:focus {
+  outline: none;
+  border: 1px solid var(--contrast-primary);
+}

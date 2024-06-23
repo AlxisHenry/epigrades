@@ -13,6 +13,7 @@
   border: 1px solid #88888830;
   justify-content: space-between;
   color: rgba(255, 255, 255, 0.796);
+  border-bottom: 0.5rem solid rgba(255, 0, 0, 0.4);
 
   .notification-icon {
     .icon-container {
@@ -30,14 +31,10 @@
     font-size: 1rem;
     text-align: center;
     border-radius: 0.25rem 0.25rem 0 0;
+    min-height: 40px;
   }
 
   .notification-date {
-    &.red {
-      border-bottom: 4px solid rgba(255, 0, 0, 0.4);
-    }
-
-    border-bottom: 4px solid rgba(0, 128, 0, 0.4);
     flex: 1;
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;

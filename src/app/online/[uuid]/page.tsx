@@ -41,7 +41,9 @@ import {
   Spinner,
   FutureCourse,
   Icon,
+  Alert,
 } from "@/components";
+import moment from "moment";
 
 type Params = {
   uuid: string;
@@ -54,7 +56,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [currentReport, setCurrentReport] = useState<Report | null>(null);
-  const [courses, setCourses] = useState<CourseType[]>([]);
+  const [creationDate, setCreationDate] = useState<moment.Moment | null>(null);
 
   useEffect(() => {
     const initialize = async () => {
@@ -67,20 +69,13 @@ export default function Home() {
         return;
       }
 
+      setCreationDate(moment(report.created_at));
       setCurrentReport(report);
       setIsLoading(false);
     };
 
     initialize();
   }, [uuid]);
-
-  useEffect(() => {
-    if (!currentReport) return;
-    currentReport.semesters.map((semester) => {
-      console.log(semester.courses);
-      setCourses((courses) => [...courses, ...semester.courses]);
-    });
-  }, [currentReport]);
 
   const isValid = (array: any[]) => array && array.length > 0;
 
@@ -92,42 +87,37 @@ export default function Home() {
         <NotFound />
       ) : (
         <>
-          <PageTitle parts={[currentReport?.student?.name]} />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "1rem",
-            }}
-          >
-            <Icon
-              icon={RefreshCcw}
-              size={28}
-              onClick={() => {
-                location.href = encodeURI(
-                  `/online?email=${currentReport?.student.email}`
-                );
-              }}
-            />
-            <Icon
-              icon={DownloadCloud}
-              size={28}
-              onClick={async () => {
-                setIsDownloading(true);
-
-                const { filename, base64 } = await getReportInBase64(uuid);
-
-                if (!base64 || !filename) {
-                  setIsDownloading(false);
-                  return;
-                }
-
-                download(base64ToBlob(base64), filename, "application/pdf");
-                setIsDownloading(false);
-              }}
-              loading={isDownloading}
-            />
-          </div>
+          <PageTitle parts={["adznaj"]} />
+          {
+            creationDate && creationDate.isValid() && (
+              creationDate.isBefore(moment().subtract(4, "weeks")) ? (
+                <Alert type="danger" title={"Important"}>
+                  The report you are viewing was generated 2 weeks ago. Please
+                  consider generating a new report to get the most up-to-date
+                  information.
+                </Alert>
+              ) :
+                creationDate.isBefore(moment().subtract(1, "weeks")) ? (
+                  <Alert type="warning" title={"Important"}>
+                    The report you are viewing was generated 1 week ago. Please
+                    consider generating a new report to get the most up-to-date
+                    information.
+                  </Alert>
+                ) :
+                  creationDate.isBefore(moment().subtract(3, "days")) ? (
+                    <Alert type="warning" title={"Important"}>
+                      The report you are viewing was generated 3 days ago. Please
+                      consider generating a new report to get the most up-to-date
+                      information.
+                    </Alert>
+                  ) : <Alert type="tips" title={"Important"}>
+                    The report you are viewing was generated less than 3 days ago.
+                  </Alert>
+            )
+          }
+          <Alert type="tips" title={"Important"}>
+            The report you are viewing was generated less than 3 days ago.
+          </Alert>
           <div
             style={{
               marginTop: "2rem",
@@ -159,45 +149,88 @@ export default function Home() {
           </div>
           <div>
             {isValid(currentReport?.upcoming_events) ? (
-              <div
-                style={{
-                  marginBottom: "2rem",
-                  display: "flex",
-                  overflowX: "auto",
-                  gap: "1rem",
-                }}
-              >
-                {sortEvents(currentReport?.upcoming_events).map((event) => {
-                  return <Event event={event} key={event.id} />;
-                })}
-              </div>
+              <>
+                <SemesterTitle title="Upcoming events and courses" />
+                <div
+                  style={{
+                    marginBottom: "3rem",
+                    display: "flex",
+                    overflowX: "auto",
+                    gap: "1rem",
+                  }}
+                >
+                  {sortEvents(currentReport?.upcoming_events).map((event) => {
+                    return <Event event={event} key={event.id} />;
+                  })}
+                  {isValid(currentReport?.future_courses) && (
+                    sortFutureCourses(currentReport?.future_courses).map(
+                      (course) => {
+                        return <FutureCourse course={course} key={course.id} />;
+                      }
+                    ))}
+                </div>
+              </>
+
             ) : null}
           </div>
           <div>
-            {isValid(currentReport?.future_courses) ? (
-              <div
-                style={{
-                  marginBottom: "2rem",
-                }}
-              >
-                <SemesterTitle title="Incoming courses" />
-                {sortFutureCourses(currentReport?.future_courses).map(
-                  (course) => {
-                    return <FutureCourse course={course} key={course.id} />;
-                  }
-                )}
-              </div>
-            ) : null}
+
           </div>
           <div
             style={{
               display: "flex",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
               gap: "1rem",
+              overflowX: "auto",
             }}
           >
-            <Icon icon={Grid} size={28} />
-            <Icon icon={LayoutIcon} size={28} />
+            <select>
+              <option value="all" selected>All semesters</option>
+              {
+                currentReport?.semesters.map((semester) => {
+                  return (
+                    <option value={semester.name} key={semester.name}>
+                      Semester {semester.name}
+                    </option>
+                  );
+                })
+              }
+            </select>
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+              }}>
+              <Icon icon={Grid} size={28} />
+              <Icon icon={LayoutIcon} size={28} />
+              <Icon
+                icon={RefreshCcw}
+                size={28}
+                onClick={() => {
+                  location.href = encodeURI(
+                    `/online?email=${currentReport?.student.email}`
+                  );
+                }}
+              />
+              <Icon
+                icon={DownloadCloud}
+                size={28}
+                onClick={async () => {
+                  setIsDownloading(true);
+
+                  const { filename, base64 } = await getReportInBase64(uuid);
+
+                  if (!base64 || !filename) {
+                    setIsDownloading(false);
+                    return;
+                  }
+
+                  download(base64ToBlob(base64), filename, "application/pdf");
+                  setIsDownloading(false);
+                }}
+                loading={isDownloading}
+              />
+            </div>
           </div>
           <div
             style={{
@@ -208,16 +241,18 @@ export default function Home() {
               gap: "1rem",
             }}
           >
-            {sortCourses(courses).map((course) => {
-              return (
-                <Course
-                  isOnline={true}
-                  uuid={uuid}
-                  course={course}
-                  semester={currentReport.semesters[0]}
-                  key={course.id}
-                />
-              );
+            {sortSemesters(currentReport?.semesters).map((semester) => {
+              return sortCourses(semester.courses).map((course) => {
+                return (
+                  <Course
+                    isOnline={true}
+                    uuid={uuid}
+                    course={course}
+                    semester={semester}
+                    key={course.id}
+                  />
+                );
+              });
             })}
           </div>
         </>
