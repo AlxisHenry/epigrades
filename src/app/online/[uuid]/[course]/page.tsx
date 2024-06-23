@@ -18,10 +18,10 @@ import {
 } from "chart.js";
 
 import { getCourseAssignementsCount } from "@/services/assignements";
-import { getCourseGrade } from "@/services/grades";
+import { getCourseGrade, getCreditsFromGrade } from "@/services/grades";
 import { isGradedDay } from "@/services/days";
 import { getReport } from "@/services/api";
-import { calculateAverage, findSemesterByuCourseId } from "@/services/courses";
+import { calculateAverage, findSemesterByCourseId } from "@/services/courses";
 import type { Course as CourseType, Report, Semester } from "@/services/online";
 
 import {
@@ -36,6 +36,7 @@ import {
   SemesterTitle,
 } from "@/components";
 import { Activity, Award, Flag } from "react-feather";
+import { stat } from "fs";
 
 type Params = {
   semester: string;
@@ -85,7 +86,7 @@ export default function Home() {
 
       setCurrentReport(report);
 
-      const currentSemester = findSemesterByuCourseId(
+      const currentSemester = findSemesterByCourseId(
         report.semesters,
         params.course
       );
@@ -216,7 +217,7 @@ export default function Home() {
           <Cards>
             <Card title="Grade" subtitle={stats.grade} icon={Flag} />
             <Card title="Average" subtitle={stats.average} icon={Activity} />
-            <Card title="Credits*" subtitle={stats.assignements} icon={Award} />
+            <Card title="Credits*" subtitle={getCreditsFromGrade(stats.grade)} icon={Award} />
           </Cards>
           <div className="table__container">
             <SemesterTitle title="Course's days" />

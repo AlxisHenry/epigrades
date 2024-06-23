@@ -74,7 +74,7 @@ export function getCourseAssignementsNames(course: Course | null): string[] {
   return assignements;
 }
 
-export function findSemesterByuCourseId(
+export function findSemesterByCourseId(
   semesters: Semester[],
   courseId: string
 ): Semester | null {

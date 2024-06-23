@@ -24,6 +24,7 @@ import {
   type Report,
 } from "@/services/online";
 import { sortEvents } from "@/services/events";
+import { getCreditsCount } from "@/services/grades";
 
 import {
   Loading,
@@ -123,7 +124,7 @@ export default function Home() {
             creationDate.isValid() &&
             !creationDate.isSame(moment(), "day") && (
               <Alert type="danger" title={"Outdated"}>
-                The report is outdated and may not reflect the current state of
+                The report can be outdated and may not reflect the current state of
                 your courses. Please run a new report to be sure to have the
                 up-to-date information. Your report was generated{" "}
                 {creationDate.fromNow()}.
@@ -148,7 +149,7 @@ export default function Home() {
               />
               <Card
                 title="Credits*"
-                subtitle={`${getGlobalAssignementsCount(report?.semesters)}`}
+                subtitle={getCreditsCount(report)}
                 icon={Award}
                 iconSize={36}
               />

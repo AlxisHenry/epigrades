@@ -1,4 +1,4 @@
-import type { Course, Day, Semester } from "@/services/online";
+import type { Course, Day, Report, Semester, Student } from "@/services/online";
 
 export enum Grade {
   A = "A",
@@ -76,3 +76,17 @@ export function getGradeAverage(semester: Semester): string {
 
   return closestGrade;
 }
+
+export const getCreditsCount = (report: Report): string => {
+  if (!report) return "0";
+
+  return report.semesters
+    .map((semester) => {
+      return semester.courses
+        .filter((course) => isValidGrade(getCourseGrade(course)))
+        .map((course) => getCreditsFromGrade(getCourseGrade(course)))
+        .reduce((acc, credit) => (acc += parseInt(credit)), 0);
+    })
+    .reduce((acc, credit) => (acc += credit), 0)
+    .toString();
+};
