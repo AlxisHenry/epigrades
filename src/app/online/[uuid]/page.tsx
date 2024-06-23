@@ -122,7 +122,7 @@ export default function Home() {
         <NotFound />
       ) : (
         <>
-          <PageTitle parts={["adznaj"]} />
+          <PageTitle parts={[report?.student?.name]} />
           {creationDate &&
             creationDate.isValid() &&
             !creationDate.isSame(moment(), "day") && (
