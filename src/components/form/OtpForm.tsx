@@ -20,6 +20,7 @@ export function OtpForm({
           <label htmlFor="otpCode">2FA Code</label>
           <p>The code has been sent to {phone}</p>
           <input
+            autoComplete="one-time-code"
             maxLength={6}
             placeholder="Enter the code"
             type="text"
