@@ -109,6 +109,8 @@ export type Event = {
 export type Student = {
   email: string;
   name: string;
+  promotion: string;
+  campus: string;
 };
 
 export type SemesterDate = {
@@ -127,10 +129,21 @@ export type Course = {
   id: string;
   name: string;
   title: string;
+  team: string;
   days: Day[];
   created_at: string;
   semester?: string;
+  events: CourseEvent[];
+  members: string[];
 };
+
+export type CourseEvent = {
+  activity: string;
+  enrolled: string;
+  attended: string;
+  date: string;
+  comment: string;
+}
 
 export type FutureCourse = {
   id: string;

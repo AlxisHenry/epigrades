@@ -28,6 +28,12 @@
   }
 }
 
+@media screen and (max-width: 768px) {
+  .page__title__subtitle {
+    display: none;
+  }
+}
+
 @media screen and (max-width: 520px) {
   .page__title__container {
     margin-bottom: 2rem;

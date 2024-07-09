@@ -34,9 +34,10 @@ import {
   NotFound,
   Alert,
   SemesterTitle,
+  Notification,
 } from "@/components";
 import { Activity, Award, Flag } from "react-feather";
-import { stat } from "fs";
+import moment from "moment";
 
 type Params = {
   semester: string;
@@ -180,53 +181,136 @@ export default function Home() {
       ) : (
         <>
           <PageTitle
-            parts={[
-              currentReport?.student?.name ?? "",
-              course!.title,
-            ]}
+            parts={[currentReport?.student?.name ?? "", course!.title]}
             clickable={[0]}
             customLink={`online/${uuid}`}
           />
-          {
-            stats.average === "-" && stats.grade === "-" && (
-              <Alert type="danger" title="Not graded" customCss={{
-                marginBottom: "2rem"
-              }}>
-                This course does not have any graded assignements for now. This is because Epitech has not already graded this course.
-              </Alert>
-            )
-          }
-          {
-            stats.average !== "-" && stats.grade === "-" && (
-              <Alert type="warning" title="Not graded" customCss={{
-                marginBottom: "2rem"
-              }}>
-                The grade for this course is not available yet. Wait for Epitech to calculate it.
-              </Alert>
-            )
-          }
-          {
-            stats.grade !== "-" && stats.average === "-" && (
-              <Alert type="warning" title="Not graded" customCss={{
-                marginBottom: "2rem"
-              }}>
-                Epitech sucks and calculated the grade but not the average. Wait for Epitech to calculate it...
-              </Alert>
-            )
-          }
+          {stats.average === "-" && stats.grade === "-" && (
+            <Alert
+              type="danger"
+              title="Not graded"
+              customCss={{
+                marginBottom: "2rem",
+              }}
+            >
+              This course does not have any graded assignements for now. This is
+              because Epitech has not already graded this course.
+            </Alert>
+          )}
+          {stats.average !== "-" && stats.grade === "-" && (
+            <Alert
+              type="warning"
+              title="Not graded"
+              customCss={{
+                marginBottom: "2rem",
+              }}
+            >
+              The grade for this course is not available yet. Wait for Epitech
+              to calculate it.
+            </Alert>
+          )}
+          {stats.grade !== "-" && stats.average === "-" && (
+            <Alert
+              type="warning"
+              title="Not graded"
+              customCss={{
+                marginBottom: "2rem",
+              }}
+            >
+              Epitech sucks and calculated the grade but not the average. Wait
+              for Epitech to calculate it...
+            </Alert>
+          )}
           <Cards>
             <Card title="Grade" subtitle={stats.grade} icon={Flag} />
             <Card title="Average" subtitle={stats.average} icon={Activity} />
-            <Card title="Credits*" subtitle={getCreditsFromGrade(stats.grade)} icon={Award} />
+            <Card
+              title="Credits*"
+              subtitle={getCreditsFromGrade(stats.grade)}
+              icon={Award}
+            />
           </Cards>
+          <div
+            style={{
+              marginTop: "3rem",
+            }}
+          >
+            {course?.members.length > 0 ? (
+              <div>
+                <SemesterTitle title={`Members (${course?.team})`} />
+                <ul
+                  style={{
+                    marginBottom: "3rem",
+                    listStyleType: "none",
+                    display: "flex",
+                    gap: "1rem",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {course?.members.map((member) => {
+                    return (
+                      <li
+                        key={member}
+                        style={{
+                          flex: "1 1 200px",
+                          padding: "1rem",
+                          textAlign: "center",
+                          backgroundColor: "#fdfdfd10",
+                          borderRadius: "0.5rem",
+                          color: "#FFF",
+                        }}
+                      >
+                        <h3>{member}</h3>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+          <div
+            style={{
+              marginTop: "3rem",
+            }}
+          >
+            {course.events && course.events.length > 0 ? (
+              <>
+                <SemesterTitle title="Events" />
+                <div
+                  style={{
+                    marginBottom: "3rem",
+                    display: "flex",
+                    overflowX: "auto",
+                    gap: "1rem",
+                  }}
+                >
+                  {course?.events.map((event) => {
+                    return (
+                      <Notification
+                        key={event.activity}
+                        title={event.activity}
+                        date={moment(event.date, "DD/MM/YYYY").format(
+                          "DD/MM/YYYY"
+                        )}
+                        inSevenDaysOrLess={event.enrolled !== "Yes"}
+                      />
+                    );
+                  })}
+                </div>
+              </>
+            ) : null}
+          </div>
+          <SemesterTitle title="Days" />
           <div className="table__container">
-            <SemesterTitle title="Course's days" />
             <Table days={course!.days} />
           </div>
           {data.labels.length > 0 && (
-            <div className="charts">
-              <Bar data={data} options={options} />
-            </div>
+            <>
+              <SemesterTitle title="Statistics" />
+              <div className="charts">
+                <Bar data={data} options={options} />
+              </div>
+            </>
           )}
         </>
       )}

@@ -33,6 +33,7 @@ const urls = {
   home: "https://gandalf.epitech.eu/",
   assignments: "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]",
   course: "https://gandalf.epitech.eu/course/view.php?id=[id]",
+  graph: "https://gandalf.epitech.eu/local/graph/view.php",
 };
 const semestersDates = JSON.parse(fs.readFileSync(files.semesters, "utf8"));
 
@@ -133,7 +134,7 @@ cleanFiles();
 (async () => {
   write("Launching the browser", 0);
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: false,
     defaultViewport: null,
     args: ["--disable-features=site-per-process", "--window-size=1280,1080"],
   });
@@ -180,18 +181,18 @@ cleanFiles();
       write("Authentication failed", 5, 1);
       exit(browser);
     }
-  } catch (e) { }
+  } catch (e) {}
 
   try {
-    await page.waitForXPath('//*[@id="passwordInput"]', {
+    await page.waitForXPath('//*[@id="i0118"]', {
       timeout: 5000,
     });
-    const passwordInput = await page.$x('//*[@id="passwordInput"]');
+    const passwordInput = await page.$x('//*[@id="i0118"]');
     await passwordInput[0].type(password);
-    await page.waitForXPath('//*[@id="submitButton"]');
-    const submitButton = await page.$x('//*[@id="submitButton"]');
+    await page.waitForXPath('//*[@id="idSIButton9"]');
+    const submitButton = await page.$x('//*[@id="idSIButton9"]');
     await submitButton[0].click();
-  } catch (e) { }
+  } catch (e) {}
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -295,6 +296,8 @@ cleanFiles();
     student: {
       email,
       name: getStudentName(email),
+      promotion: "",
+      campus: "",
     },
     semesters: [
       {
@@ -339,7 +342,7 @@ cleanFiles();
           (el) => el.textContent,
           titleContainer[0]
         );
-      } catch (e) { }
+      } catch (e) {}
 
       grades.semesters
         .find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -347,7 +350,10 @@ cleanFiles();
           id: link.split("=")[1],
           name: name,
           title,
+          team: null,
           days: [],
+          events: [],
+          members: [],
           created_at: null,
         });
 
@@ -507,10 +513,9 @@ cleanFiles();
     }
   }
 
-
   write("Retrieving upcoming events", 95);
 
-  let events_url = "https://gandalf.epitech.eu/calendar/view.php?view=upcoming"
+  let events_url = "https://gandalf.epitech.eu/calendar/view.php?view=upcoming";
 
   await page.goto(events_url);
 
@@ -554,10 +559,7 @@ cleanFiles();
         "div:first-child .row:first-child"
       );
 
-      const fullDate = await page.evaluate(
-        (el) => el.textContent,
-        dateElement
-      );
+      const fullDate = await page.evaluate((el) => el.textContent, dateElement);
 
       if (!title || !courseId || !id || !component || !fullDate) continue;
 
@@ -617,16 +619,195 @@ cleanFiles();
     }
   }
 
+  write("Retrieving grades missing from course view", 95);
+
+  await page.goto(urls.graph);
+
+  await page.waitForXPath(
+    "/html/body/div[4]/div[1]/div[2]/section/div/div/div/div[2]/div[1]"
+  );
+
+  const listInfo = await page.$x(
+    "/html/body/div[4]/div[1]/div[2]/section/div/div/div/div[1]/div[1]/div[2]"
+  );
+
+  if (listInfo.length > 0) {
+    const infos = await listInfo[0]?.$$("div");
+    const [o, t, th, f, fi, s, last] = infos;
+
+    if (f) {
+      let promotionContentSpan = await f.$("span.content");
+      let promotion = await page.evaluate(
+        (el) => el.textContent,
+        promotionContentSpan
+      );
+
+      if (promotion) {
+        grades.student.promotion = trim(promotion);
+      }
+    }
+
+    if (last) {
+      let campusContentSpan = await last.$("span.content");
+      let campus = await page.evaluate(
+        (el) => el.textContent,
+        campusContentSpan
+      );
+
+      if (campus) {
+        grades.student.campus = trim(campus);
+      }
+    }
+  }
+
+  const projetsList = await page.$x(
+    "/html/body/div[4]/div[1]/div[2]/section/div/div/div/div[2]/div[1]"
+  );
+
+  if (projetsList.length > 0) {
+    const details = await projetsList[0]?.$$("details.projects-details");
+
+    if (details.length > 0) {
+      for (const line of details) {
+        const members = [];
+        const events = [];
+
+        const summary = await line.$("summary.projects-summary");
+
+        const courseTitle = (
+          await page.evaluate((el) => el.textContent, summary)
+        ).split(" ")[0];
+
+        if (courseTitle) {
+          const course = grades.semesters
+            .find((s) => s.name === DEFAULT_SEMESTER_NAME)
+            ?.courses.find((c) => c.name === courseTitle);
+
+          const gradeSpan = await line.$$("small > span");
+
+          if (gradeSpan.length > 0) {
+            const grade = await page.evaluate(
+              (el) => el.textContent,
+              gradeSpan[0]
+            );
+
+            if (course) {
+              if (
+                course.days.length > 0 &&
+                course.days[course?.days.length - 1]?.assignments ===
+                  "Course final grade"
+              ) {
+                course.days.pop();
+              }
+
+              course.days.push({
+                name: "",
+                topic: "",
+                assignments: "Course final grade",
+                due_date: "-",
+                submission: "No submission",
+                grade: grade,
+              });
+            }
+          }
+
+          const projectContainer = await line.$$("div.flex-project");
+
+          if (projectContainer.length > 0) {
+            const $events = await projectContainer[0]?.$$("table > tbody > tr");
+
+            if ($events.length > 0) {
+              for (const scheduler of $events) {
+                const cells = await scheduler.$$("td");
+
+                if (cells.length > 0) {
+                  const activity = await page.evaluate(
+                    (el) => el.textContent,
+                    cells[0]
+                  );
+                  const enrolled = await page.evaluate(
+                    (el) => el.textContent,
+                    cells[1]
+                  );
+                  const attended = await page.evaluate(
+                    (el) => el.textContent,
+                    cells[2]
+                  );
+                  const date = await page.evaluate(
+                    (el) => el.textContent,
+                    cells[3]
+                  );
+                  const comment = await page.evaluate(
+                    (el) => el.textContent,
+                    cells[4]
+                  );
+
+                  events.push({
+                    activity: trim(activity),
+                    enrolled: trim(enrolled),
+                    attended: trim(attended),
+                    date: trim(date),
+                    comment: trim(comment),
+                  });
+                }
+              }
+            }
+          }
+
+          const teamContainer = await line.$$("details");
+
+          if (teamContainer.length > 0) {
+            let summary = await teamContainer[0]?.$$("summary");
+
+            if (summary.length > 0) {
+              const team = await page.evaluate(
+                (el) => el.textContent,
+                summary[0]
+              );
+
+              if (course) {
+                course.team = trim(team);
+              }
+            }
+
+            let membersContainer = await teamContainer[0]?.$$("ul");
+
+            if (membersContainer.length > 0) {
+              const $members = await membersContainer[0]?.$$("li");
+
+              if ($members.length > 0) {
+                for (const member of $members) {
+                  const email = await page.evaluate(
+                    (el) => el.textContent,
+                    member
+                  );
+                  members.push(trim(email));
+                }
+              }
+            }
+          }
+
+          if (course) {
+            course.members = members;
+            course.events = events;
+          }
+        }
+      }
+    }
+  }
+
+  // projectsTab is the id of the tab that contains the projects, find all details in this div
+
   // TODO: Retrieve badges
   // TODO: Retrieve GPA
 
-  write("Generating the report", 95);
+  write("Generating the report", 99);
 
   for (const course of grades.semesters[0].courses) {
     let lastDueDate = course?.days
-      ?.slice()
-      ?.reverse()
-      ?.find((d) => d.due_date !== "-")?.due_date,
+        ?.slice()
+        ?.reverse()
+        ?.find((d) => d.due_date !== "-")?.due_date,
       firstDueDate = course?.days?.find((d) => d.due_date !== "-")?.due_date;
 
     if (!firstDueDate || !lastDueDate || new Date(lastDueDate) > new Date()) {
