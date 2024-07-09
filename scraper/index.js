@@ -134,7 +134,7 @@ cleanFiles();
 (async () => {
   write("Launching the browser", 0);
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: "new",
     defaultViewport: null,
     args: ["--disable-features=site-per-process", "--window-size=1280,1080"],
   });
