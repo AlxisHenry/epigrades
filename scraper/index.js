@@ -619,7 +619,7 @@ cleanFiles();
     }
   }
 
-  write("Retrieving grades missing from course view", 95);
+  write("Retrieving grades missing from course view", 97);
 
   await page.goto(urls.graph);
 
@@ -692,22 +692,22 @@ cleanFiles();
             );
 
             if (course) {
-              if (
-                course.days.length > 0 &&
-                course.days[course?.days.length - 1]?.assignments ===
-                  "Course final grade"
-              ) {
-                course.days.pop();
-              }
+              if (course.days.length > 0) {
+                let finalGrade = course.days.find(
+                  (d) => d.assignments === "Course final grade"
+                );
 
-              course.days.push({
-                name: "",
-                topic: "",
-                assignments: "Course final grade",
-                due_date: "-",
-                submission: "No submission",
-                grade: grade,
-              });
+                if (!finalGrade) {
+                  course.days.push({
+                    name: "",
+                    topic: "",
+                    assignments: "Course final grade",
+                    due_date: "-",
+                    submission: "No submission",
+                    grade: grade,
+                  });
+                }
+              }
             }
           }
 
@@ -795,8 +795,6 @@ cleanFiles();
       }
     }
   }
-
-  // projectsTab is the id of the tab that contains the projects, find all details in this div
 
   // TODO: Retrieve badges
   // TODO: Retrieve GPA
