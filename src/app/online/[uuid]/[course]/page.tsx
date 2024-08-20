@@ -197,7 +197,7 @@ export default function Home() {
           />
           {stats.average === "-" && stats.grade === "-" && (
             <Alert
-              type="danger"
+              type="info"
               title="Not graded"
               customCss={{
                 marginBottom: "2rem",
@@ -217,18 +217,6 @@ export default function Home() {
             >
               The grade for this course is not available yet. Wait for Epitech
               to calculate it.
-            </Alert>
-          )}
-          {stats.grade !== "-" && stats.average === "-" && (
-            <Alert
-              type="warning"
-              title="Not graded"
-              customCss={{
-                marginBottom: "2rem",
-              }}
-            >
-              Epitech sucks and calculated the grade but not the average. Wait
-              for Epitech to calculate it...
             </Alert>
           )}
           <Cards>
@@ -335,6 +323,20 @@ const MembersView = (props: ViewProps) => {
 
 const EventsView = (props: ViewProps) => {
   const { course } = props;
+
+  if (course?.events.length === 0) {
+    return (
+      <div
+        style={{
+          marginTop: "3rem",
+        }}
+      >
+        <p style={{ marginBottom: "3rem", color: "#FFF", fontSize: "1.4rem" }}>
+          There are no events for this course.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div

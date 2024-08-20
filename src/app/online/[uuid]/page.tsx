@@ -11,6 +11,7 @@ import {
   Award,
   Activity,
   Zap,
+  Calendar,
 } from "react-feather";
 import moment from "moment";
 
@@ -59,7 +60,7 @@ export default function Home() {
   const [creationDate, setCreationDate] = useState<moment.Moment | null>(null);
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [courses, setCourses] = useState<CourseType[]>([]);
-  const [view, setView] = useState<"flat" | "modules">("flat");
+  const [view, setView] = useState<"flat" | "events" | "modules">("flat");
 
   useEffect(() => {
     const initialize = async () => {
@@ -112,8 +113,6 @@ export default function Home() {
     }
   }, [currentSemester, report]);
 
-  const isValid = (array: any[]) => array && array.length > 0;
-
   return (
     <Layout>
       {isLoading ? (
@@ -158,29 +157,6 @@ export default function Home() {
               />
             </Cards>
           </div>
-          <div>
-            {isValid(report?.upcoming_events) ? (
-              <>
-                <SemesterTitle title="Upcoming events and courses" />
-                <div
-                  style={{
-                    marginBottom: "3rem",
-                    display: "flex",
-                    overflowX: "auto",
-                    gap: "1rem",
-                  }}
-                >
-                  {sortEvents(report?.upcoming_events).map((event) => {
-                    return <Event event={event} key={event.id} />;
-                  })}
-                  {isValid(report?.future_courses) &&
-                    sortFutureCourses(report?.future_courses).map((course) => {
-                      return <FutureCourse course={course} key={course.id} />;
-                    })}
-                </div>
-              </>
-            ) : null}
-          </div>
           <div
             style={{
               display: "flex",
@@ -220,6 +196,12 @@ export default function Home() {
                 className={view === "modules" ? "active" : ""}
               />
               <Icon
+                icon={Calendar}
+                size={28}
+                onClick={() => setView("events")}
+                className={view === "events" ? "active" : ""}
+              />
+              <Icon
                 icon={RefreshCcw}
                 size={28}
                 onClick={() => {
@@ -249,26 +231,9 @@ export default function Home() {
             </div>
           </div>
           {view === "flat" ? (
-            <div
-              style={{
-                marginTop: "2rem",
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-                gridAutoRows: "minmax(100px, auto)",
-                gap: "1rem",
-              }}
-            >
-              {sortCourses(courses).map((course) => {
-                return (
-                  <Course
-                    isOnline={true}
-                    uuid={uuid}
-                    course={course}
-                    key={course.id}
-                  />
-                );
-              })}
-            </div>
+            <FlatView courses={courses} uuid={uuid} />
+          ) : view === "events" ? (
+            <EventsView report={report} />
           ) : (
             <CoursesByModuleView
               uuid={uuid}
@@ -278,6 +243,73 @@ export default function Home() {
         </>
       )}
     </Layout>
+  );
+}
+
+interface FlatViewProps {
+  courses: CourseType[];
+  uuid: string;
+}
+
+function FlatView(props: FlatViewProps) {
+  const { courses, uuid } = props;
+
+  return (
+    <div
+      style={{
+        marginTop: "2rem",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+        gridAutoRows: "minmax(100px, auto)",
+        gap: "1rem",
+      }}
+    >
+      {sortCourses(courses).map((course) => {
+        return (
+          <Course
+            isOnline={true}
+            uuid={uuid}
+            course={course}
+            key={course.id}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+interface EventsViewProps {
+  report: Report;
+}
+
+function EventsView(props: EventsViewProps) {
+  const { report } = props;
+
+  const isValid = (array: any[]) => array && array.length > 0;
+
+  return (
+    <div>
+      {isValid(report?.upcoming_events) ? (
+        <>
+          <div
+            style={{
+              display: "flex",
+              overflowX: "auto",
+              gap: "1rem",
+              marginBlock: "3rem"
+            }}
+          >
+            {sortEvents(report?.upcoming_events).map((event) => {
+              return <Event event={event} key={event.id} />;
+            })}
+            {isValid(report?.future_courses) &&
+              sortFutureCourses(report?.future_courses).map((course) => {
+                return <FutureCourse course={course} key={course.id} />;
+              })}
+          </div>
+        </>
+      ) : null}
+    </div>
   );
 }
 
