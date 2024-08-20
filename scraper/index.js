@@ -31,7 +31,7 @@ if (fs.existsSync(files.progress)) {
 const DEFAULT_SEMESTER_NAME = "-";
 const urls = {
   home: "https://gandalf.epitech.eu/",
-  assignments: "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]",
+  assignments: "https://gandalf.epitech.eu/grade/report/user/index.php?id=[id]",
   course: "https://gandalf.epitech.eu/course/view.php?id=[id]",
   graph: "https://gandalf.epitech.eu/local/graph/view.php",
 };
@@ -134,7 +134,7 @@ cleanFiles();
 (async () => {
   write("Launching the browser", 0);
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: false,
     defaultViewport: null,
     args: ["--disable-features=site-per-process", "--window-size=1280,1080"],
   });
@@ -181,7 +181,7 @@ cleanFiles();
       write("Authentication failed", 5, 1);
       exit(browser);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   try {
     await page.waitForXPath('//*[@id="i0118"]', {
@@ -192,7 +192,7 @@ cleanFiles();
     await page.waitForXPath('//*[@id="idSIButton9"]');
     const submitButton = await page.$x('//*[@id="idSIButton9"]');
     await submitButton[0].click();
-  } catch (e) {}
+  } catch (e) { }
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -317,9 +317,43 @@ cleanFiles();
     const link = await page.evaluate((el) => el.href, element);
     const name = await page.evaluate((el) => el.textContent, element);
     const currentPage = await browser.newPage();
+    const id = link.split("=")[1];
 
     await currentPage.goto(
-      urls.assignments.replace("[id]", link.split("=")[1])
+      urls.course.replace("[id]", id)
+    );
+
+    const deadlinesListContainer = await currentPage.$x(
+      '/html/body/div[4]/div[1]/div[2]/section/div/div/ul/li[1]/div[3]/div[5]/ul/li[1]/div/div/div[2]/div/div/div/ul'
+    );
+
+    const deadlines = [];
+
+    if (deadlinesListContainer.length > 0) {
+      const deadlinesList = await deadlinesListContainer[0]?.$$("li");
+
+      if (deadlinesList.length > 0) {
+        for (let i = 0; i < deadlinesList.length; i++) {
+          const deadline = deadlinesList[i];
+          const content = await currentPage.evaluate(
+            (el) => el.textContent,
+            deadline
+          );
+
+          const [due_date, label] = content.split(' : ');
+
+          deadlines.push({
+            due_date,
+            label
+          });
+        }
+      }
+    }
+
+    console.log(deadlines)
+
+    await currentPage.goto(
+      urls.assignments.replace("[id]", id)
     );
 
     write(`${name} (${i + 1}/${coursesCount})`, 20 + (i / coursesCount) * 70);
@@ -342,7 +376,7 @@ cleanFiles();
           (el) => el.textContent,
           titleContainer[0]
         );
-      } catch (e) {}
+      } catch (e) { }
 
       grades.semesters
         .find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -354,6 +388,7 @@ cleanFiles();
           days: [],
           events: [],
           members: [],
+          deadlines,
           created_at: null,
         });
 
@@ -367,33 +402,43 @@ cleanFiles();
 
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
+        const firstTH = await row?.$$("th");
         const columns = await row?.$$("td");
 
-        if (columns.length <= 0) continue;
+        if (columns.length <= 0 && firstTH.length <= 0) continue;
 
         const topic = await currentPage.evaluate(
           (el) => el?.textContent ?? "",
+          firstTH[0]
+        )
+        const calculatedWeight = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
           columns[0]
-        );
-        const assignments = await currentPage.evaluate(
-          (el) => el?.textContent ?? "",
-          columns[1]
-        );
-        const due_date = await currentPage.evaluate(
-          (el) => el?.textContent ?? "",
-          columns[2]
-        );
-        const submission = await currentPage.evaluate(
-          (el) => el?.textContent ?? "",
-          columns[3]
         );
         const grade = await currentPage.evaluate(
           (el) => el?.textContent ?? "",
-          columns[4]
+          columns[1]
+        );
+        const range = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
+          columns[2]
+        );
+        const percentage = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
+          columns[3]
+        );
+        const feedback = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
+          columns[3]
+        );
+        const totalContribution = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
+          columns[3]
         );
 
-        if (!topic && !assignments && !due_date && !submission && !grade)
-          continue;
+        if (range === "") continue;
+
+        console.table({ topic, calculatedWeight, grade, range, percentage, feedback, totalContribution })
 
         grades.semesters
           ?.find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -401,10 +446,12 @@ cleanFiles();
           ?.days.push({
             name: topic,
             topic,
-            assignments,
-            due_date: formatDueDate(due_date),
-            submission,
             grade,
+            range,
+            percentage,
+            feedback,
+            calculated_weight: calculatedWeight,
+            total_contribution: totalContribution,
           });
       }
     }
@@ -803,9 +850,9 @@ cleanFiles();
 
   for (const course of grades.semesters[0].courses) {
     let lastDueDate = course?.days
-        ?.slice()
-        ?.reverse()
-        ?.find((d) => d.due_date !== "-")?.due_date,
+      ?.slice()
+      ?.reverse()
+      ?.find((d) => d.due_date !== "-")?.due_date,
       firstDueDate = course?.days?.find((d) => d.due_date !== "-")?.due_date;
 
     if (!firstDueDate || !lastDueDate || new Date(lastDueDate) > new Date()) {
