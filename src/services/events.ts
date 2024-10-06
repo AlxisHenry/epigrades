@@ -12,5 +12,9 @@ export function sortEvents(courses: undefined | null | Event[]): Event[] {
       if (aDate < bDate) return -1;
       return 0;
     })
-    .filter((c) => moment(c.date).isBefore(moment().add(7, "week")));
+    .filter(
+      (c) =>
+        moment(c.date).isBefore(moment().add(7, "week")) &&
+        moment(c.date).isAfter(moment())
+    );
 }

@@ -26,16 +26,13 @@ export function Event({ event }: Props): JSX.Element {
       title = `${event.course.name} ${event.title.replace("Project", "")}`;
     }
 
-    let _ = moment(date().split("»")[0].trim(), "DD/MM/YYYY hh:mm A");
-
-    let isPast = _.isBefore(moment());
-
-    if (isPast) return `${title.replace("is due", "")} was ${_.fromNow()}`;
-
-    return `${title} ${_.fromNow()}`;
+    return `${title} ${moment(
+      date().split("»")[0].trim(),
+      "DD/MM/YYYY hh:mm A"
+    ).fromNow()}`;
   };
 
-  return (
+  return ( 
     <Notification
       title={title()}
       date={date()}

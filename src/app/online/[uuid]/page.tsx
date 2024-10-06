@@ -289,7 +289,7 @@ function EventsView(props: EventsViewProps) {
 
   return (
     <div>
-      {isValid(report?.upcoming_events) ? (
+      {isValid(report?.upcoming_events) || isValid(report?.future_courses) ? (
         <>
           <div
             style={{

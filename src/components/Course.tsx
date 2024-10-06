@@ -14,15 +14,14 @@ interface Props {
   course: Course;
 }
 
-export function Course({
-  isOnline = false,
-  uuid,
-  course,
-}: Props): JSX.Element {
+export function Course({ isOnline = false, uuid, course }: Props): JSX.Element {
   return (
-    <div className={`course`} onClick={() => {
-      location.href = `/online/${uuid}/${course.id}`;
-    }}>
+    <div
+      className={`course`}
+      onClick={() => {
+        location.href = `/online/${uuid}/${course.id}`;
+      }}
+    >
       <Link
         isOnline={isOnline}
         uuid={uuid}
@@ -30,14 +29,19 @@ export function Course({
         content={course.title || course.name}
         title={true}
       />
-      <div className="average">{calculateAverage(course)}<span style={{
-        fontSize: "0.8rem",
-        marginLeft: "0.5rem",
-      }}>/&nbsp;20</span></div>
-      <Badge grade={getCourseGrade(course)} />
-      <div className="code">
-        {course.name}
+      <div className="average">
+        {calculateAverage(course)}
+        <span
+          style={{
+            fontSize: "0.8rem",
+            marginLeft: "0.5rem",
+          }}
+        >
+          /&nbsp;20
+        </span>
       </div>
+      <Badge grade={getCourseGrade(course)} />
+      <div className="code">{course.name}</div>
     </div>
   );
 }
@@ -64,15 +68,11 @@ function Link({
   const t = (text: string): string => text.toLowerCase();
 
   const getAs = (): string => {
-    return isOnline
-      ? `/online/${uuid}/${id}`
-      : `/semesters/${id}`;
+    return isOnline ? `/online/${uuid}/${id}` : `/semesters/${id}`;
   };
 
   const getLink = (): string => {
-    return isOnline
-      ? "/online/[uuid]/[course]"
-      : "/semesters/[course]";
+    return isOnline ? "/online/[uuid]/[course]" : "/semesters/[course]";
   };
 
   return (
@@ -98,22 +98,24 @@ export function Table({ days }: { days: DayType[] }) {
     );
 
   return (
-    <div style={{
-      overflowX: "auto",
-    }}>
+    <div
+      style={{
+        overflowX: "auto",
+      }}
+    >
       <table>
         <thead>
           <tr>
-            <th>Day</th>
             <th>Topic</th>
-            <th>Assignments</th>
-            <th>Due Date</th>
-            <th>Submission</th>
+            <th>Range</th>
             <th>Grade</th>
+            <th>Feedback</th>
           </tr>
         </thead>
         <tbody>
-          {days.map((day) => isValidDay(day) && <Day day={day} key={day.name} />)}
+          {days.map(
+            (day) => <Day day={day} key={day.name} />
+          )}
         </tbody>
       </table>
     </div>
@@ -124,11 +126,20 @@ function Day({ day }: { day: DayType }) {
   return (
     <tr>
       <td>{day.name}</td>
-      <td>{day.topic}</td>
-      <td>{day.assignments}</td>
-      <td>{moment(day.due_date).format("DD/MM/YYYY")}</td>
-      <td>{day.submission}</td>
-      <td>{day.grade}</td>
+      <td>{day.range}</td>
+      <td>{day.grade}</td>      
+      <td
+        title={day.feedback}
+        style={{
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: "400px",
+          display: "block",
+        }}
+      >
+        {day.feedback}
+      </td>
     </tr>
   );
 }

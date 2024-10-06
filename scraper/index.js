@@ -181,7 +181,7 @@ cleanFiles();
       write("Authentication failed", 5, 1);
       exit(browser);
     }
-  } catch (e) { }
+  } catch (e) {}
 
   try {
     await page.waitForXPath('//*[@id="i0118"]', {
@@ -192,7 +192,7 @@ cleanFiles();
     await page.waitForXPath('//*[@id="idSIButton9"]');
     const submitButton = await page.$x('//*[@id="idSIButton9"]');
     await submitButton[0].click();
-  } catch (e) { }
+  } catch (e) {}
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -319,12 +319,12 @@ cleanFiles();
     const currentPage = await browser.newPage();
     const id = link.split("=")[1];
 
-    await currentPage.goto(
-      urls.course.replace("[id]", id)
-    );
+    await currentPage.goto(urls.course.replace("[id]", id));
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const deadlinesListContainer = await currentPage.$x(
-      '/html/body/div[4]/div[1]/div[2]/section/div/div/ul/li[1]/div[3]/div[5]/ul/li[1]/div/div/div[2]/div/div/div/ul'
+      '//*[@id="deadlinesContainer"]'
     );
 
     const deadlines = [];
@@ -340,21 +340,19 @@ cleanFiles();
             deadline
           );
 
-          const [due_date, label] = content.split(' : ');
+          const [due_date, label] = content.split(" : ");
 
           deadlines.push({
             due_date,
-            label
+            label,
           });
         }
       }
     }
 
-    console.log(deadlines)
+    console.log(name, deadlines);
 
-    await currentPage.goto(
-      urls.assignments.replace("[id]", id)
-    );
+    await currentPage.goto(urls.assignments.replace("[id]", id));
 
     write(`${name} (${i + 1}/${coursesCount})`, 20 + (i / coursesCount) * 70);
 
@@ -376,7 +374,7 @@ cleanFiles();
           (el) => el.textContent,
           titleContainer[0]
         );
-      } catch (e) { }
+      } catch (e) {}
 
       grades.semesters
         .find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -410,7 +408,7 @@ cleanFiles();
         const topic = await currentPage.evaluate(
           (el) => el?.textContent ?? "",
           firstTH[0]
-        )
+        );
         const calculatedWeight = await currentPage.evaluate(
           (el) => el?.textContent ?? "",
           columns[0]
@@ -429,16 +427,14 @@ cleanFiles();
         );
         const feedback = await currentPage.evaluate(
           (el) => el?.textContent ?? "",
-          columns[3]
+          columns[4]
         );
         const totalContribution = await currentPage.evaluate(
           (el) => el?.textContent ?? "",
-          columns[3]
+          columns[5]
         );
 
         if (range === "") continue;
-
-        console.table({ topic, calculatedWeight, grade, range, percentage, feedback, totalContribution })
 
         grades.semesters
           ?.find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -741,17 +737,19 @@ cleanFiles();
             if (course) {
               if (course.days.length > 0) {
                 let finalGrade = course.days.find(
-                  (d) => d.assignments === "Course final grade"
+                  (d) => d.topic === "Course final grade"
                 );
 
                 if (!finalGrade) {
                   course.days.push({
-                    name: "",
-                    topic: "",
-                    assignments: "Course final grade",
-                    due_date: "-",
-                    submission: "No submission",
-                    grade: grade,
+                    name: "Course final grade",
+                    topic: "Course final grade",
+                    grade: trim(grade),
+                    range: "-",
+                    percentage: "-",
+                    feedback: "-",
+                    calculated_weight: "-",
+                    total_contribution: "-",
                   });
                 }
               }
@@ -843,58 +841,57 @@ cleanFiles();
     }
   }
 
-  // TODO: Retrieve badges
-  // TODO: Retrieve GPA
-
   write("Generating the report", 99);
 
-  for (const course of grades.semesters[0].courses) {
-    let lastDueDate = course?.days
-      ?.slice()
-      ?.reverse()
-      ?.find((d) => d.due_date !== "-")?.due_date,
-      firstDueDate = course?.days?.find((d) => d.due_date !== "-")?.due_date;
+  // for (const course of grades.semesters[0].courses) {
+  //   let lastDueDate = course?.deadlines?.sort(
+  //       (a, b) => new Date(b.due_date) - new Date(a.due_date)
+  //     )[0]?.due_date,
+  //     firstDueDate = course?.deadlines?.sort(
+  //       (a, b) => new Date(a.due_date) - new Date(b.due_date)
+  //     )[0]?.due_date;
 
-    if (!firstDueDate || !lastDueDate || new Date(lastDueDate) > new Date()) {
-      grades.semesters[0].courses = grades.semesters[0].courses.filter(
-        (c) => c.name !== course.name
-      );
-      continue;
-    }
+  //   if (!firstDueDate || !lastDueDate || new Date(firstDueDate) >= new Date()) {
+  //     grades.semesters[0].courses = grades.semesters[0].courses.filter(
+  //       (c) => c.name !== course.name
+  //     );
+  //     continue;
+  //   }
 
-    if (firstDueDate) {
-      for (const semesterDate of semestersDates) {
-        if (!semesterDate.start || !semesterDate.end) continue;
+  //   if (firstDueDate) {
+  //     for (const semesterDate of semestersDates) {
+  //       if (!semesterDate.start || !semesterDate.end) continue;
 
-        if (
-          new Date(firstDueDate) >= new Date(semesterDate.start) &&
-          new Date(firstDueDate) <= new Date(semesterDate.end)
-        ) {
-          if (!grades.semesters.find((s) => s.name === semesterDate.name)) {
-            grades.semesters.push({
-              name: semesterDate.name,
-              courses: [course],
-              created_at: firstDueDate,
-            });
-          } else {
-            grades.semesters
-              .find((s) => s.name === semesterDate.name)
-              ?.courses.push(course);
-          }
-        }
-      }
-    }
+  //       if (
+  //         new Date(firstDueDate) >= new Date(semesterDate.start) &&
+  //         new Date(firstDueDate) <= new Date(semesterDate.end)
+  //       ) {
+  //         if (!grades.semesters.find((s) => s.name === semesterDate.name)) {
+  //           grades.semesters.push({
+  //             name: semesterDate.name,
+  //             courses: [course],
+  //             created_at: firstDueDate,
+  //           });
+  //         } else {
+  //           grades.semesters
+  //             .find((s) => s.name === semesterDate.name)
+  //             ?.courses.push(course);
+  //         }
+  //       }
+  //     }
+  //   }
 
-    if (lastDueDate) course.created_at = lastDueDate;
-  }
+  //   if (lastDueDate) course.created_at = lastDueDate;
+  // }
 
-  grades.semesters = grades.semesters.filter(
-    (s) => s.courses.length > 0 && s.name !== DEFAULT_SEMESTER_NAME
-  );
+  // grades.semesters = grades.semesters.filter(
+  //   (s) => s.courses.length > 0 && s.name !== DEFAULT_SEMESTER_NAME
+  // );
 
-  for (const semester of grades.semesters) {
-    semester.created_at = semester?.courses[0]?.created_at ?? null;
-  }
+  // for (const semester of grades.semesters) {
+  //   semester.courses = semester.courses.filter((c) => c.days.length > 0);
+  //   semester.created_at = semester?.courses[0]?.created_at ?? null;
+  // }
 
   grades.created_at = now();
 

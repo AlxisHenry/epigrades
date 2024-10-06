@@ -19,7 +19,7 @@ import {
 
 import { getCourseAssignementsCount } from "@/services/assignements";
 import { getCourseGrade, getCreditsFromGrade } from "@/services/grades";
-import { isGradedDay } from "@/services/days";
+import { isGradedDay, isValidDay } from "@/services/days";
 import { getReport } from "@/services/api";
 import { calculateAverage, findSemesterByCourseId } from "@/services/courses";
 import type { Course as CourseType, Report } from "@/services/online";
@@ -176,7 +176,7 @@ export default function Home() {
 
   if (!isLoading && course) {
     for (const day of course!.days) {
-      if (!isGradedDay(day)) continue;
+      if (!isValidDay(day) || !isGradedDay(day)) continue;
       data.labels.push(day.name);
       data.datasets[0].data.push(day.grade);
     }

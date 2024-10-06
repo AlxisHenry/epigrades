@@ -6,6 +6,7 @@ export enum Grade {
   C = "C",
   D = "D",
   E = "Echec",
+  Echec = "Echec",
 }
 
 export const UNKNOW_GRADE = "N/A";
@@ -32,15 +33,15 @@ export function getTotalCredits(semester: Semester): string {
 export function getCourseGrade(course: Course | null): string {
   if (course === null) return "-";
 
-  let lastDay: Day = course.days[course.days.length - 1];
+  let courseFinalGrade = course.days.find(
+    (day) => day.name === "Course final grade"
+  );
 
-  if (lastDay?.due_date === "-") {
-    if (Object.values(Grade).includes(lastDay.grade as Grade)) {
-      return lastDay.grade;
-    }
+  if (courseFinalGrade && courseFinalGrade?.grade !== "-") {
+    return courseFinalGrade.grade;
   }
 
-  return "-";
+  return "N/A";
 }
 
 export function getGradeAverage(semester: Semester): string {
