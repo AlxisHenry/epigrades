@@ -1,23 +1,19 @@
 import { getCourses } from "@/services/courses";
 import type { Day, Course } from "@/services/online";
+import { Grade } from "@/services/grades";
 
 export function isValidDay(day: Day): boolean {
   return (
     day.name !== "" &&
     day.name !== null &&
-    day.due_date !== "-" &&
-    day.due_date !== null &&
-    day.grade !== null
+    day.grade !== null &&
+    // day is not in Grade enum
+    Grade[day.grade as keyof typeof Grade] === undefined
   );
 }
 
 export function isGradedDay(day: Day): boolean {
-  return (
-    day.due_date !== "-" &&
-    day.due_date !== null &&
-    day.grade !== null &&
-    day.grade !== "-"
-  );
+  return day.grade !== null && day.grade !== "-";
 }
 
 export async function getDays(): Promise<Day[]> {

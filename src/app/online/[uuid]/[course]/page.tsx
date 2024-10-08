@@ -19,10 +19,10 @@ import {
 
 import { getCourseAssignementsCount } from "@/services/assignements";
 import { getCourseGrade, getCreditsFromGrade } from "@/services/grades";
-import { isGradedDay } from "@/services/days";
+import { isGradedDay, isValidDay } from "@/services/days";
 import { getReport } from "@/services/api";
 import { calculateAverage, findSemesterByCourseId } from "@/services/courses";
-import type { Course as CourseType, Report, Semester } from "@/services/online";
+import type { Course as CourseType, Report } from "@/services/online";
 
 import {
   PageTitle,
@@ -35,8 +35,17 @@ import {
   Alert,
   SemesterTitle,
   Notification,
+  Icon,
+  Highlight,
 } from "@/components";
-import { Activity, Award, Flag } from "react-feather";
+import {
+  Activity,
+  Award,
+  Calendar,
+  Flag,
+  PieChart,
+  Users,
+} from "react-feather";
 import moment from "moment";
 
 type Params = {
@@ -63,6 +72,7 @@ export default function Home() {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentReport, setCurrentReport] = useState<Report | null>(null);
+  const [view, setView] = useState<"stats" | "members" | "events">("stats");
   const [course, setCourse] = useState<CourseType | null>(null);
 
   const [stats, setStats] = useState<{
@@ -166,7 +176,7 @@ export default function Home() {
 
   if (!isLoading && course) {
     for (const day of course!.days) {
-      if (!isGradedDay(day)) continue;
+      if (!isValidDay(day) || !isGradedDay(day)) continue;
       data.labels.push(day.name);
       data.datasets[0].data.push(day.grade);
     }
@@ -187,7 +197,7 @@ export default function Home() {
           />
           {stats.average === "-" && stats.grade === "-" && (
             <Alert
-              type="danger"
+              type="info"
               title="Not graded"
               customCss={{
                 marginBottom: "2rem",
@@ -209,18 +219,6 @@ export default function Home() {
               to calculate it.
             </Alert>
           )}
-          {stats.grade !== "-" && stats.average === "-" && (
-            <Alert
-              type="warning"
-              title="Not graded"
-              customCss={{
-                marginBottom: "2rem",
-              }}
-            >
-              Epitech sucks and calculated the grade but not the average. Wait
-              for Epitech to calculate it...
-            </Alert>
-          )}
           <Cards>
             <Card title="Grade" subtitle={stats.grade} icon={Flag} />
             <Card title="Average" subtitle={stats.average} icon={Activity} />
@@ -232,88 +230,170 @@ export default function Home() {
           </Cards>
           <div
             style={{
+              display: "flex",
+              justifyContent: "flex-end",
               marginTop: "3rem",
+              gap: "1rem",
+              overflowX: "auto",
             }}
           >
-            {course?.members.length > 0 ? (
-              <div>
-                <SemesterTitle title={`Members (${course?.team})`} />
-                <ul
-                  style={{
-                    marginBottom: "3rem",
-                    listStyleType: "none",
-                    display: "flex",
-                    gap: "1rem",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {course?.members.map((member) => {
-                    return (
-                      <li
-                        key={member}
-                        style={{
-                          flex: "1 1 200px",
-                          padding: "1rem",
-                          textAlign: "center",
-                          backgroundColor: "#fdfdfd10",
-                          borderRadius: "0.5rem",
-                          color: "#FFF",
-                        }}
-                      >
-                        <h3>{member}</h3>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ) : null}
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+              }}
+            >
+              <Icon
+                icon={PieChart}
+                size={28}
+                onClick={() => setView("stats")}
+                className={view === "stats" ? "active" : ""}
+              />
+              <Icon
+                icon={Users}
+                size={28}
+                onClick={() => setView("members")}
+                className={view === "members" ? "active" : ""}
+              />
+              <Icon
+                icon={Calendar}
+                size={28}
+                onClick={() => setView("events")}
+                className={view === "events" ? "active" : ""}
+              />
+            </div>
           </div>
-          <div
-            style={{
-              marginTop: "3rem",
-            }}
-          >
-            {course.events && course.events.length > 0 ? (
-              <>
-                <SemesterTitle title="Events" />
-                <div
-                  style={{
-                    marginBottom: "3rem",
-                    display: "flex",
-                    overflowX: "auto",
-                    gap: "1rem",
-                  }}
-                >
-                  {course?.events.map((event) => {
-                    return (
-                      <Notification
-                        key={event.activity}
-                        title={event.activity}
-                        date={moment(event.date, "DD/MM/YYYY").format(
-                          "DD/MM/YYYY"
-                        )}
-                        inSevenDaysOrLess={event.enrolled !== "Yes"}
-                      />
-                    );
-                  })}
-                </div>
-              </>
-            ) : null}
-          </div>
-          <SemesterTitle title="Days" />
-          <div className="table__container">
-            <Table days={course!.days} />
-          </div>
-          {data.labels.length > 0 && (
-            <>
-              <SemesterTitle title="Statistics" />
-              <div className="charts">
-                <Bar data={data} options={options} />
-              </div>
-            </>
+          {view === "stats" && (
+            <StatisticsView course={course} data={data} options={options} />
           )}
+          {view === "members" && <MembersView course={course} />}
+          {view === "events" && <EventsView course={course} />}
         </>
       )}
     </Layout>
   );
 }
+
+interface ViewProps {
+  course: CourseType;
+}
+
+const MembersView = (props: ViewProps) => {
+  const { course } = props;
+
+  return (
+    <div
+      style={{
+        marginTop: "3rem",
+      }}
+    >
+      <p style={{ marginBottom: "3rem", color: "#FFF", fontSize: "1.4rem" }}>
+        For the <Highlight>{course.title}</Highlight> project{" "}
+        <span
+          style={{
+            color: "#FFF",
+            fontSize: "1rem",
+            fontWeight: "bold",
+          }}
+        >
+          ({course.name})
+        </span>{" "}
+        you were part of the <Highlight>{course.team}</Highlight> team.
+      </p>
+      {course?.members.length > 0 ? (
+        <div>
+          {course?.members.map((member) => {
+            return (
+              <li
+                key={member}
+                style={{
+                  padding: "1rem",
+                  color: "#FFF",
+                }}
+              >
+                {member}
+              </li>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+const EventsView = (props: ViewProps) => {
+  const { course } = props;
+
+  if (course?.events.length === 0) {
+    return (
+      <div
+        style={{
+          marginTop: "3rem",
+        }}
+      >
+        <p style={{ marginBottom: "3rem", color: "#FFF", fontSize: "1.4rem" }}>
+          There are no events for this course.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        marginTop: "3rem",
+      }}
+    >
+      {course.events && course.events.length > 0 ? (
+        <>
+          <div
+            style={{
+              marginBottom: "3rem",
+              display: "flex",
+              overflowX: "auto",
+              gap: "1rem",
+            }}
+          >
+            {course?.events.map((event) => {
+              return (
+                <Notification
+                  key={event.activity}
+                  title={event.activity}
+                  date={moment(event.date, "DD/MM/YYYY").format("DD/MM/YYYY")}
+                  inSevenDaysOrLess={event.enrolled !== "Yes"}
+                />
+              );
+            })}
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+};
+
+interface StatisticsViewProps {
+  course: CourseType;
+  data: any;
+  options: any;
+}
+
+const StatisticsView = (props: StatisticsViewProps) => {
+  const { course, options, data } = props;
+
+  return (
+    <>
+      <SemesterTitle title="Days" />
+      <div className="table__container">
+        <Table days={course!.days} />
+      </div>
+      {data.labels.length > 0 && (
+        <>
+          <SemesterTitle title="Statistics" />
+          <div className="charts">
+            <Bar data={data} options={options} />
+          </div>
+        </>
+      )}
+    </>
+  );
+};

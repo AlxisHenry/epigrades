@@ -7,9 +7,6 @@ export type AuthenticatorImage = {
   image: string | null;
 };
 
-/**
- * This method will check in the execution file the progress of the execution
- */
 export async function GET(
   request: NextRequest
 ): Promise<NextResponse<AuthenticatorImage>> {

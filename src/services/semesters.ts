@@ -59,7 +59,12 @@ export function calculateAverage(
       s.courses.forEach((course) => {
         course.days.map((day) => {
           if (isGradedDay(day)) {
-            sum += parseFloat(day.grade);
+            let grade = parseFloat(day.grade) || -1;
+            if (grade === -1) return;
+            let [_, max] = day?.range?.split('–')?.map(parseFloat);
+            if (max === 0) return;
+            if (max && max !== 20) grade = (grade * 20) / max;
+            sum += grade;
             assignementsCount++;
           }
         });
@@ -69,7 +74,12 @@ export function calculateAverage(
     semester.courses.forEach((course) => {
       course.days.map((day) => {
         if (isGradedDay(day)) {
-          sum += parseFloat(day.grade);
+          let grade = parseFloat(day.grade) || -1;
+          if (grade === -1) return;
+          let [_, max] = day?.range?.split('–')?.map(parseFloat);
+          if (max === 0) return;
+          if (max && max !== 20) grade = (grade * 20) / max;
+          sum += grade;
           assignementsCount++;
         }
       });

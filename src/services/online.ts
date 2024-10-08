@@ -135,7 +135,13 @@ export type Course = {
   semester?: string;
   events: CourseEvent[];
   members: string[];
+  deadlines: Deadline[];
 };
+
+type Deadline = {
+  due_date: string;
+  label: string;
+}
 
 export type CourseEvent = {
   activity: string;
@@ -143,7 +149,7 @@ export type CourseEvent = {
   attended: string;
   date: string;
   comment: string;
-}
+};
 
 export type FutureCourse = {
   id: string;
@@ -155,10 +161,12 @@ export type FutureCourse = {
 export type Day = {
   name: string;
   topic: string;
-  assignments: string;
-  due_date: string;
-  submission: string;
   grade: string;
+  range: string;
+  percentage: string;
+  feedback: string;
+  calculated_weight: string;
+  total_contribution: string;
 };
 
 export type Progress = {

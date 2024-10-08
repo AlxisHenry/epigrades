@@ -31,7 +31,7 @@ if (fs.existsSync(files.progress)) {
 const DEFAULT_SEMESTER_NAME = "-";
 const urls = {
   home: "https://gandalf.epitech.eu/",
-  assignments: "https://gandalf.epitech.eu/mod/assign/index.php?id=[id]",
+  assignments: "https://gandalf.epitech.eu/grade/report/user/index.php?id=[id]",
   course: "https://gandalf.epitech.eu/course/view.php?id=[id]",
   graph: "https://gandalf.epitech.eu/local/graph/view.php",
 };
@@ -134,7 +134,7 @@ cleanFiles();
 (async () => {
   write("Launching the browser", 0);
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: false,
     defaultViewport: null,
     args: ["--disable-features=site-per-process", "--window-size=1280,1080"],
   });
@@ -181,7 +181,7 @@ cleanFiles();
       write("Authentication failed", 5, 1);
       exit(browser);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   try {
     await page.waitForXPath('//*[@id="i0118"]', {
@@ -192,7 +192,7 @@ cleanFiles();
     await page.waitForXPath('//*[@id="idSIButton9"]');
     const submitButton = await page.$x('//*[@id="idSIButton9"]');
     await submitButton[0].click();
-  } catch (e) {}
+  } catch (e) { }
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -317,10 +317,42 @@ cleanFiles();
     const link = await page.evaluate((el) => el.href, element);
     const name = await page.evaluate((el) => el.textContent, element);
     const currentPage = await browser.newPage();
+    const id = link.split("=")[1];
 
-    await currentPage.goto(
-      urls.assignments.replace("[id]", link.split("=")[1])
+    await currentPage.goto(urls.course.replace("[id]", id));
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const deadlinesListContainer = await currentPage.$x(
+      '//*[@id="deadlinesContainer"]'
     );
+
+    const deadlines = [];
+
+    if (deadlinesListContainer.length > 0) {
+      const deadlinesList = await deadlinesListContainer[0]?.$$("li");
+
+      if (deadlinesList.length > 0) {
+        for (let i = 0; i < deadlinesList.length; i++) {
+          const deadline = deadlinesList[i];
+          const content = await currentPage.evaluate(
+            (el) => el.textContent,
+            deadline
+          );
+
+          const [due_date, label] = content.split(" : ");
+
+          deadlines.push({
+            due_date,
+            label,
+          });
+        }
+      }
+    }
+
+    console.log(name, deadlines);
+
+    await currentPage.goto(urls.assignments.replace("[id]", id));
 
     write(`${name} (${i + 1}/${coursesCount})`, 20 + (i / coursesCount) * 70);
 
@@ -342,7 +374,7 @@ cleanFiles();
           (el) => el.textContent,
           titleContainer[0]
         );
-      } catch (e) {}
+      } catch (e) { }
 
       grades.semesters
         .find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -354,6 +386,7 @@ cleanFiles();
           days: [],
           events: [],
           members: [],
+          deadlines,
           created_at: null,
         });
 
@@ -367,33 +400,41 @@ cleanFiles();
 
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
+        const firstTH = await row?.$$("th");
         const columns = await row?.$$("td");
 
-        if (columns.length <= 0) continue;
+        if (columns.length <= 0 && firstTH.length <= 0) continue;
 
         const topic = await currentPage.evaluate(
           (el) => el?.textContent ?? "",
+          firstTH[0]
+        );
+        const calculatedWeight = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
           columns[0]
-        );
-        const assignments = await currentPage.evaluate(
-          (el) => el?.textContent ?? "",
-          columns[1]
-        );
-        const due_date = await currentPage.evaluate(
-          (el) => el?.textContent ?? "",
-          columns[2]
-        );
-        const submission = await currentPage.evaluate(
-          (el) => el?.textContent ?? "",
-          columns[3]
         );
         const grade = await currentPage.evaluate(
           (el) => el?.textContent ?? "",
+          columns[1]
+        );
+        const range = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
+          columns[2]
+        );
+        const percentage = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
+          columns[3]
+        );
+        const feedback = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
           columns[4]
         );
+        const totalContribution = await currentPage.evaluate(
+          (el) => el?.textContent ?? "",
+          columns[5]
+        );
 
-        if (!topic && !assignments && !due_date && !submission && !grade)
-          continue;
+        if (range === "") continue;
 
         grades.semesters
           ?.find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -401,10 +442,12 @@ cleanFiles();
           ?.days.push({
             name: topic,
             topic,
-            assignments,
-            due_date: formatDueDate(due_date),
-            submission,
             grade,
+            range,
+            percentage,
+            feedback,
+            calculated_weight: calculatedWeight,
+            total_contribution: totalContribution,
           });
       }
     }
@@ -440,38 +483,40 @@ cleanFiles();
 
       const futureCoursesCards = await futureCoursesContainer[0]?.$$("div");
 
-      for (let i = 0; i < futureCoursesCards.length; i++) {
-        const courseBody = await futureCoursesCards[i]?.$(
-          ".course-info-container"
-        );
+      if (futureCoursesCards && futureCoursesCards.length > 0) {
+        for (let i = 0; i < futureCoursesCards?.length; i++) {
+          const courseBody = await futureCoursesCards[i]?.$(
+            ".course-info-container"
+          );
 
-        if (!courseBody) continue;
+          if (!courseBody) continue;
 
-        const id = await page.evaluate(
-          (el) => el.getAttribute("data-course-id"),
-          futureCoursesCards[i]
-        );
+          const id = await page.evaluate(
+            (el) => el.getAttribute("data-course-id"),
+            futureCoursesCards[i]
+          );
 
-        if (!id) continue;
+          if (!id) continue;
 
-        const nameContainer = await courseBody.$$(
-          ".text-muted > div:last-child"
-        );
+          const nameContainer = await courseBody.$$(
+            ".text-muted > div:last-child"
+          );
 
-        if (!nameContainer) continue;
+          if (!nameContainer) continue;
 
-        const name = await page.evaluate(
-          (el) => el.textContent,
-          nameContainer[0]
-        );
+          const name = await page.evaluate(
+            (el) => el.textContent,
+            nameContainer[0]
+          );
 
-        if (!name) continue;
+          if (!name) continue;
 
-        if (!futureCourses.find((c) => c.id === id))
-          futureCourses.push({
-            id,
-            name: trim(name),
-          });
+          if (!futureCourses.find((c) => c.id === id))
+            futureCourses.push({
+              id,
+              name: trim(name),
+            });
+        }
       }
 
       for (let i = 0; i < futureCourses.length; i++) {
@@ -694,17 +739,19 @@ cleanFiles();
             if (course) {
               if (course.days.length > 0) {
                 let finalGrade = course.days.find(
-                  (d) => d.assignments === "Course final grade"
+                  (d) => d.topic === "Course final grade"
                 );
 
                 if (!finalGrade) {
                   course.days.push({
-                    name: "",
-                    topic: "",
-                    assignments: "Course final grade",
-                    due_date: "-",
-                    submission: "No submission",
-                    grade: grade,
+                    name: "Course final grade",
+                    topic: "Course final grade",
+                    grade: trim(grade),
+                    range: "-",
+                    percentage: "-",
+                    feedback: "-",
+                    calculated_weight: "-",
+                    total_contribution: "-",
                   });
                 }
               }
@@ -796,19 +843,17 @@ cleanFiles();
     }
   }
 
-  // TODO: Retrieve badges
-  // TODO: Retrieve GPA
-
   write("Generating the report", 99);
 
   for (const course of grades.semesters[0].courses) {
-    let lastDueDate = course?.days
-        ?.slice()
-        ?.reverse()
-        ?.find((d) => d.due_date !== "-")?.due_date,
-      firstDueDate = course?.days?.find((d) => d.due_date !== "-")?.due_date;
+    let lastDueDate = course?.deadlines?.sort(
+        (a, b) => new Date(b.due_date) - new Date(a.due_date)
+      )[0]?.due_date,
+      firstDueDate = course?.deadlines?.sort(
+        (a, b) => new Date(a.due_date) - new Date(b.due_date)
+      )[0]?.due_date;
 
-    if (!firstDueDate || !lastDueDate || new Date(lastDueDate) > new Date()) {
+    if (!firstDueDate || !lastDueDate || new Date(firstDueDate) >= new Date()) {
       grades.semesters[0].courses = grades.semesters[0].courses.filter(
         (c) => c.name !== course.name
       );
@@ -846,6 +891,7 @@ cleanFiles();
   );
 
   for (const semester of grades.semesters) {
+    semester.courses = semester.courses.filter((c) => c.days.length > 0);
     semester.created_at = semester?.courses[0]?.created_at ?? null;
   }
 

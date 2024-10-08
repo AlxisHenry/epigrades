@@ -25,7 +25,10 @@ export function sortFutureCourses(
       if (aDate < bDate) return -1;
       return 0;
     })
-    .filter((c) => moment(c.start_date).isBefore(moment().add(7, "week")));
+    .filter(
+      (c) =>
+        moment(c.start_date).isAfter(moment())
+    );
 }
 
 export async function getCourses(): Promise<Course[]> {
@@ -55,7 +58,13 @@ export function calculateAverage(course: Course | null): string {
     countOfGrades = 0;
   course.days.map((day) => {
     if (isGradedDay(day)) {
-      grade += parseFloat(day.grade);
+      let g = parseFloat(day.grade) || -1;
+      if (g === -1) return;
+      let [_, max] = day.range.split('–').map(parseFloat);
+      if (max === 0) return;
+      if (max && max !== 20) g = (g * 20) / max;
+
+      grade += g;
       countOfGrades++;
     }
   });
