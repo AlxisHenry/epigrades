@@ -181,7 +181,7 @@ cleanFiles();
       write("Authentication failed", 5, 1);
       exit(browser);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   try {
     await page.waitForXPath('//*[@id="i0118"]', {
@@ -192,7 +192,7 @@ cleanFiles();
     await page.waitForXPath('//*[@id="idSIButton9"]');
     const submitButton = await page.$x('//*[@id="idSIButton9"]');
     await submitButton[0].click();
-  } catch (e) {}
+  } catch (e) { }
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -374,7 +374,7 @@ cleanFiles();
           (el) => el.textContent,
           titleContainer[0]
         );
-      } catch (e) {}
+      } catch (e) { }
 
       grades.semesters
         .find((semester) => semester.name === DEFAULT_SEMESTER_NAME)
@@ -483,38 +483,40 @@ cleanFiles();
 
       const futureCoursesCards = await futureCoursesContainer[0]?.$$("div");
 
-      for (let i = 0; i < futureCoursesCards.length; i++) {
-        const courseBody = await futureCoursesCards[i]?.$(
-          ".course-info-container"
-        );
+      if (futureCoursesCards && futureCoursesCards.length > 0) {
+        for (let i = 0; i < futureCoursesCards?.length; i++) {
+          const courseBody = await futureCoursesCards[i]?.$(
+            ".course-info-container"
+          );
 
-        if (!courseBody) continue;
+          if (!courseBody) continue;
 
-        const id = await page.evaluate(
-          (el) => el.getAttribute("data-course-id"),
-          futureCoursesCards[i]
-        );
+          const id = await page.evaluate(
+            (el) => el.getAttribute("data-course-id"),
+            futureCoursesCards[i]
+          );
 
-        if (!id) continue;
+          if (!id) continue;
 
-        const nameContainer = await courseBody.$$(
-          ".text-muted > div:last-child"
-        );
+          const nameContainer = await courseBody.$$(
+            ".text-muted > div:last-child"
+          );
 
-        if (!nameContainer) continue;
+          if (!nameContainer) continue;
 
-        const name = await page.evaluate(
-          (el) => el.textContent,
-          nameContainer[0]
-        );
+          const name = await page.evaluate(
+            (el) => el.textContent,
+            nameContainer[0]
+          );
 
-        if (!name) continue;
+          if (!name) continue;
 
-        if (!futureCourses.find((c) => c.id === id))
-          futureCourses.push({
-            id,
-            name: trim(name),
-          });
+          if (!futureCourses.find((c) => c.id === id))
+            futureCourses.push({
+              id,
+              name: trim(name),
+            });
+        }
       }
 
       for (let i = 0; i < futureCourses.length; i++) {
@@ -843,55 +845,55 @@ cleanFiles();
 
   write("Generating the report", 99);
 
-  // for (const course of grades.semesters[0].courses) {
-  //   let lastDueDate = course?.deadlines?.sort(
-  //       (a, b) => new Date(b.due_date) - new Date(a.due_date)
-  //     )[0]?.due_date,
-  //     firstDueDate = course?.deadlines?.sort(
-  //       (a, b) => new Date(a.due_date) - new Date(b.due_date)
-  //     )[0]?.due_date;
+  for (const course of grades.semesters[0].courses) {
+    let lastDueDate = course?.deadlines?.sort(
+        (a, b) => new Date(b.due_date) - new Date(a.due_date)
+      )[0]?.due_date,
+      firstDueDate = course?.deadlines?.sort(
+        (a, b) => new Date(a.due_date) - new Date(b.due_date)
+      )[0]?.due_date;
 
-  //   if (!firstDueDate || !lastDueDate || new Date(firstDueDate) >= new Date()) {
-  //     grades.semesters[0].courses = grades.semesters[0].courses.filter(
-  //       (c) => c.name !== course.name
-  //     );
-  //     continue;
-  //   }
+    if (!firstDueDate || !lastDueDate || new Date(firstDueDate) >= new Date()) {
+      grades.semesters[0].courses = grades.semesters[0].courses.filter(
+        (c) => c.name !== course.name
+      );
+      continue;
+    }
 
-  //   if (firstDueDate) {
-  //     for (const semesterDate of semestersDates) {
-  //       if (!semesterDate.start || !semesterDate.end) continue;
+    if (firstDueDate) {
+      for (const semesterDate of semestersDates) {
+        if (!semesterDate.start || !semesterDate.end) continue;
 
-  //       if (
-  //         new Date(firstDueDate) >= new Date(semesterDate.start) &&
-  //         new Date(firstDueDate) <= new Date(semesterDate.end)
-  //       ) {
-  //         if (!grades.semesters.find((s) => s.name === semesterDate.name)) {
-  //           grades.semesters.push({
-  //             name: semesterDate.name,
-  //             courses: [course],
-  //             created_at: firstDueDate,
-  //           });
-  //         } else {
-  //           grades.semesters
-  //             .find((s) => s.name === semesterDate.name)
-  //             ?.courses.push(course);
-  //         }
-  //       }
-  //     }
-  //   }
+        if (
+          new Date(firstDueDate) >= new Date(semesterDate.start) &&
+          new Date(firstDueDate) <= new Date(semesterDate.end)
+        ) {
+          if (!grades.semesters.find((s) => s.name === semesterDate.name)) {
+            grades.semesters.push({
+              name: semesterDate.name,
+              courses: [course],
+              created_at: firstDueDate,
+            });
+          } else {
+            grades.semesters
+              .find((s) => s.name === semesterDate.name)
+              ?.courses.push(course);
+          }
+        }
+      }
+    }
 
-  //   if (lastDueDate) course.created_at = lastDueDate;
-  // }
+    if (lastDueDate) course.created_at = lastDueDate;
+  }
 
-  // grades.semesters = grades.semesters.filter(
-  //   (s) => s.courses.length > 0 && s.name !== DEFAULT_SEMESTER_NAME
-  // );
+  grades.semesters = grades.semesters.filter(
+    (s) => s.courses.length > 0 && s.name !== DEFAULT_SEMESTER_NAME
+  );
 
-  // for (const semester of grades.semesters) {
-  //   semester.courses = semester.courses.filter((c) => c.days.length > 0);
-  //   semester.created_at = semester?.courses[0]?.created_at ?? null;
-  // }
+  for (const semester of grades.semesters) {
+    semester.courses = semester.courses.filter((c) => c.days.length > 0);
+    semester.created_at = semester?.courses[0]?.created_at ?? null;
+  }
 
   grades.created_at = now();
 
