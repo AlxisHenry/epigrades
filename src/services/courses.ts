@@ -60,10 +60,14 @@ export function calculateAverage(course: Course | null): string {
     if (isGradedDay(day)) {
       let g = parseFloat(day.grade) || -1;
       if (g === -1) return;
-      let [_, max] = day.range.split('–').map(parseFloat);
+      let max = 20;
+      if (day.range) {
+        let [_, parsedMax] = day.range.split('–').map(parseFloat);
+        if (parsedMax !== undefined) max = parsedMax;
+      }
+      console.log(max)
       if (max === 0) return;
       if (max && max !== 20) g = (g * 20) / max;
-
       grade += g;
       countOfGrades++;
     }

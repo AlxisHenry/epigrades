@@ -61,9 +61,13 @@ export function calculateAverage(
           if (isGradedDay(day)) {
             let grade = parseFloat(day.grade) || -1;
             if (grade === -1) return;
-            let [_, max = 20] = day?.range?.split('–')?.map(parseFloat);
+            let max = 20;
+            if (day.range) {
+              let [_, parsedMax] = day.range.split('–').map(parseFloat);
+              if (parsedMax !== undefined) max = parsedMax;
+            }
             if (max === 0) return;
-            if (max && max !== 20) grade = (grade * 20) / max;
+            if (max !== 20) grade = (grade * 20) / max;
             sum += grade;
             assignementsCount++;
           }
@@ -76,9 +80,13 @@ export function calculateAverage(
         if (isGradedDay(day)) {
           let grade = parseFloat(day.grade) || -1;
           if (grade === -1) return;
-          let [_, max = 20] = day?.range?.split('–')?.map(parseFloat);
-          if (max === 0) return;
-          if (max && max !== 20) grade = (grade * 20) / max;
+            let max = 20;
+            if (day.range) {
+            let [_, parsedMax] = day.range.split('–').map(parseFloat);
+            if (parsedMax !== undefined) max = parsedMax;
+            }
+            if (max === 0) return;
+            if (max !== 20) grade = (grade * 20) / max;
           sum += grade;
           assignementsCount++;
         }
