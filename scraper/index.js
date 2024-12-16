@@ -136,7 +136,7 @@ cleanFiles();
   const browser = await puppeteer.launch({
     headless: "new",
     defaultViewport: null,
-    args: ["--disable-features=site-per-process", "--window-size=1280,1080"],
+    args: ["--no-sandbox", "--disable-features=site-per-process", "--window-size=1280,1080"],
   });
   write("Opening the intranet login page", 2);
 
